@@ -3,9 +3,65 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+  --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+}
+
+@layer base {
+  h1 {
+    @apply font-medium text-[57px] text-[#000]
+  }
+
+  h2 {
+    @apply font-medium text-[48px] text-[#000]
+  }
+
+  h3 {
+    @apply font-semibold text-[24px] text-[#18181B]
+  }
+
+  p { 
+    @apply font-[300] text-[16px] leading-[150%] text-[#000]
+  }
+
+  b { 
+    @apply font-bold text-[16px] leading-[150%] text-[#000]
+  }
+
+  .withborder {
+    @apply rounded-lg min-w-[116px] text-[#fff] w-[250px] bg-[#0CCE68] border-[2px] border-solid border-transparent shadow-[0px_4px_4px_rgba(0,_0,_0,_0.25)] leading-[150%] font-medium overflow-hidden flex flex-row items-center justify-center py-2.5 px-[67px] whitespace-nowrap duration-500
+  }
+
+  .withborder:hover {
+    @apply bg-transparent border-[#0CCE68] border-solid border-[2px] text-[#000]
+  }
+ 
+  .borderless {
+    @apply w-[250px] min-w-[89px] font-medium leading-[150%] rounded-lg box-border flex flex-row items-start justify-center py-2.5 px-5 border-[2px] border-solid border-[#0CCE68] duration-500
+  }
+
+  .borderless:hover {
+    @apply bg-[#0CCE68] border-transparent border-solid border-[2px] text-[#fff]
+  }
+
+  @media (max-width: 1023px) {
+    h1 {
+      @apply font-medium text-[36px] text-[#000] font-medium
+    }
+
+    h2 {
+      @apply font-medium text-[32px] text-[#000] font-medium
+    }
+
+    h3 {
+      @apply font-medium   text-[24px] text-[#18181B]
+    }
+  }
+
+  body {
+    @apply bg-white overflow-x-hidden
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,16 +70,6 @@
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
