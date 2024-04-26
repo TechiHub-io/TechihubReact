@@ -1,10 +1,12 @@
-"use client"
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 
 function Header() {
   const [nav, setNav] = useState(false);
+  const pathname = usePathname();
   const modalRef = useRef<HTMLUListElement>(null);
   const handleNav = () => {
     setNav(!nav);
@@ -12,7 +14,11 @@ function Header() {
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       // If the modal is open and the click is outside the modal, close the modal
-      if (nav && modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        nav &&
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         setNav(false);
       }
     }
@@ -24,45 +30,89 @@ function Header() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [nav,setNav]);
+  }, [nav, setNav]);
   return (
-    <header className='w-[90%] flex items-start mx-auto justify-between pt-[29px] px-0 pb-[62px] box-border gap-[20px] max-w-full text-left'>
-      <Link href="/" className='block lg:hidden z-10'>
-        <Image src='/images/shared/logo.svg' width={62} height={45} alt='image' />
-      </Link>
-      <div className='w-full hidden lg:flex justify-between'>
-      <Link href="/" className='hidden lg:block z-10'>
-        <Image src='/images/shared/logo.svg' width={62} height={45} alt='image' />
-      </Link>
-      
-        <nav className='m-0 hidden lg:flex items-start justify-center pt-2.5 px-0 pb-0 box-border max-w-full '>
-          <nav className='m-0 flex flex-row items-start justify-center gap-[24px] text-left text-lg text-black font-poppins'>
-            <Link href="/" className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[55px] hover:underline'>
-              Home
-            </Link>
-            <Link href="/about-us" className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[82px] whitespace-nowrap hover:underline'>
-              About us
-            </Link>
-            <Link href="/our-services" className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[115px] whitespace-nowrap hover:underline'>
-              Our Services
-            </Link>
+    <header className={`${
+      pathname === '/about-us'
+        ? 'pt-[29px] px-0 pb-[62px] lg:bg-[#364187] min-[1440px]:bg-transparent'
+        : 'pt-[29px] px-0 pb-[62px]'
+    }`}>
+      <div
+        className=' w-[90%] flex items-start mx-auto justify-between  box-border gap-[20px]  text-left z-40'
+      >
+        <Link href='/' className='block lg:hidden z-20'>
+          <Image
+            src='/images/shared/logo.svg'
+            width={62}
+            height={45}
+            alt='image'
+          />
+        </Link>
+        <div className='w-full hidden lg:flex justify-between'>
+          <Link href='/' className='hidden lg:block z-10'>
+            <Image
+              src='/images/shared/logo.svg'
+              width={62}
+              height={45}
+              alt='image'
+            />
+          </Link>
+
+          <nav className='m-0 hidden lg:flex items-start justify-center pt-2.5 px-0 pb-0 box-border max-w-full z-40'>
+            <nav
+              className={`${
+                pathname === '/about-us'
+                  ? 'm-0 lg:text-[#fff] min-[1440px]:text-[#000]  flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
+                  : 'm-0 text-[#000] flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
+              }`}
+            >
+              <Link
+                href='/'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[55px] hover:underline'
+              >
+                Home
+              </Link>
+              <Link
+                href='/about-us'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[82px] whitespace-nowrap hover:underline'
+              >
+                About us
+              </Link>
+              <Link
+                href='/our-services'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[115px] whitespace-nowrap hover:underline'
+              >
+                Our Services
+              </Link>
+            </nav>
           </nav>
-        </nav>
-        <div className='w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] '>
-          <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0 '>
-            <Link href="/login" className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'>
-              Log in
-            </Link>
-          </div>
-          <div className=' rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68]'>
-            <Link href="/sign-up" className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'>
-              sign up
-            </Link>
+          <div
+            className={`${
+              pathname === '/about-us'
+                ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] min-[1440px]:text-[#364187] z-20'
+                : 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] z-20'
+            }`}
+          >
+            <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0 z-20'>
+              <Link
+                href='/login'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
+              >
+                Log in
+              </Link>
+            </div>
+            <div className=' rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68] z-20'>
+              <Link
+                href='/sign-up'
+                className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'
+              >
+                sign up
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <nav>
+
+        <nav>
           <button
             onClick={handleNav}
             className='lg:hidden right-[5%] relative border-none outline-none z-20'
@@ -89,7 +139,6 @@ function Header() {
                 ? 'fixed lg:hidden left-0 top-0 w-[60%] h-full border-r bg-[#364187] p-[32px] text-[#fff] rounded-b-md ease-in-out duration-500 z-20 flex flex-col gap-[2rem]'
                 : 'ease-in-out w-[60%] duration-500 fixed top-0 bottom-0 left-[-100%] flex flex-col gap-[2rem] z-20'
             }
-            
           >
             <hr />
             <li className='outline-none cursor-pointer hover:no-underline'>
@@ -114,18 +163,25 @@ function Header() {
             <hr />
             <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
               <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
-                <Link href="/login" className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'>
+                <Link
+                  href='/login'
+                  className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
+                >
                   Log in
                 </Link>
               </div>
               <div className='flex-1 rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68]'>
-                <Link href="/sign-up" className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'>
+                <Link
+                  href='/sign-up'
+                  className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'
+                >
                   sign up
                 </Link>
               </div>
             </div>
           </ul>
         </nav>
+      </div>
     </header>
   );
 }

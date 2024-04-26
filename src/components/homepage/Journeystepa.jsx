@@ -4,11 +4,11 @@ import './embla/Embla.css';
 
 function Journeystepa({ url, numb, lines, myclass }) {
   return (
-    <section className=''>
+    <section className='main_embla_section'>
       <div className='flex flex-col gap-[8px] items-center z-[2]'>
       <div className="self-stretch flex flex-row items-start justify-center py-0 px-5 relative z-10">
         <Image
-          className="relative"
+          className="lines_image relative"
           loading="lazy"
           width={162}
           height={162}

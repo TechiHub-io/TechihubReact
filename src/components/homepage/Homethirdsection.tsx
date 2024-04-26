@@ -28,12 +28,16 @@ const data = [
   },
 ]
 
-function Homethirdsection() {
+interface homeprops {
+  readonly title: string;
+}
+
+function Homethirdsection({title}: homeprops) {
   return (
     <div className='max-w-[1330px] w-[90%] mx-auto flex flex-col items-center justify-start py-0 pr-0 box-border gap-[32px] text-left pt-[49px]'>
       <div className='max-w-[1172px] flex flex-row items-center justify-center py-0 px-5 box-border'>
         <h2 className='m-0 relative '>
-          Success stories
+          {title}
         </h2>
       </div>
       <div className='self-stretch flex flex-row items-center justify-center max-w-full gap-[20px] relative'>

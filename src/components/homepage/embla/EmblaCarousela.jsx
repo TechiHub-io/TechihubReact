@@ -66,7 +66,7 @@ const EmblaCarousela = (props) => {
       <div className="embla__viewport" ref={emblaRef}>
         <div className="embla__container">
           {slides.map((dat) => (
-            <section key={dat.id} className='flex flex-col'>
+            <section key={dat.id} className='embla_section flex flex-col '>
               <Journeystepa
                 url={dat.url}
                 lines={dat.lines}
