@@ -36,7 +36,7 @@ export default function Home() {
       />
       <HomeHero />
       <Homesecondsection />
-      <Homethirdsection />
+      <Homethirdsection title={"Success stories"} />
       <JourneySection />
       <Lasttwosections title={data[0].title} des={data[0].des} link={data[0].link} text={data[0].text} btntype={data[0].btntype} />
       <Lasttwosections title={data[1].title} des={data[1].des} link={data[1].link} text={data[1].text} btntype={data[1].btntype} />

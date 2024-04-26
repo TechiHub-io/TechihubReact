@@ -43,7 +43,7 @@ const alldata = [
 
 function JourneySection() {
   return (
-    <section className='py-[65px]  gap-[27px] w-90% mx-auto flex flex-col justify-center items-center gap-[77px]'>
+    <section className='sectembla gap-[27px] w-[90%] mx-auto flex flex-col justify-center items-center lg:gap-[77px]'>
       <h2 className='text-center min-w-[348px] flex justify-center items-center'>
         Getting Started with Techiehub
       </h2>
