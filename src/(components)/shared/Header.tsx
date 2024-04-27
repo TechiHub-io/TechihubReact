@@ -3,10 +3,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+// import { signIn } from '../../../auth';
+import { signIn } from "next-auth/react"
+import Sign from './Sign';
 
 function Header() {
   const [nav, setNav] = useState(false);
-  const pathname = usePathname();
+  const pathname=usePathname();
   const modalRef = useRef<HTMLUListElement>(null);
   const handleNav = () => {
     setNav(!nav);
@@ -32,14 +35,14 @@ function Header() {
     };
   }, [nav, setNav]);
   return (
-    <header className={`${
-      pathname === '/about-us'
-        ? 'pt-[29px] px-0 pb-[62px] lg:bg-[#364187] min-[1440px]:bg-transparent'
-        : 'pt-[29px] px-0 pb-[62px]'
-    }`}>
-      <div
-        className=' w-[90%] flex items-start mx-auto justify-between  box-border gap-[20px]  text-left z-40'
-      >
+    <header
+      className={`${
+        pathname === '/about-us'
+          ? 'pt-[29px] px-0 pb-[62px] lg:bg-[#364187] min-[1440px]:bg-transparent'
+          : 'pt-[29px] px-0 pb-[62px]'
+      }`}
+    >
+      <div className=' w-[90%] flex items-start mx-auto justify-between  box-border gap-[20px]  text-left z-40'>
         <Link href='/' className='block lg:hidden z-20'>
           <Image
             src='/images/shared/logo.svg'
@@ -93,22 +96,7 @@ function Header() {
                 : 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] z-20'
             }`}
           >
-            <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0 z-20'>
-              <Link
-                href='/login'
-                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
-              >
-                Log in
-              </Link>
-            </div>
-            <div className=' rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68] z-20'>
-              <Link
-                href='/sign-up'
-                className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'
-              >
-                sign up
-              </Link>
-            </div>
+            <Sign />
           </div>
         </div>
 
@@ -164,15 +152,15 @@ function Header() {
             <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
               <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
                 <Link
-                  href='/login'
+                  href='/api/auth/signin'
                   className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
                 >
-                  Log in
+                  Login in
                 </Link>
               </div>
               <div className='flex-1 rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68]'>
                 <Link
-                  href='/sign-up'
+                  href='/api/auth/signup'
                   className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'
                 >
                   sign up

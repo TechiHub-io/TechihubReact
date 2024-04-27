@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { Jobsprops } from "@/libs/types/Jobstypes";
-import Bgbutton from "@/components/shared/Bgbutton";
+import Bgbutton from "@/(components)/shared/Bgbutton";
 
 const JobDash: FunctionComponent<Jobsprops> = ({ id, title, location, salary, companyName, jobType, employer }) => {
   return (
