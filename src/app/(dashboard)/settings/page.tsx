@@ -1,8 +1,11 @@
 import React from 'react'
+import Multistep from './(components)/Multistep';
 
 const Settings = () => {
   return (
-    <div>Settings</div>
+    <div className="flex max-w-[1024px]">
+      <Multistep />
+    </div>
   )
 }
 
