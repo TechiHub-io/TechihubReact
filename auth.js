@@ -2,7 +2,6 @@ import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
-import { redirect } from 'next/navigation';
 import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -18,12 +17,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         let user = null;
         const { email, password } = await Signinschema.parseAsync(credentials);
-
+        // pass on the data to the object
         const apidata = {
           email: email,
           password: password,
         };
-        // logic to verify if user exists
+        // use your data to sign in then query for user data
         try {
           const response = await axios.post(
             'https://techihubjobsproject.azurewebsites.net/api/users/login',

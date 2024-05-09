@@ -4,7 +4,7 @@ import axios from 'axios';
 import useSWR from 'swr';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data.data.jobs);
-const baseUrl = 'https://techihubjobsproject.azurewebsites.net';
+const baseUrl = 'https://techihubjobsproject.azurewebsites.net'
 
 
 export function Swrgetdat(url: string){

@@ -14,7 +14,12 @@ export const ProfileFormDataSchema = z.object({
   about: z.string().min(2, "About is required"),
   jobBenefits: z.string().min(3, 'Job Benefits is Required'),
   requirements: z.string().min(3, 'Requirements is required'),
-  experience: z.string().min(3, 'Experience is required')
+  experience: z.string().min(3, 'Experience is required'),
+  keywords: z.string().min(3, 'Experience is required'),
+  jobRoles: z.string().min(3, 'Experience is required'),
+  education: z.string().min(3, 'Experience is required'),
+  jobLevel: z.string().min(3, 'Experience is required'),
+  expirationDate: z.string().min(3, 'Experience is required'),
 })
 
 export const FormDataSchema = z.object({
