@@ -12,7 +12,7 @@ const Sign =  () => {
       {
         !session?.user ? <>
         <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
-          <button onClick={() => signIn("credentials")}>Sign In</button>
+          {/* <button onClick={() => signIn("credentials")}>Sign In</button> */}
         <Link
           href='/api/auth/signin?callbackUrl=/'
           className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'

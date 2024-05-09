@@ -254,7 +254,6 @@ const PostJob = () => {
               <div className='mt-2'>
                 <textarea
                   id='expirationDate'
-                  type='text'
                   {...register('expirationDate')}
                   placeholder='enter expirationDate'
                   autoComplete='given-name'
@@ -285,9 +284,13 @@ const PostJob = () => {
 export default PostJob;
 
 const BoxSelection = () => {
-  const [selectedBoxes, setSelectedBoxes] = useState([]);
+  interface Box {
+    id: number;
+    label: string;
+  }
+  const [selectedBoxes, setSelectedBoxes] = useState<number[]>([]);
 
-  const handleBoxClick = (boxId) => {
+  const handleBoxClick = (boxId: number) => {
     if (selectedBoxes.includes(boxId)) {
       setSelectedBoxes(selectedBoxes.filter((id) => id !== boxId));
     } else {

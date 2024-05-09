@@ -328,7 +328,7 @@ export default JobDetails;
 const fetcher = (url: string) =>
   axios.get(url).then((res) => res.data.data.job);
 const baseUrl = 'https://techihubjobsproject.azurewebsites.net';
-export function Swrgetdat2(url: string) {
+function Swrgetdat2(url: string) {
   const { data, error, isLoading } = useSWR(`${baseUrl}${url}`, fetcher); //, {refreshInterval: 3000}
   return {
     data: data,
