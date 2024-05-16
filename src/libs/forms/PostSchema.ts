@@ -35,7 +35,7 @@ export const FormDataSchema = z.object({
 
 
 export const Signupschema = z.object({
-  name: z.string().min(3, 'Your name is required'),
+  confirmPassword: z.string().min(3, 'Your name is required'),
   email: z.string().min(3, 'Your email is requires').email('invalid Email address'),
   password: z.string().min(3, 'Password is required')
 })
