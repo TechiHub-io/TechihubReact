@@ -87,6 +87,12 @@ function Header() {
               >
                 Our Services
               </Link>
+              <Link
+                href='/jobs'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[115px] whitespace-nowrap hover:underline'
+              >
+                Job board
+              </Link>
             </nav>
           </nav>
           <div
@@ -149,10 +155,20 @@ function Header() {
               </Link>
             </li>
             <hr />
+            <li className='outline-none cursor-pointer'>
+              <Link
+                href='/jobs'
+                rel='noreferrer noopener'
+                className='relative tracking-[-0.03em] leading-[120%] py-4 font-medium hover:underline ease-in-out text-[18px]'
+              >
+                Job board
+              </Link>
+            </li>
+            <hr />
             <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
               <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
                 <Link
-                  href='/api/auth/signin'
+                  href='/api/auth/signin?callbackUrl=/'
                   className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
                 >
                   Login in
@@ -160,7 +176,7 @@ function Header() {
               </div>
               <div className='flex-1 rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68]'>
                 <Link
-                  href='/api/auth/signup'
+                  href='/sign-up'
                   className='relative tracking-[0.25px] leading-[27px] font-medium inline-block min-w-[69px] whitespace-nowrap hover:underline'
                 >
                   sign up
