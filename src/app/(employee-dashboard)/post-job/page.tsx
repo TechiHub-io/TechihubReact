@@ -21,7 +21,6 @@ const PostJob = () => {
   });
 
   const processForm: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
     reset();
   };
   return (

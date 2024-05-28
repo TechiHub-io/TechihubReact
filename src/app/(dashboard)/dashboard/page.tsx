@@ -76,7 +76,6 @@ const Dashboard = () => {
   })
   const url = '/techihub/list';
   const { data, error, isLoading } = Swrgetdat(url);
-  console.log('this', data);
   if (isLoading) {
     return <div>loding ...</div>;
   }

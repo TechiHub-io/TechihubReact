@@ -15,7 +15,7 @@ export async function signUserUp(state: { message: string }, formData: FormData)
   }
   try {
     const response = await axios.post(`${baseurl}/api/users/register/user`, rawformData).then(response => response.data).catch(error =>  error);
-    console.log(response.response.data);
+   
     if(response.response.data.status !== 200){
       return {message: `${response.response.data.message}`}
     }
@@ -39,7 +39,7 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
   }
   try {
     const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
-    console.log(response.response.data);
+    
     if(response.response.data.status !== 200){
       return {message: `${response.response.data.message}`}
     }

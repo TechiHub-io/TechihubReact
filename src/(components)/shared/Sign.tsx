@@ -6,7 +6,6 @@ import Link from 'next/link';
 
 const Sign =  () => {
   const { data: session } = useSession();
-  console.log("this is the sesion", session?.user);
   return (
     <div className='flex gap-[32px]'>
       {

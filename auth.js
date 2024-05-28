@@ -35,7 +35,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 `https://techihubjobsproject.azurewebsites.net/api/user-profile/${userId}`
               )
             ).data.data.userProfile;
-            console.log(user);
             return user;
           } else {
             console.error('userid not found');

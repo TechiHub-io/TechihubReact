@@ -10,7 +10,6 @@ const initialState = {
 
 function SignUpButton(){
   const { pending } = useFormStatus();
-  console.log(pending)
   return (
     <button
       type='submit'

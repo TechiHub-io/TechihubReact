@@ -8,7 +8,6 @@ import useSWR from 'swr';
 function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   const url = `/techihub/get/${params.id}`;
   const { data, error, isLoading } = Swrgetdat2(url);
-  console.log('this is', data);
   if (isLoading) {
     return (
       <div>
