@@ -324,4 +324,3 @@ const BoxSelection = () => {
     </div>
   );
 };
-
