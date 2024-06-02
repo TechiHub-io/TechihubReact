@@ -4,7 +4,7 @@ import Homethirdsection from '@/(components)/homepage/Homethirdsection';
 import Lasttwosections from '@/(components)/homepage/Lasttwosections';
 import JourneySection from '@/(components)/homepage/JourneySection';
 import Image from 'next/image';
-console.log("auth secret", process.env.AUTH_SECRET)
+console.log("auth secret", process.env.NEXT_PUBLIC_AUTH_SECRET)
 const data = [
   {
     id: 1,
