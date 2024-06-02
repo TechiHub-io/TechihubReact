@@ -168,7 +168,7 @@ function Header() {
             <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
               <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
                 <Link
-                  href='/api/auth/signin?callbackUrl=/'
+                  href='/api/auth/signin'
                   className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
                 >
                   Login in
@@ -191,3 +191,5 @@ function Header() {
 }
 
 export default Header;
+
+// removed cllback ?callbackUrl=/

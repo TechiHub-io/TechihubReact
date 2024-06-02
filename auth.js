@@ -4,6 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
+import credentials from 'next-auth/providers/credentials';
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     GitHub,
@@ -16,6 +17,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async (credentials) => {
         let user = null;
+        console.log("this are credentials,", credentials)
+
         const { email, password } = await Signinschema.parseAsync(credentials);
         // pass on the data to the object
         const apidata = {
@@ -51,8 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
-  debug: true,
+  // secret: process.env.AUTH_SECRET,
   callbacks: {
     jwt({ token, user }) {
       if (user) {
