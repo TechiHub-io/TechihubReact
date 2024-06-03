@@ -4,7 +4,6 @@ import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
-import log from "logging-service"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     // GitHub,
@@ -54,17 +53,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  logger: {
-    error(code, ...message) {
-      log.error(code, message)
-    },
-    warn(code, ...message) {
-      log.warn(code, message)
-    },
-    debug(code, ...message) {
-      log.debug(code, message)
-    }
-  },
   // secret: process.env.AUTH_SECRET,
   callbacks: {
     jwt({ token, user }) {
