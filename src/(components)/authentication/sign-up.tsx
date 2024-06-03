@@ -20,7 +20,6 @@ function SignUpButton(){
     </button>
   )
 }
-
 const Signup = () => {
   const [state, handleSubmit] = useFormState(signUserUp, initialState)
   const [stateemployee, handleSubmitEmployee] = useFormState(signUserUpEmployee, initialState)
