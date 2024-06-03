@@ -4,10 +4,10 @@ import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
-import credentials from 'next-auth/providers/credentials';
+import log from "logging-service"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    GitHub,
+    // GitHub,
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
@@ -54,6 +54,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  logger: {
+    error(code, ...message) {
+      log.error(code, message)
+    },
+    warn(code, ...message) {
+      log.warn(code, message)
+    },
+    debug(code, ...message) {
+      log.debug(code, message)
+    }
+  },
   // secret: process.env.AUTH_SECRET,
   callbacks: {
     jwt({ token, user }) {
