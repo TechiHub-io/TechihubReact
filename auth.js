@@ -6,7 +6,7 @@ import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    GitHub,
+    // GitHub,
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
       // e.g. domain, username, password, 2FA token, etc.
