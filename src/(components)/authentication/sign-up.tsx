@@ -22,7 +22,6 @@ function SignUpButton(){
 }
 
 const Signup = () => {
-  // const onSubmit =
   const [state, handleSubmit] = useFormState(signUserUp, initialState)
   const [stateemployee, handleSubmitEmployee] = useFormState(signUserUpEmployee, initialState)
 
