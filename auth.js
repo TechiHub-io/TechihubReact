@@ -65,7 +65,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       log.debug(code, message)
     }
   },
-  
   // secret: process.env.AUTH_SECRET,
   callbacks: {
     jwt({ token, user }) {
