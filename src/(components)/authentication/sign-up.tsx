@@ -7,7 +7,6 @@ import { useFormState } from 'react-dom';
 const initialState = {
   message: ""
 }
-
 function SignUpButton(){
   const { pending } = useFormStatus();
   return (
