@@ -14,7 +14,7 @@ function Footer() {
             alt="logo"
             width={179}
             height={143}
-            src="/images/shared/footerlogo.svg"
+            src="/images/shared/footerlogoa.svg"
           />
         </div>
         <div className="w-[230.6px] flex flex-col  items-center lg:items-start justify-center lg:justify-start pt-[7.7px] px-0 pb-0 box-border">

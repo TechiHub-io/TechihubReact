@@ -45,7 +45,7 @@ function Header() {
       <div className=' w-[90%] flex items-start mx-auto justify-between  box-border gap-[20px]  text-left z-40'>
         <Link href='/' className='block lg:hidden z-20'>
           <Image
-            src='/images/shared/logo.svg'
+            src='/images/shared/logoa.svg'
             width={62}
             height={45}
             alt='image'
@@ -54,7 +54,7 @@ function Header() {
         <div className='w-full hidden lg:flex justify-between'>
           <Link href='/' className='hidden lg:block z-10'>
             <Image
-              src='/images/shared/logo.svg'
+              src='/images/shared/logoa.svg'
               width={62}
               height={45}
               alt='image'

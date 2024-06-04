@@ -10,8 +10,7 @@ const HomeHero: NextPage = () => {
             Connecting Tech Talents with Opportunities
           </h1>
           <p className='flex-1 relative leading-[32px] inline-block  max-w-[786px]'>
-            Techihub is a digital tech community connecting top talent with
-            leading companies across Africa and beyond
+            Techihub is a digital tech community connecting top talent with leading companies across Africa and beyond to be at the frontier of creating innovative solutions for the world.
           </p>
         </div>
         <Image
