@@ -21,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async (credentials) => {
         let user2 = null;
-        console.log("this are credentials,", credentials)
+        // console.log("this are credentials,", credentials)
         
         const { email, password } = await Signinschema.parseAsync(credentials);
         // pass on the data to the object
@@ -35,7 +35,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             'https://techihubjobsproject.azurewebsites.net/api/users/login',
             apidata
           )
-          if (!response.ok) return null
           if (response.data && response.data.userId) {
             let userId = response.data.userId;
             user2 = (
