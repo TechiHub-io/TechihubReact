@@ -74,6 +74,7 @@ const Dashboard = () => {
       redirect("/api/auth/signin?callbackUrl=/dashboard")
     }
   })
+  
   const url = '/techihub/list';
   const { data, error, isLoading } = Swrgetdat(url);
   if (isLoading) {

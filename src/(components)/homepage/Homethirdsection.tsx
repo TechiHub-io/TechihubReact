@@ -5,6 +5,33 @@ const data = [
   {
     id: 1,
     rating: "⭐⭐⭐⭐⭐",
+    name: "An",
+    avator: "/images/homepage/avator.svg",
+    role: "Freelance React Developer",
+    des: '“You made it so simple. My new site is so much faster and easier to work with than my old site. I just choose the page, make the change.”'
+  },
+  {
+    id: 2,
+    rating: "⭐⭐⭐⭐⭐",
+    name: "Jacob Jones",
+    avator: "/images/homepage/avator.svg",
+    role: "Digital Marketer",
+    des: '“Simply the best. Better than all the rest. I’d recommend this product to beginners and advanced users.”'
+  },
+  {
+    id: 3,
+    rating: "⭐⭐⭐⭐⭐",
+    name: "Jenny Wilson",
+    avator: "/images/homepage/avator.svg",
+    role: "Graphic Designer",
+    des: '“I cannot believe that I have got a brand new landing page after getting Omega. It was super easy to edit and publish.”'
+  },
+]
+
+const datab = [
+  {
+    id: 1,
+    rating: "⭐⭐⭐⭐⭐",
     name: "Leslie Alexander",
     avator: "/images/homepage/avator.svg",
     role: "Freelance React Developer",

@@ -40,6 +40,11 @@ export const Signupschema = z.object({
   password: z.string().min(3, 'Password is required')
 })
 
+export const Forgotpass = z.object({
+  confirmPassword: z.string().min(3, 'Your name is required'),
+  password: z.string().min(3, 'Password is required')
+})
+
 export const Signinschema = z.object({
   email: z.string().min(3, 'Your email is requires').email('invalid Email address'),
   password: z.string().min(3, 'Password is required')

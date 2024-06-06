@@ -6,6 +6,8 @@ import Job from '@/(components)/jobs/Job';
 import { Jobsprops } from '@/libs/types/Jobstypes';
 import { Swrgetdat } from '@/libs/hooks/Swrgetdat';
 import EJobDash from './(components)/EJobsDash';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 
 const data2 = [
   {
@@ -40,6 +42,26 @@ export type thetypes = {
 
 const EDashboard = () => {
   const url = '/techihub/list';
+  const {data: session} = useSession({
+    required: true,
+    onUnauthenticated(){
+      redirect("/api/auth/signin?callbackUrl=/e-dashboard")
+    }
+  }
+  );
+  
+  
+  const callout = () => {
+    // @ts-ignore
+    if(session?.user?.role !== "EMPLOYER") {
+     redirect('/');
+    }
+  }
+  setTimeout(() => {
+    callout();
+  }, 2000)
+  
+
   const { data, error, isLoading } = Swrgetdat(url);
   if (isLoading) {
     return <div>loding ...</div>;

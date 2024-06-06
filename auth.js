@@ -1,9 +1,14 @@
-import NextAuth from 'next-auth';
+import NextAuth, {CredentialsSignin} from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
+
+class InvalidLoginError extends CredentialsSignin {
+  code = "Invalid identifier or password"
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     // GitHub,
@@ -15,9 +20,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
-        let user = null;
+        let user2 = null;
         console.log("this are credentials,", credentials)
-
+        
         const { email, password } = await Signinschema.parseAsync(credentials);
         // pass on the data to the object
         const apidata = {
@@ -29,14 +34,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const response = await axios.post(
             'https://techihubjobsproject.azurewebsites.net/api/users/login',
             apidata
-          );
+          )
+          if (!response.ok) return null
           if (response.data && response.data.userId) {
             let userId = response.data.userId;
-            user = (
+            user2 = (
               await axios.get(
                 `https://techihubjobsproject.azurewebsites.net/api/user-profile/${userId}`
               )
             ).data.data.userProfile;
+            const user = {...user2, role: response.data.role}
             return user;
           } else {
             console.error('userid not found');
@@ -48,8 +55,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
           console.error('Error occurred:', error);
         }
-        
-
       },
     }),
   ],
@@ -59,11 +64,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         // User is available during sign-in
         token.id = user.userId;
+        token.role = user.role
       }
       return token;
     },
     session({ session, token }) {
       session.user.userId = token.id;
+      session.user.role = token.role
       return session;
     },
   },

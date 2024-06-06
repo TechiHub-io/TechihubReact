@@ -4,23 +4,23 @@ import Homesecondsectioncomponent from './Homesecondsectioncomponent'
 const data = [
   {
     id: 1,
-    title: "🚀 Short Term or Project Staffing",
-    des: "Simplify your hiring process with our user-friendly platform. From job posting to candidate selection, we make recruitment efficient and straightforward."
+    title: "🚀 Seamless Recruitment",
+    des: "Your journey to finding the perfect tech talent starts right here, right now. At Techihub, we're not just another platform; Get ready to elevate your hiring game, connect with top-notch technologists, and shape the future of your team!"
   },
   {
     id: 2,
     title: "🚀 Short Term or Project Staffing",
-    des: "Simplify your hiring process with our user-friendly platform. From job posting to candidate selection, we make recruitment efficient and straightforward."
+    des: "Embrace the agility of project-based staffing with our Project Contracting services. Whether you need a specialized skillset for a specific project or seek to augment your team's capabilities, our Staff on Demand solutions provide the flexibility you need."
   },
   {
     id: 3,
     title: "🌟 Empowering Careers",
-    des: "For job seekers, Techily is not just a platform – it's a launchpad to elevate your career. Unleash your potential and turn your passion into a profession with our empowering opportunitie"
+    des: "For job seekers, Techihub is not just a platform – it's a launchpad to elevate your career. Unleash your potential and turn your passion into a profession with our empowering opportunities."
   },
   {
     id: 4,
     title: "🌐 Largest Tech Network",
-    des: "Connect with top tech talent from Africa and beyond. Our diverse and skilled community is ready to shape the future with innovation."
+    des: "Our community is where tech enthusiasts and industry experts unite. For job seekers, it's a one-stop-shop for tech jobs, career advice, and a network of like-minded peers. For employers, it's a hub to discover talent, share insights, and stay ahead of innovation."
   }
 ]
 

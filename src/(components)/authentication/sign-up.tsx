@@ -21,7 +21,7 @@ function SignUpButton(){
 
 const Signup = () => {
   // const onSubmit =
-  const [state, handleSubmit] = useFormState(signUserUp, initialState)
+  const [state, handleSubmit] = useFormState(signUserUp, initialState);
   const [stateemployee, handleSubmitEmployee] = useFormState(signUserUpEmployee, initialState)
 
   return (
@@ -65,14 +65,6 @@ const Signup = () => {
                 >
                   Password
                 </label>
-                <div className='text-sm'>
-                  <a
-                    href='#'
-                    className='font-semibold text-indigo-600 hover:text-indigo-500'
-                  >
-                    Forgot password?
-                  </a>
-                </div>
               </div>
               <div className='mt-2'>
                 <input
@@ -112,6 +104,7 @@ const Signup = () => {
               type='checkbox'
               id="terms"
               name="terms"
+              required
               className='font-semibold leading-6 text-indigo-600 hover:text-indigo-500'
             />
             <label htmlFor="terms">I agree to the terms & policy</label>
@@ -158,14 +151,6 @@ const Signup = () => {
                 >
                   Password
                 </label>
-                <div className='text-sm'>
-                  <a
-                    href='#'
-                    className='font-semibold text-indigo-600 hover:text-indigo-500'
-                  >
-                    Forgot password?
-                  </a>
-                </div>
               </div>
               <div className='mt-2'>
                 <input
@@ -198,17 +183,17 @@ const Signup = () => {
             <div>
               <SignUpButton />
             </div>
-          </form>
-
-          <p className='mt-10 text-center text-sm text-gray-500'>
+            <p className='mt-10 text-center text-sm text-gray-500'>
             <input
               type='checkbox'
               id="terms"
               name="terms"
+              required
               className='font-semibold leading-6 text-indigo-600 hover:text-indigo-500'
             />
             <label htmlFor="terms">I agree to the terms & policy</label>
           </p>
+          </form>
         </div>
       </div>
     </main>

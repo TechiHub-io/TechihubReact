@@ -50,7 +50,7 @@ const Signin = () => {
                 </label>
                 <div className='text-sm'>
                   <a
-                    href='#'
+                    href='/forgot-password'
                     className='font-semibold text-indigo-600 hover:text-indigo-500'
                   >
                     Forgot password?
@@ -77,17 +77,10 @@ const Signin = () => {
                 Sign in
               </button>
             </div>
+          
           </form>
 
-          <p className='mt-10 text-center text-sm text-gray-500'>
-            <input
-              type='checkbox'
-              id='terms'
-              name='terms'
-              className='font-semibold leading-6 text-indigo-600 hover:text-indigo-500'
-            />
-            <label htmlFor='terms'>I agree to the terms & policy</label>
-          </p>
+          
         </div>
       </div>
     </main>

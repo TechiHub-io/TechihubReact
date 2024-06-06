@@ -6,7 +6,7 @@ const data = [
     title: "Empower",
     subtitle: "we believe that",
     url: '/images/aboutus/empowervalue.svg',
-    des: "code, design, and idea shapes the future. We're committed to turning passions into professions.",
+    des: "Your dreams, and your potential as the driving force behind everything we do. We believe that every line of code, every design stroke, and every idea holds the power to shape the future",
     bgcolor: "#364187" 
   },
   {
@@ -14,7 +14,7 @@ const data = [
     title: "Collaborate",
     subtitle: "we foster",
     url: '/images/aboutus/collaboratevalue.svg',
-    des: " a vibrant ecosystem of collaboration, connecting innovators globally and co-creating solutions that shape industries",
+    des: "Connection with fellow innovators from every corner of the globe 🌐, sharing insights, and co-creating the solutions.",
     bgcolor: "#0CCE68" 
   },
   {
@@ -22,7 +22,7 @@ const data = [
     title: "Innovate",
     subtitle: "we are",
     url: '/images/aboutus/innovatevalue.svg',
-    des: "a playground for dreamers and doers, celebrating ideas that revolutionize the tech landscape",
+    des: "Your virtual innovation lab, where you can experiment, ideate, and revolutionize the tech landscape.",
     bgcolor: "#85c4ff" 
   }
 ]

@@ -5,13 +5,13 @@ const data = [
     id: 1,
     title: "Our mission",
     url: '/images/aboutus/ourmissionicon.svg',
-    des: "Our mission is to empower individuals, disrupt norms, and elevate the tech ecosystem by providing opportunities that redefine the future."
+    des: "Our mission is to Unleashing the human potential to be at the center of creating innovative solutions for the world. "
   },
   {
     id: 2,
     title: "Our vision",
     url: '/images/aboutus/ourvisionicon.svg',
-    des: "We envision millions stepping into dream tech careers through Techily, reshaping industries and transforming lives."
+    des: "To be a leading platform to transform Africa into a global tech hub, empowering over 1 million talents & thousands of organizations to drive innovation and achieve $1 billion in economic growth by 2035."
   }
 ]
 function Missionvision() {

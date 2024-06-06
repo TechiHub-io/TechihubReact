@@ -17,10 +17,10 @@ function Aboutstory() {
             height={339}
           />
           <p className='text-center lg:text-left'>
-            In August 2022, Techily started with a vision for Africa's Tech Potential that evolved into a transformative hub connecting top-tier tech talent with global opportunities. One year down the line, Techily rebranded to Techihub with emphasis of seamless integration of technology, AI and create access to vast Africa’s young talent.  
+            In August 2022, Techihub journey began when a group of young, passionate, and visionary minds and fueled by a shared belief in the untapped potential of Africa's tech talent came together and set out on a mission to transform the continent into a thriving hub of technological innovation.
             <br />
             <br />
-            Beyond jobs, Techihub catalyzes innovation, empowerment, and economic advancement in Africa, shaping the tech revolution's future
+            Africa presented the opportunity with its world's largest young workforce (Median age of 19). Beyond jobs, Techihub catalyzes innovation, empowerment, and economic advancement in Africa, shaping the tech revolution's future.
           </p>
           <div className='flex gap-[32px]'>
             <div className='flex flex-col justify-around'>
@@ -50,7 +50,7 @@ function Aboutstory() {
                 Re-branding
               </h3>
               <p className=':text-left'>
-                In August 2023, Techily re-branded to Techihub with technology innovation to solve global gap for tech talent merging technology, AI and Talent Community. 
+               In August 2023, Techily re-branded to Techihub with technology innovation to solve global gap for tech talent merging technology, AI and Talent Community. 
               </p>
             </div>
           </div>

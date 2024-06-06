@@ -18,7 +18,7 @@ function Abouthero() {
       </h1>
       <div className='flex items-center lg:items-start flex-col gap-[34px] lg:gap-[68px] max-w-[539px]'>
         <p className='text-center lg:text-left lg:text-[#fff] min-[1440px]:text-[#000]'>
-          Techily connects top tech talent with global opportunities through a seamless platform. Beyond jobs, we foster innovation and diversity in a vibrant community. Join for a dynamic tech experience.
+          Techihub connects top tech talent with global opportunities through our seamless platform. Beyond jobs, we foster innovation and diversity in a vibrant community. Join for a dynamic tech experience.
         </p>
         <div className='flex flex-col lg:flex-row gap-[20px] justify-between lg:!text-[#fff] min-[1440px]:!text-[#000]'>
           <Bgbutton link="/jobs" text='Explore Jobs' btntype='withborder'/>

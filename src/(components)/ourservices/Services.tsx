@@ -5,7 +5,7 @@ const data = [
   {
     id: 1,
     title: "End to end talent Sourcing",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs to onboarding. We ensure a tailored match that aligns with your organizational goals, simplifying the entire hiring process.",
+    des: "Techihub talent sourcing services offer a seamless journey, from identifying your hiring needs to onboarding. We ensure a tailored match that aligns with your organizational goals, simplifying the entire hiring process.",
     link: "/our-services",
     url: "/images/ourservices/img1.svg",
     text: "Post Jobs",
@@ -23,7 +23,7 @@ const data = [
   {
     id: 3,
     title: "Staff on Demand",
-    des: "Embrace flexibility with our project-based staffing solutions. Whether you need specialized skills for a project or want to augment your team, our staff-on-demand services provide the flexibility you need",
+    des: "Embrace flexibility with our project-based staffing solutions. Whether you need specialized skills for a project or want to augment your team, our staff-on-demand services provide the flexibility you need.",
     link: "/our-services",
     url: "/images/ourservices/img3.svg",
     text: "Contact us",
@@ -32,7 +32,7 @@ const data = [
   {
     id: 4,
     title: "Thriving Tech Talent Community",
-    des: "Techiehub’s Community Platform is where tech enthusiasts and industry experts unite. For job seekers, it's a one-stop-shop for tech jobs, career advice, and a network of like-minded peers. For employers, it's a hub to discover talent, share insights, and stay at the forefront of innovation",
+    des: "Techihub’s Community Platform is where tech enthusiasts and industry experts unite. For job seekers, it's a one-stop-shop for tech jobs, career advice, and a network of like-minded peers. For employers, it's a hub to discover talent, share insights, and stay ahead of innovation.",
     link: "/our-services",
     url: "/images/ourservices/img4.svg",
     text: "Join Community",
