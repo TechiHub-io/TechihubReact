@@ -44,7 +44,7 @@ function Footer() {
                 </Link>
               </div>
               <div className="w-[125.5px] flex flex-row items-center lg:items-start justify-center lg:justify-start py-0 px-0.5 box-border">
-                <Link href="community" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
+                <Link href="/community" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
                   Community
                 </Link>
               </div>
