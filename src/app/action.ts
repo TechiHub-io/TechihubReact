@@ -1,7 +1,10 @@
 'use server'
-import { Forgotpass, Signupschema } from '@/libs/forms/PostSchema';
+import { Forgotpass, FormDataSchema, FormEducation, FormExperience, FormProfile, Signupschema } from '@/libs/forms/PostSchema';
 import axios from 'axios';
+import { redirect } from 'next/navigation';
+import {auth} from '../../auth'
 
+const baseurl =   'https://techihubjobsproject.azurewebsites.net'
 export async function signUserUp(state: { message: string }, formData: FormData){
   const baseurl =   'https://techihubjobsproject.azurewebsites.net'
   const rawformData = Signupschema.parse({
@@ -51,7 +54,7 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
 } 
 
 export async function ForgotPasswordsetup(state: {message: string}, formData: FormData){
-  const baseurl =   'https://techihubjobsproject.azurewebsites.net'
+ 
   const rawformData = Forgotpass.parse({
     password: formData.get('password'),
     confirmPassword: formData.get('confirmPassword'),
@@ -71,4 +74,76 @@ export async function ForgotPasswordsetup(state: {message: string}, formData: Fo
   } catch (error: any) {
     return {message: `Error encountered ${error}`}
   }
+}
+
+export async function CreateProfile(state: {message: string}, formData: FormData){
+  const session = await auth();
+  const profile =  FormProfile.parse({
+    first_name: formData.get('firstname'),
+    last_name: formData.get('lastname'),
+    address: formData.get('address'),
+    email: formData.get('email'),
+    role_name: formData.get('role_name'),
+    phone_number: formData.get('phone_number'),
+    githubUrl: formData.get('githubUrl'),
+    linkedinUrl: formData.get('linkedinUrl'),
+    about: formData.get('about')    
+  })
+  const profile2 = {...profile, username: profile.first_name + " " + profile.last_name}
+  try {
+    // @ts-ignore
+    const response = await axios.put(`${baseurl}/api/user-profile/update-name-role/${session?.user?.userId}`, profile2).then(response => response.data).catch(error => error)
+    if(response === ''){
+      return {message: 'session timeout'}
+    }
+    return {message: `Congratulations succesfuly created profile`}
+  } catch (error) {
+    return {message: `Error encountered ${error}`}
+  }
+}
+
+export async function CreateEducation(state: {message: string}, formData: FormData){
+  const session = await auth();
+  const education =  FormEducation.parse({
+    course: formData.get('course'),
+    school_name: formData.get('school_name'),
+    startDate: formData.get('startDate'),
+    endDate: formData.get('endDate'),
+    summary: formData.get('summary')
+  })
+  try {
+    // @ts-ignore
+    const response = await axios.post(`https://techihubjobsproject.azurewebsites.net/educations/${session?.user?.userId}`, education).then(response => response.data).catch(error => error)
+    if(response === ''){
+      return {message: 'session timeout'}
+    }
+    return {message: `Congratulations succesfuly added Education fill again to add more`}
+  } catch (error) {
+    return {message: `Error encountered ${error}`}
+  }
+}
+
+export async function CreateExperience(state: {message: string}, formData: FormData){
+  const session = await auth();
+  const experience = FormExperience.parse({
+    title: formData.get('title'),
+    company: formData.get('company'),
+    startDate: formData.get('startDate'),
+    endDate: formData.get('endDate'),
+    workSummary: formData.get('workSummary')
+  })
+  try {
+    // @ts-ignore
+    const response = await axios.post(`${baseurl}/educations/${session?.user?.userId}`, experience).then(response => response.data).catch(error => error)
+  
+    if(response === ''){
+      return {message: 'session timeout'}
+    }
+    redirect('/user-profile')
+    return {message: `Congratulations succesfuly created education fill in to create more`}
+    
+  } catch (error) {
+    return {message: `Error encountered ${error}`}
+  }
+  
 }

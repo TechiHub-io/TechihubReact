@@ -14,7 +14,7 @@ const Sign =  () => {
         <div className='flex-1 rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px]'>
           {/* <button onClick={() => signIn("credentials")}>Sign In</button> */}
         <Link
-          href='/api/auth/signin'
+          href='/api/auth/signin?callbackUrl=/dashboard'
           className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
         >
           Sign in

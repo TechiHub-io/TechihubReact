@@ -26,11 +26,48 @@ export const FormDataSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
-  country: z.string().min(1, 'Country is required'),
-  street: z.string().min(1, 'Street is required'),
-  city: z.string().min(1, 'City is required'),
-  state: z.string().min(1, 'State is required'),
-  zip: z.string().min(1, 'Zip is required')
+  address: z.string().min(1, 'Your address is required'),
+  role_name: z.string().min(1, 'Your Job Title is required'),
+  phone_number: z.number().min(10, 'Your phone Number is required'),
+  githubUrl: z.string().min(1, 'Your Github Url is required'),
+  linkedinUrl: z.string().min(1, 'Your Linkedin Url is required'),
+  about: z.string().min(1, 'Your bio is required'),
+  course: z.string().min(1, 'Your Certificate is required'),
+  school_name: z.string().min(1, 'Your Institution/college is required'),
+  startDate: z.string().min(4, 'Your Start Date is required'),
+  endDate: z.string().min(4, 'Your End Date is required'),
+  summary: z.string().min(4, 'Your Summary is required'),
+  title: z.string().min(1, 'Your Role title is required'),
+  company: z.string().min(1, 'The company is required'),
+  workSummary: z.string().min(4, 'Your Work Summary is required'),
+})
+
+export const FormProfile = z.object({
+  first_name: z.string().min(1, 'First name is required'),
+  last_name: z.string().min(1, 'Last name is required'),
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  address: z.string().min(1, 'Your address is required'),
+  role_name: z.string().min(1, 'Your Job Title is required'),
+  phone_number: z.string().min(2, 'Your phone Number is required'),
+  githubUrl: z.string().min(1, 'Your Github Url is required'),
+  linkedinUrl: z.string().min(1, 'Your Linkedin Url is required'),
+  about: z.string().min(1, 'Your bio is required'),
+})
+
+export const FormEducation = z.object({
+  course: z.string().min(1, 'Your Certificate is required'),
+  school_name: z.string().min(1, 'Your Institution/college is required'),
+  startDate: z.string().min(4, 'Your Start Date is required'),
+  endDate: z.string().min(4, 'Your End Date is required'),
+  summary: z.string().min(4, 'Your Summary is required'),
+})
+
+export const FormExperience = z.object({
+  title: z.string().min(1, 'Your Role title is required'),
+  company: z.string().min(1, 'The company is required'),
+  startDate: z.string().min(4, 'Your Start Date is required'),
+  endDate: z.string().min(4, 'Your End Date is required'),
+  workSummary: z.string().min(4, 'Your Work Summary is required'),
 })
 
 

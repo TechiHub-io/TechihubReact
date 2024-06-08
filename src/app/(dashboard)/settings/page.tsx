@@ -1,5 +1,5 @@
 import React from 'react'
-import Multistep from './(components)/Multistep';
+import Multistep from './(components)/Multistepa';
 
 const Settings = () => {
   return (
