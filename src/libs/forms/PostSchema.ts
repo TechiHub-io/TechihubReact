@@ -54,6 +54,24 @@ export const FormProfile = z.object({
   about: z.string().min(1, 'Your bio is required'),
 })
 
+export const PostingJob = z.object({
+  title: z.string().min(3, 'Job Titleis required'),
+  location: z.string().min(3, "Location Of the Job"),
+  salary: z.string().min(4, 'Salary in Ksh is required'),
+  companyName: z.string().min(1, 'Company Name is required'),
+  companyWebsiteLink: z.string().min(1, 'Your company webisite link is required'),
+  desires: z.string().min(1, 'Your Job desires are required'),
+  jobType: z.string().min(2, 'Your Job Type is required'),
+  deadline: z.null(),
+  employer: z.null(),
+  logoUpload: z.null(),
+  description: z.string().min(2, 'Your Job description is required'),
+  about: z.string().min(1, 'Job About is required'),
+  jobBenefits: z.string().min(1, 'Job Benefits are required'),
+  requirements: z.string().min(1, 'Job requirements are required'),
+  experience: z.string().min(1, 'Job experience are required'),
+})
+
 export const FormEducation = z.object({
   course: z.string().min(1, 'Your Certificate is required'),
   school_name: z.string().min(1, 'Your Institution/college is required'),

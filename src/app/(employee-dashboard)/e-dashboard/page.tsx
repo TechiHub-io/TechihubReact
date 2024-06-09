@@ -118,7 +118,7 @@ const EDashboard = () => {
 
         <section className='flex gap-[24px] flex-col'>
           {data ? (
-            data.map((dat: Jobsprops) => (
+            data?.jobs?.map((dat: Jobsprops) => (
               <EJobDash
                 key={dat?.id}
                 id={dat.id}

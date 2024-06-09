@@ -1,5 +1,5 @@
 'use server'
-import { Forgotpass, FormDataSchema, FormEducation, FormExperience, FormProfile, Signupschema } from '@/libs/forms/PostSchema';
+import { Forgotpass, FormDataSchema, FormEducation, FormExperience, FormProfile, PostingJob, Signupschema } from '@/libs/forms/PostSchema';
 import axios from 'axios';
 import { redirect } from 'next/navigation';
 import {auth} from '../../auth'
@@ -145,4 +145,40 @@ export async function CreateExperience(state: {message: string}, formData: FormD
     return {message: `Error encountered ${error}`}
   }
   
+}
+
+export async function PostedJob(state: {message: string}, formData: FormData){
+  
+  const session = await auth();
+
+  const experiencepost = PostingJob.parse({
+  title: formData.get("jobTitle"),
+  location: formData.get("location"),
+  salary: formData.get("salary"),
+  logoUpload: null,
+  companyName: formData.get("companyName"),
+  companyWebsiteLink: formData.get("companyWebsiteLink"),
+  desires: formData.get("desires"),
+  jobType: formData.get("jobType"),
+  deadline: null,
+  employer: null,
+  description: formData.get("description"),
+  about: formData.get("about"),
+  jobBenefits: formData.get("jobBenefits"),
+  requirements: formData.get("requirements"),
+  experience: formData.get("experience")
+  })
+
+  try {
+    // @ts-ignore
+    const response = await axios.post(`${baseurl}/techihub/save`, experiencepost).then(response => response.data).catch(error => error)
+    if(response === ''){
+      return {message: 'session timeout'}
+    }
+    
+    return {message: `Congratulations succesfuly created education fill in to create more`}
+  
+  } catch (error) {
+    return {message: `Error encountered ${error}`}
+  }
 }
