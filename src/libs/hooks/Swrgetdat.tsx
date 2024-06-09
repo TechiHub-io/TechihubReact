@@ -3,7 +3,7 @@ import React from 'react';
 import axios from 'axios';
 import useSWR from 'swr';
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data.data.jobs);
+const fetcher = (url: string) => axios.get(url).then((res) => res.data.data);
 const baseUrl = 'https://techihubjobsproject.azurewebsites.net'
 
 

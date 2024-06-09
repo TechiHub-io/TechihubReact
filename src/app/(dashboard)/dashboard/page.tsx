@@ -84,6 +84,7 @@ const Dashboard = () => {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
   return (
     <section className='max-w-[822px]'>
       <div className='flex flex-col lg:flex-row lg:justify-between'>
@@ -137,7 +138,7 @@ const Dashboard = () => {
 
         <section className='flex gap-[24px] flex-col'>
           {data ? (
-            data.map((dat: Jobsprops) => (
+            data?.jobs?.map((dat: Jobsprops) => (
               <JobDash
                 key={dat?.id}
                 id={dat.id}

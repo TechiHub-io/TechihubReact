@@ -139,7 +139,6 @@ export async function CreateExperience(state: {message: string}, formData: FormD
     if(response === ''){
       return {message: 'session timeout'}
     }
-    redirect('/user-profile')
     return {message: `Congratulations succesfuly created education fill in to create more`}
     
   } catch (error) {

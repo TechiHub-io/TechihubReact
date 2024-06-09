@@ -1,12 +1,17 @@
-import Signup from '@/(components)/authentication/sign-up'
+'use client'
 import React from 'react'
-import Signin from '../../../(components)/authentication/sign-in'
-
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 function FavouriteJobs() {
+  const {data:session}= useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin?callbackUrl=/dashboard")
+    }
+  })
   return (
     <div>
-      <Signup />
-      <Signin />
+      Favourite
     </div>
   )
 }

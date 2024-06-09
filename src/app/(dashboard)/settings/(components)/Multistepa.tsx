@@ -17,7 +17,7 @@ function SubmittingButton({text}: any){
     <button
       type='submit'
       aria-disabled={pending}
-      className='flex w-full sm:col-span-4 justify-center rounded-md bg-[#0CCE68] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
+      className='flex w-full sm:col-span-4 justify-center items-center rounded-md bg-[#0CCE68] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
     >{pending ? 'Loading' : `${text}`}
     </button>
   )
@@ -29,7 +29,20 @@ export default function Multistepa() {
   const [stateeducation, handleEducation] = useFormState(CreateEducation, initialState)
   const [stateexperience, handleExperience] = useFormState(CreateExperience, initialState)
  
+  const handleReset = () => {
+    // @ts-ignore
+    document.getElementById('handleProfileForm')?.reset();
+  }
 
+  const handleEDucation = () => {
+    // @ts-ignore
+    document.getElementById('handleEducationForm')?.reset();
+  }
+
+  const handleEXperience = () => {
+    // @ts-ignore
+    document.getElementById('handleExperienceForm')?.reset();
+  }
   return (
     <section className=" inset-0 flex flex-col justify-between pl-[32px] w-[80%]">
       <div className="mt-1 py-2" >
@@ -42,7 +55,7 @@ export default function Multistepa() {
         <p aria-live='polite' className=' text-[#ff0000] text-center text-[16px]' role='status'>
           {stateprofile?.message}
         </p>
-        <form action={handleProfile} className=" mt-2 mb-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <form id="handleProfileForm" action={handleProfile} className=" mt-2 mb-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-3">
             <label
               htmlFor="firstName"
@@ -212,6 +225,9 @@ export default function Multistepa() {
             </div>
           </div>
           <SubmittingButton text='Add Profile' />
+          <button type="button" onClick={handleReset} className="withborder sm:col-span-2">
+            Reset Form
+          </button>
         </form>
 
         <h2 className="text-base font-semibold leading-7 text-gray-900">
@@ -223,7 +239,7 @@ export default function Multistepa() {
         <p aria-live='polite' className=' text-[#ff0000] text-center text-[16px]' role='status'>
           {stateeducation?.message}
         </p>
-        <form action={handleEducation} className="mb-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <form action={handleEducation} id="handleEducationForm" className="mb-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-3">
             <label
               htmlFor={`course`}
@@ -317,6 +333,9 @@ export default function Multistepa() {
             </div>
           </div>
           <SubmittingButton text='Add Education' />
+          <button type="button" onClick={handleEDucation} className="withborder sm:col-span-2">
+            Add Education
+          </button>
         </form>
 
         <h2 className="text-base font-semibold leading-7 text-gray-900">
@@ -328,7 +347,7 @@ export default function Multistepa() {
         <p aria-live='polite' className=' text-[#ff0000] text-center text-[16px]' role='status'>
           {stateexperience?.message}
         </p>
-        <form action={handleExperience} className="mb-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+        <form action={handleExperience} id="handleExperienceForm" className="mb-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
           <div className="sm:col-span-3">
             <label
               htmlFor="title"
@@ -422,6 +441,12 @@ export default function Multistepa() {
             </div>
           </div>
           <SubmittingButton text='Add Experience' />
+          <button type="button" onClick={handleEXperience} className="withborder sm:col-span-2">
+            Add Experience
+          </button>  
+          <a href="/user-profile" onClick={handleEXperience} className="withborder sm:col-span-2">
+            User Profile
+          </a>          
         </form>
         <div className="mt-8 pt-5"></div>
       </div>

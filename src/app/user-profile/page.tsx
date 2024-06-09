@@ -1,8 +1,48 @@
+'use client'
 import Bgbutton from "@/(components)/shared/Bgbutton";
+import { Skeleton } from "@/(components)/ui/skeleton";
+import { Swrgetdat } from "@/libs/hooks/Swrgetdat";
 import Image from "next/image";
 import React from "react";
+import { useSession } from "next-auth/react";
 
 const UserProfile = () => {
+  const {data: session} = useSession();
+  
+  // @ts-ignore
+  const url = `/api/user-profile/${session?.user?.userId}`;
+  const { data, error, isLoading } = Swrgetdat(url);
+  if (isLoading) {
+    return (
+      <div>
+        <Skeleton />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+  function convertDateToMonthYear(dateString: string) {
+      const date = new Date(dateString);
+      const month = date.toLocaleString('default', { month: 'long' });
+      const year = date.getFullYear();
+      return `${month} ${year}`;
+  }
+
+  function formatDateRange(startDate: string, endDate: string) {
+      const startMonthYear = convertDateToMonthYear(startDate);
+      const endMonthYear = convertDateToMonthYear(endDate);
+      return `${startMonthYear} - ${endMonthYear}`;
+  }
+
+  interface experienceData {
+    company: string,
+    title: string,
+    startDate: string,
+    endDate: string,
+    workSummary: string
+  }
   return (
     <main>
       <div className="max-w-[1440px] w-[90%] mx-auto flex flex-col gap-[42px] lg:gap-[64px]">
@@ -15,8 +55,8 @@ const UserProfile = () => {
             height={232}
           />
           <figcaption className="flex flex-col max-w-[200px] items-center gap-[8px]">
-            <p className="text-[24px] font-medium">Lorem Ipsum</p>
-            <p className="text-[16px] font-medium">Product Designer</p>
+            <p className="text-[24px] font-medium">{data.userProfile.username}</p>
+            <p className="text-[16px] font-medium">{data.userProfile.role_name}</p>
           </figcaption>
         </figure>
         <div className="flex flex-col gap-[24px]">
@@ -29,13 +69,7 @@ const UserProfile = () => {
           <div className="flex flex-col gap-[24px]">
             <p className="text-[24px] font-medium">Bio </p>
             <p className="text-[16px] font-medium max-w-[630px]">
-              Here at Velstar, we don't just make websites, we create
-              exceptional digital experiences that consumers love. Our team of
-              designers, developers, strategists, and creators work together to
-              push brands to the next level. From Platform Migration, User
-              Experience & User Interface Design, to Digital Marketing, we have
-              a proven track record in delivering outstanding eCommerce
-              solutions and driving sales for our clients.
+              {data.userProfile.about}
             </p>
           </div>
           <div className="border-[2px] border-[#0CCE68] flex flex-col rounded-[8px] max-w-[501px] w-full px-[16px] py-[32px]">
@@ -120,70 +154,43 @@ const UserProfile = () => {
               </div>
             </div>
             <div>
-              <div className="self-stretch flex flex-row flex-wrap items-center justify-center px-[16px] py-[29px] border-[0.8px] border-[#18191C] border-opacity-[0.2] shadow-md rounded-[7px] max-w-[632px] gap-[12px] w-full text-base">
-                <div className="rounded bg-ghostwhite flex flex-row items-start justify-start ">
-                  <img
-                    className="h-[99px] w-[99px] relative overflow-hidden shrink-0"
-                    loading="lazy"
-                    alt=""
-                    src="/images/jobs/com.svg"
-                  />
-                </div>
-                <div className="flex-1 flex flex-col items-start justify-start gap-[4px] max-w-[738px] md:max-w-full">
-                  <div className=" relative leading-[24px] font-medium">
-                    Product Designer
-                  </div>
-                  <div className=" relative text-[16px] font-medium">
-                    Google inc
-                  </div>
-                  <div className="flex-1 relative leading-[20px] inline-block text-[12px] !text-[#18191C] max-w-[calc(100%_-_22px)]">
-                    May 2023 - Aug 2024
-                  </div>
-                  <div className="self-stretch flex flex-row items-center justify-start gap-[4px] max-w-full text-sm text-slategray">
-                    <img
-                      className="h-[18px] w-[18px] relative"
-                      loading="lazy"
-                      alt=""
-                      src="/images/jobs/locat.svg"
-                    />
-                    <div className="flex-1 relative leading-[20px] inline-block text-[12px] !text-[#18191C] max-w-[calc(100%_-_22px)]">
-                      Nairobi Kenya
+              {
+                data.userProfile.experiences.map((dat : experienceData) => (
+                  <div className="self-stretch flex flex-row flex-wrap items-center justify-center px-[16px] py-[29px] border-[0.8px] border-[#18191C] border-opacity-[0.2] shadow-md rounded-[7px] max-w-[632px] gap-[12px] w-full text-base">
+                    <div className="rounded bg-ghostwhite flex flex-row items-start justify-start ">
+                      <img
+                        className="h-[99px] w-[99px] relative overflow-hidden shrink-0"
+                        loading="lazy"
+                        alt=""
+                        src="/images/jobs/com.svg"
+                      />
+                    </div>
+                    <div className="flex-1 flex flex-col items-start justify-start gap-[4px] max-w-[738px] md:max-w-full">
+                      <div className=" relative leading-[24px] font-medium">
+                        {dat.title}
+                      </div>
+                      <div className=" relative text-[16px] font-medium">
+                        {dat.company}
+                      </div>
+                      <div className="flex-1 relative leading-[20px] inline-block text-[12px] !text-[#18191C] max-w-[calc(100%_-_22px)]">
+                        {formatDateRange(dat.startDate, dat.endDate)}
+                      </div>
+                      <div className="self-stretch flex flex-row items-center justify-start gap-[4px] max-w-full text-sm text-slategray">
+                        <img
+                          className="h-[18px] w-[18px] relative"
+                          loading="lazy"
+                          alt=""
+                          src="/images/jobs/locat.svg"
+                        />
+                        <div className="flex-1 relative leading-[20px] inline-block text-[12px] !text-[#18191C] max-w-[calc(100%_-_22px)]">
+                          Nairobi Kenya
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="self-stretch flex flex-row flex-wrap items-center justify-center px-[16px] py-[29px] border-[0.8px] border-[#18191C] border-opacity-[0.2] shadow-md rounded-[7px] max-w-[632px] gap-[12px] w-full text-base">
-                <div className="rounded bg-ghostwhite flex flex-row items-start justify-start ">
-                  <img
-                    className="h-[99px] w-[99px] relative overflow-hidden shrink-0"
-                    loading="lazy"
-                    alt=""
-                    src="/images/jobs/com.svg"
-                  />
-                </div>
-                <div className="flex-1 flex flex-col items-start justify-start gap-[4px] max-w-[738px] md:max-w-full">
-                  <div className=" relative leading-[24px] font-medium">
-                    Product Designer
-                  </div>
-                  <div className=" relative text-[16px] font-medium">
-                    Google inc
-                  </div>
-                  <div className="flex-1 relative leading-[20px] inline-block text-[12px] !text-[#18191C] max-w-[calc(100%_-_22px)]">
-                    May 2023 - Aug 2024
-                  </div>
-                  <div className="self-stretch flex flex-row items-center justify-start gap-[4px] max-w-full text-sm text-slategray">
-                    <img
-                      className="h-[18px] w-[18px] relative"
-                      loading="lazy"
-                      alt=""
-                      src="/images/jobs/locat.svg"
-                    />
-                    <div className="flex-1 relative leading-[20px] inline-block text-[12px] !text-[#18191C] max-w-[calc(100%_-_22px)]">
-                      Nairobi Kenya
-                    </div>
-                  </div>
-                </div>
-              </div>
+                ))
+              }
+              
             </div>
           </div>
           <div className="max-w-[501px] w-full">
