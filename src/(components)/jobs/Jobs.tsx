@@ -21,7 +21,7 @@ function Jobs() {
         Featured Jobs
       </h2>
       <section className='flex gap-[24px] flex-col'>
-        {data ? data.map((dat: Jobsprops) => (
+        {data ? data?.jobs.map((dat: Jobsprops) => (
             <Job
               key={dat?.id}
               id={dat.id}
