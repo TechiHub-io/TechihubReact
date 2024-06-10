@@ -4,6 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import axios from 'axios';
 import { ZodError } from 'zod';
 import { Signinschema } from '@/libs/forms/PostSchema';
+import { redirect } from 'next/navigation';
 
 class InvalidLoginError extends CredentialsSignin {
   code = "Invalid identifier or password"
@@ -37,6 +38,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           )
           if (response.data && response.data.userId) {
             let userId = response.data.userId;
+            employee = response.data.role;
             user2 = (
               await axios.get(
                 `https://techihubjobsproject.azurewebsites.net/api/user-profile/${userId}`
@@ -44,6 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             ).data.data.userProfile;
             const user = {...user2, role: response.data.role}
             return user;
+            
           } else {
             console.error('userid not found');
           }
@@ -54,7 +57,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
           console.error('Error occurred:', error);
         }
-      },
+      }
     }),
   ],
   // secret: process.env.AUTH_SECRET,

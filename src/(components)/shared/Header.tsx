@@ -6,9 +6,13 @@ import React, { useEffect, useRef, useState } from 'react';
 // import { signIn } from '../../../auth';
 import { signIn } from "next-auth/react"
 import Sign from './Sign';
+import { useSession } from 'next-auth/react';
 
 function Header() {
   const [nav, setNav] = useState(false);
+  const {data: session} = useSession();
+  //@ts-ignore
+  const employee = session?.user?.role
   const pathname=usePathname();
   const modalRef = useRef<HTMLUListElement>(null);
   const handleNav = () => {
@@ -93,6 +97,24 @@ function Header() {
               >
                 Job board
               </Link>
+              {
+                employee !== "EMPLOYER" ? <>
+                  <Link
+                href='/dashboard'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[115px] whitespace-nowrap hover:underline'
+              >
+                Dashboard
+              </Link>
+                </> : employee === "EMPLOYER" ? <>
+                <Link
+                href='/e-dashboard'
+                className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[115px] whitespace-nowrap hover:underline'
+              >
+                Dashboard
+              </Link>
+                </> : ""
+              }
+            
             </nav>
           </nav>
           <div
@@ -168,7 +190,7 @@ function Header() {
             <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
               <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
                 <Link
-                  href='/api/auth/signin?callbackUrl=/dashboard'
+                  href='/api/auth/signin'
                   className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[54px] whitespace-nowrap hover:underline'
                 >
                   Login in
