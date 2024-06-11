@@ -38,7 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           )
           if (response.data && response.data.userId) {
             let userId = response.data.userId;
-            employee = response.data.role;
             user2 = (
               await axios.get(
                 `https://techihubjobsproject.azurewebsites.net/api/user-profile/${userId}`

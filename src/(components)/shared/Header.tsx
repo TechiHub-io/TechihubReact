@@ -74,7 +74,7 @@ function Header() {
               }`}
             >
               <Link
-                href='/'
+                href='/home'
                 className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[55px] hover:underline'
               >
                 Home

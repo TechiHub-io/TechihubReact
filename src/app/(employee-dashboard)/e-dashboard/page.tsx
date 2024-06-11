@@ -54,7 +54,7 @@ const EDashboard = () => {
   const callout = () => {
     // @ts-ignore
     if(session?.user?.role !== "EMPLOYER") {
-     redirect('/');
+     redirect('/home');
     }
   }
   setTimeout(() => {
