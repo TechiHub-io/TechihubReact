@@ -28,8 +28,11 @@ function Filter() {
         <div className=' bg-[#fff] rounded-[8px] max-w-[1076px] w-[95%] lg:w-auto grid grid-cols-2 mx-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 py-[31px] px-[41px] absolute left-[50%] translate-x-[-50%] bottom-[-45px] h-[90px] gap-[42px] justify-center items-center shadow-[4px_0px_10px_1px_#0cce68]'>
           <select name="Jobtype" className='bg-transparent text-[18px] font-semibold' id="">
             <option value="">Job Type</option>
-            <option value="">a</option>
-            <option value="">b</option>
+            <option value="">Full-time</option>
+            <option value="">Part-time</option>
+            <option value="">Onsite</option>
+            <option value="">Remote</option>
+            <option value="">Internship</option>
           </select>
           <select name="Jobtype" className='bg-transparent text-[18px] font-semibold' id="">
             <option value="">Location</option>
@@ -38,13 +41,17 @@ function Filter() {
           </select>
           <select name="Jobtype" className='bg-transparent text-[18px] font-semibold' id="">
             <option value="">Level</option>
-            <option value="">a</option>
-            <option value="">b</option>
+            <option value="">Executive</option>
+            <option value="">Senior/Managerial</option>
+            <option value="">Mid Level</option>
+            <option value="">Junior</option>
           </select>
           <select name="Jobtype" className='bg-transparent text-[18px] font-semibold' id="">
-            <option value="">Industry</option>
-            <option value="">a</option>
-            <option value="">b</option>
+            <option value="">Years of Experience</option>
+            <option value="">0-2 Years</option>
+            <option value="">2-4 Years</option>
+            <option value="">5- 7 Years</option>
+            <option value="">Above 7 years</option>
           </select>
         </div>
       </div>

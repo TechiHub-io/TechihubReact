@@ -20,7 +20,6 @@ export default function TheHome() {
   }, 2000)
   // @ts-ignore
   const employer = session?.user?.role
-  console.log(employer)
   return (
     <main className='flex min-h-screen flex-col items-center justify-between relative '>
       {
