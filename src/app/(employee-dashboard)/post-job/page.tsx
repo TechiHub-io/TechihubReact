@@ -132,7 +132,7 @@ const PostJob = () => {
                 name="salary"
                 autoComplete="salary"
                 required
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+                className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
               >
                 <option value="">Select salary range</option>
                 <option value="Less than $30,000">Less than $30,000</option>
@@ -218,7 +218,7 @@ const PostJob = () => {
                 name="jobType"
                 autoComplete="jobType"
                 required
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+                className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
               >
                 <option value="">Select job type</option>
                 <option value="Full-time">Full-time</option>
@@ -262,7 +262,7 @@ const PostJob = () => {
                 name="experience"
                 autoComplete="experience"
                 required
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+                className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
               >
                 <option value="">Select years of experience</option>
                 <option value="0-2 Years">0-2 Years</option>

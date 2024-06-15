@@ -35,9 +35,6 @@ const providers = [
           'https://techihubjobsproject.azurewebsites.net/api/users/login',
           apidata
         )
-        // if(!response.data){
-        //   throw new Error("User not found.")
-        // }
         if (response.data && response.data.userId) {
           let userId = response.data.userId;
           user2 = (
@@ -57,6 +54,7 @@ const providers = [
           return error;
         }
         console.error('Error occurred:', error);
+        throw new Error('An unexpected error occurred.');
       }
     }
   }),
@@ -64,6 +62,7 @@ const providers = [
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
+  debug: true,
   // secret: process.env.AUTH_SECRET,
   callbacks: {
     jwt({ token, user }) {
