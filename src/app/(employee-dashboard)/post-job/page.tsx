@@ -127,15 +127,20 @@ const PostJob = () => {
                 Salary
               </label>
               <div className="mt-2">
-                <input
-                  id="salary"
-                  type="number"
-                  name="salary"
-                  placeholder="enter Salary"
-                  autoComplete="salary"
-                  required
-                  className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
-                />
+              <select
+                id="salary"
+                name="salary"
+                autoComplete="salary"
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+              >
+                <option value="">Select salary range</option>
+                <option value="Less than $30,000">Less than $30,000</option>
+                <option value="$30,000 - $50,000">$30,000 - $50,000</option>
+                <option value="$50,000 - $70,000">$50,000 - $70,000</option>
+                <option value="$70,000 - $100,000">$70,000 - $100,000</option>
+                <option value="Above $100,000">Above $100,000</option>
+              </select>
               </div>
             </div>
             <div className="sm:col-span-3">
@@ -151,7 +156,7 @@ const PostJob = () => {
                   type="text"
                   name="companyName"
                   placeholder="enter Company Name"
-                  autoComplete="given-name"
+                  autoComplete="companyName"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -175,7 +180,7 @@ const PostJob = () => {
                   type="text"
                   name="companyWebsiteLink"
                   placeholder="enter Company Website LInk"
-                  autoComplete="given-name"
+                  autoComplete="companyWebsiteLink"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -194,7 +199,7 @@ const PostJob = () => {
                   type="text"
                   name="desires"
                   placeholder="enter Desires"
-                  autoComplete="given-name"
+                  autoComplete="desires"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -208,15 +213,20 @@ const PostJob = () => {
                 Job type
               </label>
               <div className="mt-2">
-                <input
-                  id="jobType"
-                  type="text"
-                  name="jobType"
-                  placeholder="enter jobType"
-                  autoComplete="given-name"
-                  required
-                  className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
-                />
+              <select
+                id="jobType"
+                name="jobType"
+                autoComplete="jobType"
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+              >
+                <option value="">Select job type</option>
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+                <option value="Onsite">Onsite</option>
+                <option value="Remote">Remote</option>
+                <option value="Internship">Internship</option>
+              </select>
               </div>
             </div>
 
@@ -232,7 +242,7 @@ const PostJob = () => {
                   id="requirements"
                   name="requirements"
                   placeholder="enter Requirements"
-                  autoComplete="given-name"
+                  autoComplete="requirements"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -247,14 +257,19 @@ const PostJob = () => {
                 Experience
               </label>
               <div className="mt-2">
-                <textarea
-                  id="experience"
-                  name="experience"
-                  placeholder="enter Experience e.g 5 years"
-                  autoComplete="given-name"
-                  required
-                  className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
-                />
+              <select
+                id="experience"
+                name="experience"
+                autoComplete="experience"
+                required
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+              >
+                <option value="">Select years of experience</option>
+                <option value="0-2 Years">0-2 Years</option>
+                <option value="2-4 Years">2-4 Years</option>
+                <option value="5-7 Years">5-7 Years</option>
+                <option value="Above 7 years">Above 7 years</option>
+              </select>
               </div>
             </div>
 
@@ -271,7 +286,7 @@ const PostJob = () => {
                   type="date"
                   name="deadline"
                   placeholder="enter Deadline"
-                  autoComplete="given-name"
+                  autoComplete="Deadline"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -291,7 +306,7 @@ const PostJob = () => {
                   type="text"
                   name="employer"
                   placeholder="enter the employer"
-                  autoComplete="given-name"
+                  autoComplete="employer"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -310,7 +325,7 @@ const PostJob = () => {
                   id="description"
                   name="description"
                   placeholder="enter Description of the Job"
-                  autoComplete="given-name"
+                  autoComplete="description"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 h-[191px] ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
@@ -329,23 +344,26 @@ const PostJob = () => {
                   id="about"
                   name="about"
                   placeholder="enter about the job"
-                  autoComplete="given-name"
+                  autoComplete="about"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 h-[191px] ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
                 />
               </div>
             </div>
 
-            <h3 className="text-[20px] font-normal text-[#000] py-[32px] sm:col-span-4">
-              Select Benefits
-            </h3>
             <div className="sm:col-span-4">
+            <label
+                htmlFor="jobBenefits"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Select Benefits
+              </label>
               <input
                 id="jobBenefits"
                 type="text"
                 name="jobBenefits"
                 placeholder="enter Job Benefits"
-                autoComplete="given-name"
+                autoComplete="jobBenefits"
                 required
                 className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
               />

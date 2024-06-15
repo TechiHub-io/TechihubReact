@@ -35,6 +35,9 @@ const providers = [
           'https://techihubjobsproject.azurewebsites.net/api/users/login',
           apidata
         )
+        // if(!response.data){
+        //   throw new Error("User not found.")
+        // }
         if (response.data && response.data.userId) {
           let userId = response.data.userId;
           user2 = (
