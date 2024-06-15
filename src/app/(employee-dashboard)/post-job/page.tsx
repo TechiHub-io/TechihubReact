@@ -127,20 +127,14 @@ const PostJob = () => {
                 Salary
               </label>
               <div className="mt-2">
-              <select
-                id="salary"
-                name="salary"
-                autoComplete="salary"
-                required
-                className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
-              >
-                <option value="">Select salary range</option>
-                <option value="Less than $30,000">Less than $30,000</option>
-                <option value="$30,000 - $50,000">$30,000 - $50,000</option>
-                <option value="$50,000 - $70,000">$50,000 - $70,000</option>
-                <option value="$70,000 - $100,000">$70,000 - $100,000</option>
-                <option value="Above $100,000">Above $100,000</option>
-              </select>
+                <input type="number"
+                  id="salary"
+                  name="salary"
+                  autoComplete="salary"
+                  required
+                  placeholder="Expected salaly in ksh"
+                  className="block w-full p-2 rounded-md border-gray-300 shadow-sm focus:border-sky-600 focus:ring-sky-600 sm:text-sm"
+                />
               </div>
             </div>
             <div className="sm:col-span-3">
