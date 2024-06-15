@@ -168,7 +168,6 @@ export async function PostedJob(state: {message: string}, formData: FormData){
   requirements: formData.get("requirements"),
   experience: formData.get("experience")
   })
-
   try {
     // @ts-ignore
     const response = await axios.post(`${baseurl}/techihub/save`, experiencepost).then(response => response.data).catch(error => error)
