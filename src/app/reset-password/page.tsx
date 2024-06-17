@@ -1,7 +1,7 @@
 'use client'
 import React from "react";
 import { useFormState, useFormStatus } from "react-dom";
-import { ForgotPasswordsetup } from "../action";
+import { ResetPasswordsetup } from "../action";
 const initialState = {
   message: ""
 }
@@ -17,14 +17,14 @@ function SignUpButton(){
   )
 }
 
-const ForgotPassword = () => {
-  const [state, handleSubmit] = useFormState(ForgotPasswordsetup, initialState);
+const ResetPassword = () => {
+  const [state, handleSubmit] = useFormState(ResetPasswordsetup, initialState);
   return (
     <main>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-[32px] font-medium leading-9 tracking-tight text-black">
-            Enter your Email and check your Email for a reset link
+            Reset your password
           </h2>
         </div>
         <p
@@ -36,23 +36,60 @@ const ForgotPassword = () => {
         </p>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action={handleSubmit}>
-            <div>
+          <div>
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="email"
+                  htmlFor="password"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Email
+                  Token Shared in Email
                 </label>
               </div>
               <div className="mt-2">
                 <input
-                  id="email"
-                  type="email"
-                  name="email"
-                  autoComplete="email"
+                  id="resetToken"
+                  type="string"
+                  name="resetToken"
+                  autoComplete="resetToken"
                   required
-                  placeholder="Enter your account email "
+                  placeholder="add token shared in your email 8 number code"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Password
+                </label>
+              </div>
+              <div className="mt-2">
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  autoComplete="current-password"
+                  required
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Confirm Password
+              </label>
+              <div className="mt-2">
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
+                  required
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -78,4 +115,4 @@ const ForgotPassword = () => {
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

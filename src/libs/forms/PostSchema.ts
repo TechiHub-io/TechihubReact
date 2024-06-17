@@ -96,8 +96,13 @@ export const Signupschema = z.object({
 })
 
 export const Forgotpass = z.object({
-  confirmPassword: z.string().min(3, 'Your name is required'),
-  password: z.string().min(3, 'Password is required')
+  email: z.string().min(3, 'Your email is required').email('Invalid Email Address'),
+})
+
+export const Resetpass = z.object({
+  resetToken: z.string().min(3, 'The Token is required'),
+  newPassword: z.string().min(3, 'password is required'),
+  confirmPassword: z.string().min(3, 'Password is required')
 })
 
 export const Signinschema = z.object({

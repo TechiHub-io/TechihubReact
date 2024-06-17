@@ -1,5 +1,5 @@
 'use server'
-import { Forgotpass, FormDataSchema, FormEducation, FormExperience, FormProfile, PostingJob, Signupschema } from '@/libs/forms/PostSchema';
+import { Forgotpass, FormDataSchema, FormEducation, FormExperience, FormProfile, PostingJob, Resetpass, Signupschema } from '@/libs/forms/PostSchema';
 import axios from 'axios';
 import { redirect } from 'next/navigation';
 import {auth} from '../../auth'
@@ -56,10 +56,29 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
 export async function ForgotPasswordsetup(state: {message: string}, formData: FormData){
  
   const rawformData = Forgotpass.parse({
-    password: formData.get('password'),
+    email: formData.get('email'),
+  })
+  try {
+    const response = await axios.post(`${baseurl}/api/users/forgot-password?email=${rawformData.email}`).then(response => response.data).catch(error =>  error);
+    
+    if(response.response.data.status !== 200){
+      return {message: `${response.response.data.message}`}
+    }
+    return {message: `${response.response.data.message}`}
+
+  } catch (error: any) {
+    return {message: `Error encountered ${error}`}
+  }
+}
+
+export async function ResetPasswordsetup(state: {message: string}, formData: FormData){
+ 
+  const rawformData = Resetpass.parse({
+    resetToken: formData.get('resetToken'),
+    newPassword: formData.get('password'),
     confirmPassword: formData.get('confirmPassword'),
   })
-  let compare = rawformData.password.trim().localeCompare(rawformData.confirmPassword.trim());
+  let compare = rawformData.newPassword.trim().localeCompare(rawformData.confirmPassword.trim());
   if(compare !== 0){
     return {message: 'password dont match'}
   }
