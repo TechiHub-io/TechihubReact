@@ -60,14 +60,13 @@ export async function ForgotPasswordsetup(state: {message: string}, formData: Fo
   })
   try {
     const response = await axios.post(`${baseurl}/api/users/forgot-password?email=${rawformData.email}`).then(response => response.data).catch(error =>  error);
-    
-    if(response.response.data.status !== 200){
-      return {message: `${response.response.data.message}`}
+    if(response.statusCode !== 200){
+      return {message: `${response.message}`}
     }
-    return {message: `${response.response.data.message}`}
+    return {message: `${response.message}`}
 
   } catch (error: any) {
-    return {message: `Error encountered ${error}`}
+    return {message: `Email Does not Exist ${error}`}
   }
 }
 
@@ -85,10 +84,10 @@ export async function ResetPasswordsetup(state: {message: string}, formData: For
   try {
     const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
     
-    if(response.response.data.status !== 200){
-      return {message: `${response.response.data.message}`}
+    if(response?.statusCode !== 200){
+      return {message: `${response.message}`}
     }
-    return {message: `${response.response.data.message}`}
+    return {message: `${response?.message}`}
 
   } catch (error: any) {
     return {message: `Error encountered ${error}`}
