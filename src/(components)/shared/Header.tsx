@@ -18,31 +18,31 @@ function Header() {
   const handleNav = () => {
     setNav(!nav);
   };
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      // If the modal is open and the click is outside the modal, close the modal
-      if (
-        nav &&
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        setNav(false);
-      }
-    }
+  // useEffect(() => {
+  //   function handleClickOutside(event: MouseEvent) {
+  //     // If the modal is open and the click is outside the modal, close the modal
+  //     if (
+  //       nav &&
+  //       modalRef.current &&
+  //       !modalRef.current.contains(event.target as Node)
+  //     ) {
+  //       setNav(false);
+  //     }
+  //   }
 
-    // Add event listener
-    document.addEventListener('mousedown', handleClickOutside);
+  //   // Add event listener
+  //   document.addEventListener('mousedown', handleClickOutside);
 
-    // Remove event listener on cleanup
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [nav, setNav]);
+  //   // Remove event listener on cleanup
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [nav, setNav]);
   return (
     <header
       className={`${
         pathname === '/about-us'
-          ? 'pt-[29px] px-0 pb-[62px] lg:bg-[#364187] min-[1440px]:bg-transparent'
+          ? 'pt-[29px] px-0 pb-[62px] bg-[#364187] min-[1560px]:bg-transparent'
           : 'pt-[29px] px-0 pb-[62px]'
       }`}
     >
@@ -69,7 +69,7 @@ function Header() {
             <nav
               className={`${
                 pathname === '/about-us'
-                  ? 'm-0 lg:text-[#fff] min-[1440px]:text-[#000]  flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
+                  ? 'm-0 lg:text-[#fff] min-[1560px]:text-[#000]  flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
                   : 'm-0 text-[#000] flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
               }`}
             >
@@ -120,7 +120,7 @@ function Header() {
           <div
             className={`${
               pathname === '/about-us'
-                ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] min-[1440px]:text-[#364187] z-20'
+                ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] min-[1560px]:text-[#364187] z-20'
                 : 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] z-20'
             }`}
           >
@@ -137,7 +137,7 @@ function Header() {
               xmlns='http://www.w3.org/2000/svg'
               width='2.2em'
               height='2.2em'
-              className='cursor-pointer'
+              className={pathname === '/about-us' ? 'cursor-pointer text-[#fff] w-[2.2em] h-[2.2em]' : 'cursor-pointer'}
               viewBox='0 0 15 15'
             >
               <path

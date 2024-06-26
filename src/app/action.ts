@@ -83,11 +83,10 @@ export async function ResetPasswordsetup(state: {message: string}, formData: For
   }
   try {
     const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
-    
     if(response?.statusCode !== 200){
       return {message: `${response.message}`}
     }
-    return {message: `${response?.message}`}
+    return {message: `Email does not Exist ${response?.message}`}
 
   } catch (error: any) {
     return {message: `Error encountered ${error}`}
