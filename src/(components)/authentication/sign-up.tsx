@@ -115,7 +115,7 @@ const Signup = () => {
       <div className='flex min-h-full flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
           <h2 className='mt-10 text-center text-[32px] font-medium leading-9 tracking-tight text-black'>
-            Sign up to your account As Employee
+            Sign up to your account As Employer
           </h2>
         </div>
         <p aria-live='polite' className=' text-[#ff0000] text-center text-[16px]' role='status'>

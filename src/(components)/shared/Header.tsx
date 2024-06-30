@@ -42,7 +42,7 @@ function Header() {
     <header
       className={`${
         pathname === '/about-us'
-          ? 'pt-[29px] px-0 pb-[62px] bg-[#364187] min-[1560px]:bg-transparent'
+          ? 'pt-[29px] px-0 pb-[62px] bg-[#364187]'
           : 'pt-[29px] px-0 pb-[62px]'
       }`}
     >
@@ -57,19 +57,30 @@ function Header() {
         </Link>
         <div className='w-full hidden lg:flex justify-between'>
           <Link href='/' className='hidden lg:block z-10'>
+          {
+            pathname === '/about-us' ? 
+            <Image
+              src='/images/homepage/whitelogo.svg'
+              width={62}
+              height={45}
+              alt='image'
+            />
+            :
             <Image
               src='/images/shared/logoa.svg'
               width={62}
               height={45}
               alt='image'
             />
+          }
+            
           </Link>
 
           <nav className='m-0 hidden lg:flex items-start justify-center pt-2.5 px-0 pb-0 box-border max-w-full z-40'>
             <nav
               className={`${
                 pathname === '/about-us'
-                  ? 'm-0 lg:text-[#fff] min-[1560px]:text-[#000]  flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
+                  ? 'm-0 lg:text-[#fff]  flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
                   : 'm-0 text-[#000] flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
               }`}
             >
@@ -120,7 +131,7 @@ function Header() {
           <div
             className={`${
               pathname === '/about-us'
-                ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] min-[1560px]:text-[#364187] z-20'
+                ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] z-20'
                 : 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] z-20'
             }`}
           >
