@@ -64,7 +64,7 @@ function Footer() {
               </Link>
             </div>
             <div className="self-stretch flex flex-row items-start justify-start py-0 pr-0 pl-[1.4px]">
-              <Link href="/terms" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
+              <Link href="/terms-and-conditions" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
                 Terms and Condition
               </Link>
             </div>
