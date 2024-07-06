@@ -203,7 +203,7 @@ const TermsAndConditions = () => {
 
       {termsAndConditionsData.map((section) => (
         <section key={section.id} ref={sectionRefs[section.id]} className="mb-8">
-          <h2 className="font-medium mb-4">{section.title}</h2>
+          <h2 className=" font-normal mb-4">{section.title}</h2>
           {section.subsections ? (
             section.subsections.map((subsection) => (
               <div key={subsection.id} className="mb-6">
