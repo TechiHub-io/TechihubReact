@@ -1,10 +1,13 @@
+'use client'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
+import { usePathname } from 'next/navigation'
 
 function Footer() {
+  const pathname = usePathname();
   return (
-    <footer className="self-stretch bg-[#364187] flex flex-col items-start justify-start pt-[39.5px] mt-[40px] lg:mt-[77px]  pb-16 box-border gap-[70.2px] max-w-full text-left text-[#afb3cf] font-poppins">
+    <footer className={pathname === "/sign-up" ? "self-stretch bg-[#364187] flex flex-col items-start justify-start pt-[39.5px]  pb-16 box-border gap-[70.2px] max-w-full text-left text-[#afb3cf] font-poppins": "self-stretch bg-[#364187] flex flex-col items-start justify-start pt-[39.5px] mt-[40px] lg:mt-[77px]  pb-16 box-border gap-[70.2px] max-w-full text-left text-[#afb3cf] font-poppins"}>
       <div className="max-w-[1440px]  relative w-[90%] mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 place-items-center lg:place-items-start justify-center lg:justify-start max-w-full text-center lg:text-left gap-[1rem] md:gap-0">
         <div className="h-[149.8px] w-[234.8px] flex flex-col items-center lg:items-start justify-start pt-[7.7px] px-0 pb-0 box-border">

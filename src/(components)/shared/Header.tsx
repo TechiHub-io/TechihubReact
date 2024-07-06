@@ -41,7 +41,7 @@ function Header() {
   return (
     <header
       className={`${
-        pathname === '/about-us'
+        pathname === '/about-us' || pathname === '/sign-up'
           ? 'pt-[29px] px-0 pb-[62px] bg-[#364187]'
           : 'pt-[29px] px-0 pb-[62px]'
       }`}
@@ -58,7 +58,7 @@ function Header() {
         <div className='w-full hidden lg:flex justify-between'>
           <Link href='/' className='hidden lg:block z-10'>
           {
-            pathname === '/about-us' ? 
+            pathname === '/about-us' || pathname === '/sign-up' ? 
             <Image
               src='/images/homepage/whitelogo.svg'
               width={62}
@@ -79,7 +79,7 @@ function Header() {
           <nav className='m-0 hidden lg:flex items-start justify-center pt-2.5 px-0 pb-0 box-border max-w-full z-40'>
             <nav
               className={`${
-                pathname === '/about-us'
+                pathname === '/about-us' || pathname === '/sign-up'
                   ? 'm-0 lg:text-[#fff]  flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
                   : 'm-0 text-[#000] flex flex-row items-start justify-center gap-[24px] text-left text-lg font-poppins'
               }`}
@@ -130,7 +130,7 @@ function Header() {
           </nav>
           <div
             className={`${
-              pathname === '/about-us'
+              pathname === '/about-us' || pathname === '/sign-up'
                 ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] z-20'
                 : 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] z-20'
             }`}
@@ -148,7 +148,7 @@ function Header() {
               xmlns='http://www.w3.org/2000/svg'
               width='2.2em'
               height='2.2em'
-              className={pathname === '/about-us' ? 'cursor-pointer text-[#fff] w-[2.2em] h-[2.2em]' : 'cursor-pointer'}
+              className={pathname === '/about-us' || pathname === '/sign-up' ? 'cursor-pointer text-[#fff] w-[2.2em] h-[2.2em]' : 'cursor-pointer'}
               viewBox='0 0 15 15'
             >
               <path
