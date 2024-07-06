@@ -48,12 +48,22 @@ function Header() {
     >
       <div className=' w-[90%] flex items-start mx-auto justify-between  box-border gap-[20px]  text-left z-40'>
         <Link href='/' className='block lg:hidden z-20'>
-          <Image
-            src='/images/shared/logoa.svg'
-            width={62}
-            height={45}
-            alt='image'
-          />
+        {
+            pathname === '/about-us' || pathname === '/sign-up' ? 
+            <Image
+              src='/images/homepage/whitelogo.svg'
+              width={62}
+              height={45}
+              alt='image'
+            />
+            :
+            <Image
+              src='/images/shared/logoa.svg'
+              width={62}
+              height={45}
+              alt='image'
+            />
+          }
         </Link>
         <div className='w-full hidden lg:flex justify-between'>
           <Link href='/' className='hidden lg:block z-10'>
