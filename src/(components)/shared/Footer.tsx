@@ -68,7 +68,7 @@ function Footer() {
                 Terms and Condition
               </Link>
             </div>
-            <Link href="/blog" className="w-[47.8px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
+            <Link href="/blogs" className="w-[47.8px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
               Blog
             </Link>
             <Link href="/contact" className="w-[121.5px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">

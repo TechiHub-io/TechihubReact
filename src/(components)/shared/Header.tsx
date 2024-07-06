@@ -114,7 +114,7 @@ function Header() {
                 href='/dashboard'
                 className='relative tracking-[0.25px] leading-[27px] inline-block min-w-[115px] whitespace-nowrap hover:underline'
               >
-                Dashboard
+                
               </Link>
                 </> : employee === "EMPLOYER" ? <>
                 <Link
