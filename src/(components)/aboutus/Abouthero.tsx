@@ -3,10 +3,10 @@ import Bgbutton from '../shared/Bgbutton'
 
 function Abouthero() {
   return (
-    <section className='relative bg-[url(/images/aboutus/herobg.svg)] bg-no-repeat bg-center lg:bg-none'>
+    <section className='relative bg-[url(/images/aboutus/herobg.svg)] bg-no-repeat w-full bg-center lg:bg-none'>
       <img
           src='/images/aboutus/herobg.svg'
-          className='hidden lg:block absolute top-[-2px] left-0 max-h-[633px] object-cover '
+          className='hidden lg:block absolute top-[-2px] w-full left-0 max-h-[633px] object-cover '
           width="100%"
           height="733px"
           alt='gradient'
