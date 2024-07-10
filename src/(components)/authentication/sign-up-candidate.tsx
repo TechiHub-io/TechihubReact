@@ -29,14 +29,14 @@ const Signup = () => {
       <div className='flex max-w-[1330px] mx-auto gap-[32px]'>
         <div className='flex min-h-full flex-col justify-center lg:justify-start px-6 py-12 lg:px-8'>
           <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
-            <h2 className='mt-10 text-center text-[32px] font-medium leading-9 tracking-tight text-black'>
+            <h2 className='mt-10 text-center lg:text-left text-[32px] font-medium leading-9 tracking-tight text-black'>
               Get Started Now
             </h2>
           </div>
           <p aria-live='polite' className=' text-[#ff0000] text-center text-[16px]' role='status'>
             {state?.message}
           </p>
-          <div className='mt-10 sm:mx-auto sm:w-full sm:max-w-sm'>
+          <div className='mt-2 sm:mx-auto sm:w-full sm:max-w-sm'>
             <form className='space-y-6' action={handleSubmit} >
         
               <div>
@@ -53,7 +53,7 @@ const Signup = () => {
                     name='email'
                     autoComplete='email'
                     required
-                    className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                    className='block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   />
                 </div>
               </div>
@@ -74,7 +74,7 @@ const Signup = () => {
                     name='password'
                     autoComplete='current-password'
                     required
-                    className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                    className='block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   />
                 </div>
               </div>
@@ -91,7 +91,7 @@ const Signup = () => {
                     type='password'
                     name='confirmPassword'
                     required
-                    className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+                    className='block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                   />
                 </div>
               </div>
@@ -106,7 +106,7 @@ const Signup = () => {
                 id="terms"
                 name="terms"
                 required
-                className='font-semibold leading-6 text-indigo-600 hover:text-indigo-500'
+                className='font-semibold leading-6 mr-1 text-indigo-600 hover:text-indigo-500'
               />
               <label htmlFor="terms">I agree to the terms & policy</label>
             </p>
