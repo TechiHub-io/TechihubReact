@@ -115,3 +115,4 @@ export const ESigninschema = z.object({
   name: z.string().min(3, 'Your name is required'),
   password: z.string().min(3, 'Password is required')
 })
+

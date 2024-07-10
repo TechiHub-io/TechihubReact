@@ -2,7 +2,7 @@
 import { Forgotpass, FormDataSchema, FormEducation, FormExperience, FormProfile, PostingJob, Resetpass, Signupschema } from '@/libs/forms/PostSchema';
 import axios from 'axios';
 import { redirect } from 'next/navigation';
-import {auth} from '../../auth'
+import {auth, signIn} from '../../auth'
 
 const baseurl =   'https://techihubjobsproject.azurewebsites.net'
 export async function signUserUp(state: { message: string }, formData: FormData){
@@ -16,16 +16,21 @@ export async function signUserUp(state: { message: string }, formData: FormData)
   if(compare !== 0){
     return {message: 'password dont match'}
   }
+  
   try {
     const response = await axios.post(`${baseurl}/api/users/register/user`, rawformData).then(response => response.data).catch(error =>  error);
    
+    if (response?.error) {
+      return { message: "", error: response.error };
+    }
+
     if(response.response.data.status !== 200){
       return {message: `${response.response.data.message}`}
     }
     return {message: `${response.response.data.message}`}
 
   } catch (error: any) {
-    return {message: `Error encountered ${error}`}
+    return {message: `The Details are already registered try with different one`}
   }
 } 
 
@@ -61,12 +66,12 @@ export async function ForgotPasswordsetup(state: {message: string}, formData: Fo
   try {
     const response = await axios.post(`${baseurl}/api/users/forgot-password?email=${rawformData.email}`).then(response => response.data).catch(error =>  error);
     if(response.statusCode !== 200){
-      return {message: `${response.message}`}
+      return {message: `invalid email Please try with the right email`}
     }
     return {message: `${response.message}`}
 
   } catch (error: any) {
-    return {message: `Email Does not Exist ${error}`}
+    return {message: `Email Does not Exist `}
   }
 }
 
@@ -196,5 +201,38 @@ export async function PostedJob(state: {message: string}, formData: FormData){
   
   } catch (error) {
     return {message: `Error encountered ${error}`}
+  }
+}
+
+type State = {
+  message: string;
+  error?: string;
+  url?: undefined
+}
+
+export const SignInHandler = async (prevState: State, formData: FormData): Promise<State> => {
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+
+  try {
+    const res = await signIn('credentials', { 
+      email, 
+      password, 
+      redirect: false,
+      callbackUrl: "/dashboard"  // Specify where to redirect after successful login
+    });
+    if (res?.error) {
+      return { message: "", error: res.error };
+    }
+    
+    if (res?.url) {
+      // Instead of redirecting here, we'll return the URL to redirect to
+      return { message: "Success signin", error: undefined, url: res.url };
+    }
+
+    return { message: "Success signin", error: undefined };
+  } catch (error) {
+    console.error('SignIn error:', error);
+    return { message: "", error: 'Invalid credentials Please try again' };
   }
 }

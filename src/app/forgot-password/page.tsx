@@ -24,7 +24,7 @@ const ForgotPassword = () => {
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-[32px] font-medium leading-9 tracking-tight text-black">
-            Enter your Email and check your Email for a reset link
+            Kindly share your Email and check your Email for a reset link
           </h2>
         </div>
         <p
@@ -34,7 +34,7 @@ const ForgotPassword = () => {
         >
           {state?.message}
         </p>
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-1 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action={handleSubmit}>
             <div>
               <div className="flex items-center justify-between">
@@ -53,7 +53,7 @@ const ForgotPassword = () => {
                   autoComplete="email"
                   required
                   placeholder="Enter your account email "
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full p-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -67,7 +67,7 @@ const ForgotPassword = () => {
               id="terms"
               name="terms"
               required
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+              className="font-semibold leading-6 mr-1 text-indigo-600 hover:text-indigo-500"
             />
             <label htmlFor="terms">I agree to the terms & policy</label>
           </p>
