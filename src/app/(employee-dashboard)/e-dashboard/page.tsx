@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import React from 'react';
+import {motion} from 'framer-motion'
 import EStatistics from './(components)/EStatistics';
 import Job from '@/(components)/jobs/Job';
 import { Jobsprops } from '@/libs/types/Jobstypes';
@@ -71,7 +72,12 @@ const EDashboard = () => {
     return <div>Error: {error.message}</div>;
   }
   return (
-    <section className='max-w-[822px]'>
+    <section className='mx-[32px] max-w-[822px]'>
+      <motion.div
+          initial={{ x: 200, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
       <div className='flex flex-col lg:flex-row lg:justify-between'>
         <div className='flex flex-col gap-[32px] max-w-[396px] min-h-[84px]'>
           <h2 className='text-[32px] text-[#000] font-light'>
@@ -118,7 +124,7 @@ const EDashboard = () => {
 
         <section className='flex gap-[24px] flex-col'>
           {data ? (
-            data?.jobs?.map((dat: Jobsprops) => (
+            data?.jobs?.slice().reverse().map((dat: Jobsprops) => (
               <EJobDash
                 key={dat?.id}
                 id={dat.id}
@@ -135,6 +141,7 @@ const EDashboard = () => {
           )}
         </section>
       </div>
+      </motion.div>
     </section>
   );
 };

@@ -9,6 +9,7 @@ const AppliedJobs = () => {
       redirect("/api/auth/signin?callbackUrl=/dashboard")
     }
   })
+ 
   const route = useRouter()
   useEffect(() => {
     const callout = () => {

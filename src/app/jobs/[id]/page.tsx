@@ -2,11 +2,29 @@
 import Bgbutton from '@/(components)/shared/Bgbutton';
 import { Skeleton } from '@/(components)/ui/skeleton';
 import axios from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import useSWR from 'swr';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   const url = `/techihub/get/${params.id}`;
+  const {data: session} = useSession({
+    required: true
+  });
+
+  // const route = useRouter()
+  // useEffect(() => {
+  //   const callout = () => {
+  //     // @ts-ignore
+  //     if(session?.user?.role === "EMPLOYER") {
+  //     route.push("/e-dashboard");
+  //     //  redirect("/e-dashboard'");
+  //     }
+  //   }
+  //   callout();
+  // })
+
   const { data, error, isLoading } = Swrgetdat2(url);
   if (isLoading) {
     return (
@@ -19,14 +37,15 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
   return (
     <main className='max-w-[1330px] mx-auto w-[90%]'>
       <section className='flex flex-col lg:flex-row justify-between lg:px-[19px] gap-[32px] lg:gap-0'>
         <div className='flex flex-col gap-[12px]'>
-          <h4 className='text-[24px] leading-[120%] font-[400]'>title</h4>
+          <h4 className='text-[24px] leading-[120%] font-[400]'>{data.title}</h4>
           <div className='flex gap-[8px] items-center'>
             <p className='bg-[#0BA02C] rounded-[3px] py-[4px] px-[12px] text-[14px] text-[#fff]'>
-              FULL-TIME
+              {data.jobType}
             </p>
             <p className='bg-[#FFEDED] rounded-[52px] py-[4px] px-[12px] text-[14px] text-[#E05151]'>
               Featured
@@ -34,14 +53,14 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
           </div>
         </div>
         <div className='flex gap-[12px]'>
-          <div className='flex justify-center items-center w-[56px] h-[56px] bg-[#E7F0FA] rounded-[4px]'>
+          {/* <div className='flex justify-center items-center w-[56px] h-[56px] bg-[#E7F0FA] rounded-[4px]'>
             <img
               className='h-6 w-6 relative'
               loading='lazy'
               alt=''
               src='/images/jobs/book.svg'
             />
-          </div>
+          </div> */}
           <Bgbutton link='/' text='Apply now ' btntype='withborder' />
         </div>
       </section>
@@ -49,29 +68,11 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
         <div className='flex flex-col gap-[16px] max-w-[732px]'>
           <h4 className='text-[18px] font-medium'>job des</h4>
           <p>
-            Here at Velstar, we don't just make websites, we create exceptional
-            digital experiences that consumers love. Our team of designers,
-            developers, strategists, and creators work together to push brands
-            to the next level. From Platform Migration, User Experience & User
-            Interface Design, to Digital Marketing, we have a proven track
-            record in delivering outstanding eCommerce solutions and driving
-            sales for our clients.
+            {data.description}
           </p>
           <h4 className='text-[18px] font-medium'>Requirements</h4>
           <p>
-            Great troubleshooting and analytical skills combined with the desire
-            to tackle challenges head-on 3+ years of experience in back-end
-            development working either with multiple smaller projects
-            simultaneously or large-scale applications Experience with HTML,
-            JavaScript, CSS, PHP, Symphony and/or Laravel Working regularly with
-            APIs and Web Services (REST, GrapthQL, SOAP, etc) Have
-            experience/awareness in Agile application development, commercial
-            off-the-shelf software, middleware, servers and storage, and
-            database management. Familiarity with version control and project
-            management systems (e.g., Github, Jira) Great troubleshooting and
-            analytical skills combined with the desire to tackle challenges
-            head-on Ambitious and hungry to grow your career in a fast-growing
-            agency
+            {data.requirements}
           </p>
         </div>
         <aside className='flex flex-col w-[100%] max-w-[617px] gap-[32px]'>
@@ -82,7 +83,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
               </p>
               <p className='text-[#0BA02C] text-[20px] font-medium'>salary</p>
               <p className='text-[#767F8C] font-[400] text-[14px]'>
-                Yearly salary
+                {data.salary}
               </p>
             </div>
             <hr className='border-[1px] border-[#E7F0FA] h-[80%] my-auto' />
@@ -105,7 +106,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                 Job Location
               </p>
               <p className='text-[#767F8C] font-[400] text-[14px]'>
-                Dhaka, Bangladesh
+                {data.location}
               </p>
             </div>
           </div>
@@ -114,7 +115,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
               <p className='text-[16px] font-medium text-[#18191C]'>
                 Job Overview
               </p>
-              <div className='flex gap-[16px]'>
+              <div className='flex gap-[16px] justify-center'>
                 <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
                   <p className=''>
                     <svg
@@ -156,10 +157,32 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                     Job expire in:
                   </p>
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
-                    14 Jun, 2021
+                    {data.deadline}
                   </p>
                 </div>
                 <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
+                  <p className=''>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='text-[#88FF99]'
+                      width='32px'
+                      height='32px'
+                      viewBox='0 0 256 256'
+                    >
+                      <path
+                        fill='currentColor'
+                        d='M216 66H56a10 10 0 0 1 0-20h136a6 6 0 0 0 0-12H56a22 22 0 0 0-22 22v128a22 22 0 0 0 22 22h160a14 14 0 0 0 14-14V80a14 14 0 0 0-14-14m2 126a2 2 0 0 1-2 2H56a10 10 0 0 1-10-10V75.59A21.84 21.84 0 0 0 56 78h160a2 2 0 0 1 2 2Zm-28-60a10 10 0 1 1-10-10a10 10 0 0 1 10 10'
+                      />
+                    </svg>
+                  </p>
+                  <p className='text-[16px] font-medium text-[#18191C]'>
+                    Experience
+                  </p>
+                  <p className='text-[#767F8C] font-[400] text-[14px]'>
+                    {data.experience}
+                  </p>
+                </div>
+                {/* <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
                   <p className=''>
                     <svg
                       className='text-[#88FF99]'
@@ -180,10 +203,10 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
                     Entry Level
                   </p>
-                </div>
+                </div> */}
               </div>
               <div className='flex gap-[16px]'>
-                <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
+                {/* <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
                   <p className=''>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -202,10 +225,10 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                     Experience
                   </p>
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
-                    $50k-80k/month
+                    {data.experience}
                   </p>
-                </div>
-                <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
+                </div> */}
+                {/* <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
                   <p className=''>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -229,14 +252,14 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
                     Graduation
                   </p>
-                </div>
+                </div> */}
               </div>
               <hr className='border-[1px] border-[#E7F0FA]' />
               <div className='flex flex-col gap-[8px] '>
                 <p className='text-[16px] font-medium text-[#18191C]'>
-                  Job Overview
+                  {data.about}
                 </p>
-                <div className='flex gap-[8px]'>
+                {/* <div className='flex gap-[8px]'>
                   <div className='bg-[#E7F0FA] flex gap-[8px] rounded-[4px] px-[16px] py-[8px]'>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -312,7 +335,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                       <path fill='none' d='M0 0h36v36H0z' />
                     </svg>
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

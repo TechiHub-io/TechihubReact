@@ -1,6 +1,7 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Jobsprops } from '@/libs/types/Jobstypes';
 import Bgbutton from '@/(components)/shared/Bgbutton';
+import { Swrgetdat4 } from '@/libs/hooks/GetDatalength';
 
 const EJobDash: FunctionComponent<Jobsprops> = ({
   id,
@@ -11,6 +12,16 @@ const EJobDash: FunctionComponent<Jobsprops> = ({
   jobType,
   employer,
 }) => {
+  const url = `/api/applications/job/${id}`;
+  const { data, error, isLoading } = Swrgetdat4(url);
+  
+  const [applicationsCount, setApplicationsCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (data && Array.isArray(data) && applicationsCount === null) {
+      setApplicationsCount(data.length);
+    }
+  }, [data, applicationsCount]);
   return (
     <div className='self-stretch rounded-lg [background:linear-gradient(90deg,_rgba(4,_159,_217,_0.5),_rgba(255,_255,_255,_0.5)),_#fff] shadow-[0px_2px_18px_rgba(24,_25,_28,_0.03)] box-border flex flex-col items-start justify-start py-6 px-[23px] gap-[20px] max-w-full text-left text-lg text-[#18191C] border-[1px] border-solid border-[#E4E5E8]'>
       <div className='self-stretch flex flex-col md:flex-row items-start justify-evenly max-w-full gap-[20px]'>
@@ -29,15 +40,15 @@ const EJobDash: FunctionComponent<Jobsprops> = ({
             </div>
           </div>
         </div>
-        <p className='text-[16px] text-[#000] opacity-50 font-thin'>2384</p>
+        <p className='text-[16px] text-[#000] opacity-50 font-thin'>{applicationsCount} </p>
         <p className='text-[16px] text-[#0CCE68] opacity-50 font-thin'>
           Active
         </p>
         <div className='flex flex-col items-start justify-start pt-[3px] px-0 pb-0'>
           <Bgbutton
             btntype='withborder'
-            text='View Details'
-            link={`/jobs/${id}`}
+            text='View Applicants'
+            link={`/applicants/${id}`}
           />
         </div>
       </div>
@@ -66,12 +77,12 @@ const EJobDash: FunctionComponent<Jobsprops> = ({
             </div>
           </div>
         </div>
-        <img
+        {/* <img
           className='h-6 w-6 relative'
           loading='lazy'
           alt=''
           src='/images/jobs/book.svg'
-        />
+        /> */}
       </div>
     </div>
   );

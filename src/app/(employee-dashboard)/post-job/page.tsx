@@ -50,7 +50,7 @@ const PostJob = () => {
     document.getElementById('handleProfileForm')?.reset();
   }
   return (
-    <section className="max-w-[907px]">
+    <section className="mx-[32px] max-w-[907px]">
       <p aria-live='polite' className=' text-[#ff0000] text-center text-[16px]' role='status'>
           {statejob?.message}
         </p>

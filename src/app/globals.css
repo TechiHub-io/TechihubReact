@@ -13,6 +13,10 @@
     @apply font-medium text-[57px] text-[#000]
   }
 
+  input {
+    @apply !p-2
+  }
+
   h2 {
     @apply font-medium text-[48px] text-[#000]
   }
