@@ -1,13 +1,13 @@
 'use client';
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Statistics from './(components)/Statistics';
 import Job from '@/(components)/jobs/Job';
 import { Jobsprops } from '@/libs/types/Jobstypes';
 import { Swrgetdat } from '@/libs/hooks/Swrgetdat';
 import JobDash from './(components)/JobsDash';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 const data2 = [
   {
@@ -68,6 +68,7 @@ export type thetypes = {
 };
 
 const Dashboard = () => {
+  const route = useRouter();
   const {data: session} = useSession({
     required: true,
     onUnauthenticated() {
@@ -75,6 +76,23 @@ const Dashboard = () => {
     }
   })
   
+  useEffect(() => {
+    const callout = () => {
+      // @ts-ignore
+      if(session?.user?.role === "EMPLOYER") {
+      route.push("/e-dashboard");
+      //  redirect("/e-dashboard'");
+      }
+    }
+    callout();
+  })
+  
+
+  
+  // setTimeout(() => {
+  //   callout();
+  // }, 2000)
+
   const url = '/techihub/list';
   const { data, error, isLoading } = Swrgetdat(url);
   if (isLoading) {

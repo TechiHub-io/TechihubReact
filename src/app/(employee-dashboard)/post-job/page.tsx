@@ -188,15 +188,14 @@ const PostJob = () => {
                 Desires
               </label>
               <div className="mt-2">
-                <input
+                <textarea
                   id="desires"
-                  type="text"
                   name="desires"
                   placeholder="enter Desires"
                   autoComplete="desires"
                   required
                   className="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm sm:leading-6 placeholder:p-[16px]"
-                />
+                ></textarea>
               </div>
             </div>
             <div className="sm:col-span-3">

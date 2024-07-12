@@ -50,11 +50,14 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
     
     if(response.response.data.status !== 200){
       return {message: `${response.response.data.message}`}
+    }else if(response.response.data.status === 200) {
+      return {message: "Succefully signed in check your email"}
     }
     return {message: `${response.response.data.message}`}
 
   } catch (error: any) {
-    return {message: `Error encountered ${error}`}
+    console.error('SignIn error:', error);
+    return { message: "", error: 'Not succesful try again' };
   }
 } 
 
