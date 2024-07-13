@@ -121,7 +121,7 @@ export default function EmployeeTemplate({ children }: { children: React.ReactNo
           </div>
         )}
       </aside>
-      <main className="flex-1 p-6 xl:ml-64">
+      <main className="flex-1 p-6 xl:ml-3">
         {children}
       </main>
     </section>

@@ -8,7 +8,6 @@ function Abouthero() {
           src='/images/aboutus/herobg.svg'
           className='hidden lg:block absolute top-[-2px] w-full left-0 max-h-[633px] object-cover '
           width="100%"
-          height="733px"
           alt='gradient'
         />
       

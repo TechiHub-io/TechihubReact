@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import React, { useEffect } from 'react';
+import {motion} from 'framer-motion';
 import Statistics from './(components)/Statistics';
 import Job from '@/(components)/jobs/Job';
 import { Jobsprops } from '@/libs/types/Jobstypes';
@@ -8,6 +9,7 @@ import { Swrgetdat } from '@/libs/hooks/Swrgetdat';
 import JobDash from './(components)/JobsDash';
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const data2 = [
   {
@@ -19,42 +21,42 @@ const data2 = [
     bg: '#88FF99',
     stat: 36,
   },
-  {
-    id: 2,
-    url: '/images/dashboard/bookmark.svg',
-    urlcolor: '#0CCE68',
-    color: '#fff',
-    text: 'Favourite Jobs',
-    bg: '#364187',
-    stat: 212,
-  },
-  {
-    id: 3,
-    url: '/images/dashboard/bell2.svg',
-    urlcolor: '#fff',
-    color: '#fff',
-    text: 'Job Alerts',
-    bg: '#364187',
-    stat: 418,
-  },
-  {
-    id: 4,
-    url: '/images/dashboard/messages.svg',
-    urlcolor: '',
-    color: '#000',
-    text: 'Messages',
-    bg: '#88FF99',
-    stat: 5,
-  },
-  {
-    id: 5,
-    url: '/images/dashboard/eye.svg',
-    urlcolor: '#0CCE68',
-    color: '#fff',
-    text: 'Messages',
-    bg: '#364187',
-    stat: 21,
-  },
+  // {
+  //   id: 2,
+  //   url: '/images/dashboard/bookmark.svg',
+  //   urlcolor: '#0CCE68',
+  //   color: '#fff',
+  //   text: 'Favourite Jobs',
+  //   bg: '#364187',
+  //   stat: 212,
+  // },
+  // {
+  //   id: 3,
+  //   url: '/images/dashboard/bell2.svg',
+  //   urlcolor: '#fff',
+  //   color: '#fff',
+  //   text: 'Job Alerts',
+  //   bg: '#364187',
+  //   stat: 418,
+  // },
+  // {
+  //   id: 4,
+  //   url: '/images/dashboard/messages.svg',
+  //   urlcolor: '',
+  //   color: '#000',
+  //   text: 'Messages',
+  //   bg: '#88FF99',
+  //   stat: 5,
+  // },
+  // {
+  //   id: 5,
+  //   url: '/images/dashboard/eye.svg',
+  //   urlcolor: '#0CCE68',
+  //   color: '#fff',
+  //   text: 'Messages',
+  //   bg: '#364187',
+  //   stat: 21,
+  // },
 ];
 
 export type thetypes = {
@@ -94,7 +96,11 @@ const Dashboard = () => {
   // }, 2000)
 
   const url = '/techihub/list';
+  // @ts-ignore
+  const url2 = `/api/user-profile/${session?.user?.userId}`;
   const { data, error, isLoading } = Swrgetdat(url);
+  const {data:data3, error:error2, isLoading:isLoading2} = Swrgetdat(url2);
+  console.log("daa", data3?.userProfile)
   if (isLoading) {
     return <div>loading ...</div>;
   }
@@ -105,26 +111,33 @@ const Dashboard = () => {
 
   return (
     <section className='max-w-[822px]'>
+      <motion.div
+          initial={{ x: 200, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
       <div className='flex flex-col lg:flex-row lg:justify-between'>
         <div className='flex flex-col gap-[32px] max-w-[396px] min-h-[84px]'>
-          <h2 className='text-[32px] text-[#000] font-light'>Lorem Ipsume</h2>
-          <p>Product Designer || UX/UI ||Human centred Design</p>
+          <h2 className='text-[32px] text-[#000] font-light'>{data3?.userProfile.first_name}{' '}{data3?.userProfile.last_name}</h2>
+          <p>{data3?.userProfile?.role_name}</p>
         </div>
         <div className='flex gap-[25px] justify-center items-center'>
-          <Image
-            src='/images/dashboard/avator.svg'
-            alt='avator'
-            className='rounded-full'
-            width={49}
-            height={49}
-          />
-          <Image
+          <Link href="/user-profile" className='no-underline'>
+            <Image
+              src='/images/dashboard/avator.svg'
+              alt='avator'
+              className='rounded-full'
+              width={49}
+              height={49}
+            />
+          </Link>
+          {/* <Image
             src='/images/dashboard/bell2.svg'
             alt='avator'
             className='rounded-full'
             width={28.61}
             height={36.77}
-          />
+          /> */}
         </div>
       </div>
       <div>
@@ -173,6 +186,7 @@ const Dashboard = () => {
           )}
         </section>
       </div>
+      </motion.div>
     </section>
   );
 };

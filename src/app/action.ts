@@ -101,6 +101,55 @@ export async function ResetPasswordsetup(state: {message: string}, formData: For
   }
 }
 
+type State2 = {
+  message: string;
+  error?: string;
+}
+
+export async function UploadResume(prevState: State2, formData: FormData): Promise<State2> {
+  try {
+    const session = await auth();
+    if (!session || !session.user) {
+      return { message: "", error: "User not authenticated" };
+    }
+
+    const file = formData.get('file') as File;
+    const documentName = formData.get('documentName') as string;
+
+    if (!file || !documentName) {
+      return { message: "", error: "File and document name are required" };
+    }
+
+    // Fetch the user profile ID
+    const userId = session.user.id; // Adjust this based on your session structure
+    const profileResponse = await fetch(`/api/user-profile/${userId}`);
+    const profileData = await profileResponse.json();
+    const userProfileId = profileData.id; // Adjust this based on your API response structure
+
+    // Prepare the form data for the API
+    const apiFormData = new FormData();
+    apiFormData.append('file', file);
+    apiFormData.append('documentName', documentName);
+    apiFormData.append('userProfileId', userProfileId);
+
+    // Make the API call
+    const response = await fetch('https://techihubjobsproject.azurewebsites.net/documents/upload-document', {
+      method: 'POST',
+      body: apiFormData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return { message: "", error: errorData.message || "Failed to upload resume" };
+    }
+
+    return { message: "Resume uploaded successfully" };
+  } catch (error) {
+    console.error('Upload error:', error);
+    return { message: "", error: 'An error occurred while uploading the resume' };
+  }
+}
+
 export async function CreateProfile(state: {message: string}, formData: FormData){
   const session = await auth();
   const profile =  FormProfile.parse({
@@ -159,7 +208,7 @@ export async function CreateExperience(state: {message: string}, formData: FormD
   })
   try {
     // @ts-ignore
-    const response = await axios.post(`${baseurl}/educations/${session?.user?.userId}`, experience).then(response => response.data).catch(error => error)
+    const response = await axios.post(`${baseurl}/experience/${session?.user?.userId}`, experience).then(response => response.data).catch(error => error)
   
     if(response === ''){
       return {message: 'session timeout'}

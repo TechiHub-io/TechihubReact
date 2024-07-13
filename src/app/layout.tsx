@@ -28,9 +28,9 @@ export default function RootLayout({
     <html lang='en' className={poppins.className}>
         <body>
         <SessionProvider session={session}>
-          <Header />
+          {/* <Header /> */}
           {children}
-          <Footer />
+          {/* <Footer /> */}
         </SessionProvider>
         </body>
     </html>

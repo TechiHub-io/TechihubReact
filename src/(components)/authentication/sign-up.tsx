@@ -3,8 +3,8 @@ import Bgbutton from '../shared/Bgbutton'
 
 const page = () => {
   return (
-    <main className='bg-[url(/images/blogs/bg.svg)] min-h-[800px] w-full flex flex-col lg:flex-row bg-center bg-no-repeat'>
-      <section className='bg-[#364187]' style={{flex: 0.5}}>
+    <main className='bg-[url(/images/blogs/bg.svg)] min-h-[800px] w-full flex flex-col lg:flex-row bg-center bg-no-repeat h-full '>
+      <section className='bg-[#364187] pt-[32px]' style={{flex: 0.5}}>
         <div className='max-w-[409px] mx-auto flex flex-col p-[32px] lg:p-0 gap-[32px] lg:gap-[60px] items-center lg:items-start lg:justify-start'>
           <img src="/images/blogs/icona.svg" width="409" className='object-contain' alt="image" />
           <h2 className='text-[#fff] text-center lg:text-left'>

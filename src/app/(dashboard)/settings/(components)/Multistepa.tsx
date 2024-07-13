@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import { CreateEducation, CreateExperience, CreateProfile } from "@/app/action";
+import { CreateEducation, CreateExperience, CreateProfile, UploadResume } from "@/app/action";
 import { useFormStatus } from 'react-dom';
 import { useFormState } from 'react-dom';
+import Image from "next/image";
+import Bgbutton from "@/(components)/shared/Bgbutton";
 
 
 const initialState = {
@@ -17,6 +19,7 @@ function SubmittingButton({text}: any){
     <button
       type='submit'
       aria-disabled={pending}
+      disabled={pending }
       className='flex w-full sm:col-span-4 justify-center items-center rounded-md bg-[#0CCE68] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
     >{pending ? 'Loading' : `${text}`}
     </button>
@@ -28,7 +31,26 @@ export default function Multistepa() {
   const [stateprofile, handleProfile] = useFormState(CreateProfile, initialState);
   const [stateeducation, handleEducation] = useFormState(CreateEducation, initialState)
   const [stateexperience, handleExperience] = useFormState(CreateExperience, initialState)
- 
+  const [stateresume, handleResume] = useFormState(UploadResume, initialState)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [documentName, setDocumentName] = useState<string>('');
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedFile(file);
+      setDocumentName(file.name);
+    } else {
+      setSelectedFile(null);
+      setDocumentName('');
+      alert('Please select a PDF file.');
+    }
+  };
+
+  const handleDocumentNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setDocumentName(event.target.value);
+  };
+
   const handleReset = () => {
     // @ts-ignore
     document.getElementById('handleProfileForm')?.reset();
@@ -44,7 +66,7 @@ export default function Multistepa() {
     document.getElementById('handleExperienceForm')?.reset();
   }
   return (
-    <section className=" inset-0 flex flex-col justify-between pl-[32px] w-[80%]">
+    <section className=" inset-0 flex flex-col justify-between pl-[8px] w-[80%]">
       <div className="mt-1 py-2" >
         <h2 className="text-base font-semibold leading-7 text-gray-900">
           Personal Information
@@ -337,7 +359,7 @@ export default function Multistepa() {
             Add Education
           </button>
         </form>
-
+               
         <h2 className="text-base font-semibold leading-7 text-gray-900">
           Experience
         </h2>
@@ -444,10 +466,72 @@ export default function Multistepa() {
           <button type="button" onClick={handleEXperience} className="withborder sm:col-span-2">
             Add Experience
           </button>  
-          <a href="/user-profile" onClick={handleEXperience} className="withborder sm:col-span-2">
-            User Profile
-          </a>          
+                 
         </form>
+
+        {/* upload resume */}
+        <h2 className="text-base font-semibold leading-7 text-gray-900">
+          Upload Resume
+        </h2>
+        <div className="mb-10">
+            <form action={handleResume} id="handleExperienceForm" className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6" encType="multipart/form-data">
+              <div className="col-span-full">
+                <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">
+                  Upload PDF
+                </label>
+                <input
+                  type="file"
+                  id="file-upload"
+                  name="file"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                />
+              </div>
+              
+              <div className="col-span-full">
+                <label htmlFor="document-name" className="block text-sm font-medium text-gray-700">
+                  Document Name
+                </label>
+                <input
+                  type="text"
+                  id="document-name"
+                  name="documentName"
+                  value={documentName}
+                  onChange={handleDocumentNameChange}
+                  required
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                />
+              </div>
+              
+              {selectedFile && (
+                <div className="col-span-full bg-gray-100 p-4 rounded-md">
+                  <h3 className="text-lg font-medium text-gray-900">File Preview</h3>
+                  <p className="mt-1 text-sm text-gray-600">{selectedFile.name}</p>
+                  <p className="mt-1 text-sm text-gray-600">Size: {(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <a
+                    href={URL.createObjectURL(selectedFile)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Open PDF
+                  </a>
+                </div>
+              )}
+              
+              <div className="col-span-full">
+              <SubmittingButton text="Upload" type="submit" />
+              </div>
+            </form>
+            
+          </div>
+
+
+         <a href="/user-profile" onClick={handleEXperience} className="withborder sm:col-span-2">
+            User Profile
+          </a>   
         <div className="mt-8 pt-5"></div>
       </div>
     </section>

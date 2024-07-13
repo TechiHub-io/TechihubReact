@@ -23,23 +23,23 @@ function Header() {
     setNav(false);
   };
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        nav &&
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        setNav(false);
-      }
-    }
+  // useEffect(() => {
+  //   function handleClickOutside(event: MouseEvent) {
+  //     if (
+  //       nav &&
+  //       modalRef.current &&
+  //       !modalRef.current.contains(event.target as Node)
+  //     ) {
+  //       setNav(false);
+  //     }
+  //   }
 
-    document.addEventListener('mousedown', handleClickOutside);
+  //   document.addEventListener('mousedown', handleClickOutside);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [nav]);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [nav]);
 
   const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
     <Link

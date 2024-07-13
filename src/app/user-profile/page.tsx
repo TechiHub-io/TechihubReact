@@ -127,9 +127,23 @@ const UserProfile = () => {
                 <p className="text-[#767F8C] font-normal text-[15px]">
                   Education
                 </p>
-                <p className=" text-[#18191C] font-medium text-[14px]">
-                  Degree
-                </p>
+                {
+                  data.userProfile.educations.map((dat: any) => (
+                    <p className=" text-[#18191C] py-3 font-medium text-[14px]">
+                      
+                      {dat.course}
+                      <br />
+                      {dat.school_name}
+                      <br />
+                      {dat.startDate}
+                      <br />
+                      {dat.endDate}
+                      <br />
+                      {dat.summary}
+                    </p>
+                  ))
+                }
+                
               </div>
             </div>
           </div>
@@ -194,7 +208,8 @@ const UserProfile = () => {
             </div>
           </div>
           <div className="max-w-[501px] w-full">
-            <div className="flex flex-col max-w-[337px] gap-[24px] w-full h-[217px] justify-center items-center rounded-md bg-[#C6D4ED] border-[2px] border-dashed border-[#0CCE68]">
+            <Bgbutton link="/settings" text="Edit Profile" btntype="withborder" />
+            {/* <div className="flex flex-col max-w-[337px] gap-[24px] w-full h-[217px] justify-center items-center rounded-md bg-[#C6D4ED] border-[2px] border-dashed border-[#0CCE68]">
               <Image
                 width={30}
                 height={30}
@@ -205,7 +220,7 @@ const UserProfile = () => {
                 Download Resume
               </p>
               <Bgbutton link="/" text="Download" btntype="withborder" />
-            </div>
+            </div> */}
           </div>
           
         </section>
