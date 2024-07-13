@@ -47,13 +47,12 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
   }
   try {
     const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
-    
-    if(response.response.data.status !== 200){
-      return {message: `${response.response.data.message}`}
-    }else if(response.response.data.status === 200) {
+    if(response.statusCode !== 200){
+      return {message: `${response.message}`}
+    }else if(response.statusCode === 200) {
       return {message: "Succefully signed in check your email"}
     }
-    return {message: `${response.response.data.message}`}
+    return {message: `${response.message}`}
 
   } catch (error: any) {
     console.error('SignIn error:', error);

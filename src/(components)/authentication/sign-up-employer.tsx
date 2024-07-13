@@ -22,7 +22,7 @@ function SignUpButton(){
 const Signup = () => {
   // const onSubmit =
   const [stateemployee, handleSubmitEmployee] = useFormState(signUserUpEmployee, initialState)
-
+  console.log(stateemployee.message)
   return (
     <main className='flex flex-col gap-[32px] lg:gap-0 lg:justify-between max-w-[1440px] mx-auto w-[90%]'>
       <img src="/images/blogs/logoa.jpg" className='mx-auto w-[100px] lg:w-[200px] ' alt="" />
