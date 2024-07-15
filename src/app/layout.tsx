@@ -6,6 +6,8 @@ import { Session } from 'next-auth'
 import './globals.css';
 import Footer from '@/(components)/shared/Footer';
 import Header from '@/(components)/shared/Header';
+import { ReactNode } from 'react';
+import SessionWrapper from './SessionWrapper';
 
 const poppins = Poppins({
   weight: ['400', '600', '700', '800'],
@@ -18,21 +20,21 @@ export const metadata: Metadata = {
   description: 'Connecting Tech Talents with Opportunities',
 };
 
-export default function RootLayout({
-  session, children
-}: Readonly<{
-  session: Session | null
-  children: React.ReactNode;
-}>) {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+// @ts-ignore
+const RootLayout = ({ children }:{children: ReactNode}) => {
   return (
     <html lang='en' className={poppins.className}>
         <body>
-        <SessionProvider session={session}>
-          {/* <Header /> */}
+        <SessionWrapper>
           {children}
-          {/* <Footer /> */}
-        </SessionProvider>
+        </SessionWrapper>
         </body>
     </html>
   );
 }
+
+export default RootLayout;
