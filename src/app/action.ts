@@ -52,7 +52,6 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
   console.log("raw data", rawformData)
   try {
     const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
-    console.log("res data", response)
     if(response.message === "Request failed with status code 400"){
       return {message: "refresh and try again, you can also contact us if the issue persist"}
     } else if(response.statusCode === 400) {
