@@ -92,7 +92,7 @@ function Footer() {
               </p>
               <form className="self-stretch rounded-[7.19px] bg-[#0CCE68] flex flex-col items-center justify-center pt-[7.9px] pb-[8.2px] pr-[0.1px] box-border gap-[10.4px] max-w-full z-[1] text-base text-[#000]">
                 <div className="w-[80%] flex flex-col items-start justify-start pt-[11.8px] px-0 pb-0 ">
-                  <input type='text' placeholder='Enter your Email' className="self-stretch py-[24.4px] px-[35.9px] h-[29.5px] relative leading-[150%] inline-block  z-[1] text-[16px] p-3 rounded-md" />
+                  <input type='text' placeholder='Enter your Email' className="self-stretch py-[24.4px] px-[35.9px]  relative leading-[150%] inline-block  z-[1] text-[16px] p-3 rounded-md" />
                 </div>
                 <div className="flex-1 max-w-[160px] rounded-[10.79px] bg-white flex flex-row items-start justify-start py-[14.4px] px-[35.9px] box-border min-w-[72px] z-[1] text-gray1-100 font-roboto">
                   <button type='button' className="relative leading-[150%] font-medium inline-block min-w-[72px] text-[16px] text-[#1D2130] cursor-pointer hover:">

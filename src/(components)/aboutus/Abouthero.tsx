@@ -3,7 +3,7 @@ import Bgbutton from '../shared/Bgbutton'
 
 function Abouthero() {
   return (
-    <section className='relative w-full !h-[661px]'>
+    <section className='relative  w-full !h-[661px]'>
       <div className='absolute inset-0 w-full h-[661px] overflow-hidden'>
         <img
           src='/images/aboutus/herobg.svg'

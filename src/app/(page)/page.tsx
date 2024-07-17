@@ -22,9 +22,10 @@ export default function TheHome() {
   const employer = session?.user?.role
   return (
     <main className='flex min-h-screen flex-col items-center justify-between relative '>
-      {
+      {/* {
         employer === "EMPLOYEE" ? redirect('/dashboard') : redirect('/e-dashboard')
-      }
+      } */}
+      {redirect('/home')}
     </main>
   );
 }
