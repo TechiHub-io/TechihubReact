@@ -63,7 +63,7 @@ const Communityaccordion = () => {
           {
             data.map((dat) => (
               <AccordionItem value={dat.id} className='max-w-[697px] mx-auto'>
-                <AccordionTrigger className='text-[22px] py-[32px] no-underline hover:no-underline focus-within:text-[#0CCE68]'>{dat.title}</AccordionTrigger>
+                <AccordionTrigger className='text-[22px] py-[32px] no-underline hover:no-underline text-center lg:text-left focus-within:text-[#0CCE68]'>{dat.title}</AccordionTrigger>
                 <AccordionContent className='text-[18px] text-[#6F6C90]'>
                   {dat.des}
                 </AccordionContent>

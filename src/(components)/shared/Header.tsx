@@ -60,7 +60,7 @@ function Header() {
       }`}
     >
       <div className='w-[90%] flex items-start mx-auto justify-between box-border gap-[20px] text-left z-40'>
-        <Link href='/' className='block lg:hidden z-20'>
+        <Link href='/home' className='block lg:hidden z-20'>
           {
             pathname === '/about-us' || pathname === '/sign-up' ? 
             <Image
@@ -79,7 +79,7 @@ function Header() {
           }
         </Link>
         <div className='w-full hidden lg:flex justify-between'>
-          <Link href='/' className='hidden lg:block z-10'>
+          <Link href='/home' className='hidden lg:block z-10'>
             {
               pathname === '/about-us' || pathname === '/sign-up' ? 
               <Image
@@ -117,7 +117,7 @@ function Header() {
               ) : null}
             </nav>
           </nav>
-          <div
+          {/* <div
             className={`${
               pathname === '/about-us' || pathname === '/sign-up'
                 ? 'w-[207px] hidden lg:flex flex-row items-start justify-end gap-[33px] text-[#364187] lg:text-[#fff] z-20'
@@ -125,7 +125,7 @@ function Header() {
             }`}
           >
             <Sign />
-          </div>
+          </div> */}
         </div>
 
         <nav>
@@ -169,14 +169,14 @@ function Header() {
               <NavLink href='/jobs'>Job board</NavLink>
             </li>
             <hr />
-            <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
+            {/* <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>
               <div className='flex flex-col items-start justify-start pt-2.5 px-0 pb-0'>
                 <NavLink href='/api/auth/signin'>Login in</NavLink>
               </div>
               <div className='flex-1 rounded-8xs flex flex-row items-start justify-start py-2.5 px-[23px] border-[2px] border-solid border-[#0CCE68]'>
                 <NavLink href='/sign-up'>sign up</NavLink>
               </div>
-            </div>
+            </div> */}
           </ul>
         </nav>
       </div>

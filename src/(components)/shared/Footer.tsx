@@ -32,19 +32,19 @@ function Footer() {
                 About Us
               </Link>
             </div>
-            <div className="self-stretch flex flex-row items-start justify-start py-0 pr-0">
+            {/* <div className="self-stretch flex flex-row items-start justify-start py-0 pr-0">
               <Link href="why" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
                 Why Choose us
               </Link>
-            </div>
+            </div> */}
             <div className="w-[171.6px] flex flex-col items-center lg:items-start justify-start gap-[14.8px]">
               <div className="self-stretch flex flex-col items-center lg:items-start justify-start gap-[9.8px]">
-                <Link href="pricing" className="w-[99.7px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
+                {/* <Link href="pricing" className="w-[99.7px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
                   Pricing
-                </Link>
-                <Link href="testimonial" className="self-stretch h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
+                </Link> */}
+                {/* <Link href="testimonial" className="self-stretch h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
                   Testimonial
-                </Link>
+                </Link> */}
               </div>
               <div className="w-[125.5px] flex flex-row items-center lg:items-start justify-center lg:justify-start py-0 px-0.5 box-border">
                 <Link href="/community" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
@@ -62,21 +62,21 @@ function Footer() {
               </h5>
             </div>
             <div className="w-[151.6px] flex flex-row items-start justify-start py-0 pr-px pl-[1.4px] box-border">
-              <Link href="/privacy" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
+              <Link href="/terms-and-conditions" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
                 Privacy Policy
               </Link>
             </div>
             <div className="self-stretch flex flex-row items-start justify-start py-0 pr-0 pl-[1.4px]">
               <Link href="/terms-and-conditions" className="h-[29.5px] flex-1 relative leading-[150%] inline-block z-[1] text-[16px]">
-                Terms and Condition
+                Terms and Conditions
               </Link>
             </div>
-            <Link href="/blogs" className="w-[47.8px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
+            {/* <Link href="/blogs" className="w-[47.8px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
               Blog
-            </Link>
-            <Link href="/contact" className="w-[121.5px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
+            </Link> */}
+            {/* <Link href="/contact" className="w-[121.5px] h-[29.5px] relative leading-[150%] inline-block shrink-0 z-[1] text-[16px]">
               Contact Us
-            </Link>
+            </Link> */}
           </div>
         </div>
         <div className="w-96 flex flex-col items-center lg:items-start justify-start gap-[41px] max-w-full text-22xl-3 text-white">
