@@ -99,7 +99,7 @@ export async function ResetPasswordsetup(state: {message: string}, formData: For
     return {message: 'password dont match'}
   }
   try {
-    const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
+    const response = await axios.post(`${baseurl}/api/users/reset-password`, rawformData).then(response => response.data).catch(error =>  error);
     if(response?.statusCode !== 200){
       return {message: `${response.message}`}
     }
