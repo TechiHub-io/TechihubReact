@@ -9,28 +9,48 @@ import {
 const data = [
   {
     id: '1',
-    title: "What is Webflow and why is it the best website builder?",
-    des: "Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere."
+    title: "What is Techihub?",
+    des: "Techihub is a digital tech community connecting top talent with leading companies across Africa and beyond to be at the frontier of creating innovative solutions for the world. "
   },
   {
     id: '2',
-    title: "What is Webflow and why is it the best website builder?",
-    des: "Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere."
+    title: "How can Techihub benefit my company?",
+    des: "Techihub offers comprehensive talent sourcing and recruitment services tailored to your organization's needs. We also offer a diverse pool of candidates in the tech space and across different parts of the world through our community platform. Whether you're looking for short-term project staffing or permanent placements, we provide access to a diverse pool of skilled tech professionals."
   },
   {
     id: '3',
-    title: "What is Webflow and why is it the best website builder?",
-    des: "Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere."
+    title: "What regions does Techihub operate in?",
+    des: "Techihub primarily focuses on Africa but extends its services globally, connecting companies and tech talent across different continents."
   },
   {
     id: '4',
-    title: "What is Webflow and why is it the best website builder?",
-    des: "Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere."
+    title: " What types of tech roles does Techihub specialize in?",
+    des: "We cater to a wide range of tech roles including software developers, data scientists, UX/UI designers, project managers, cybersecurity experts, and more."
   },
   {
     id: '5',
-    title: "What is Webflow and why is it the best website builder?",
-    des: "Vitae congue eu consequat ac felis placerat vestibulum lectus mauris ultrices. Cursus sit amet dictum sit amet justo donec enim diam porttitor lacus luctus accumsan tortor posuere."
+    title: "How does Techihub ensure quality in talent sourcing?",
+    des: "We employ rigorous screening processes that not only assess the culture fit but also technical competency. Our aim is to ensure a seamless fit between the employer's requirements and the candidate's skills."
+  },
+  {
+    id: '6',
+    title: "Is Techihub only for tech professionals or can companies from other sectors benefit too?",
+    des: "While our primary focus is on the tech industry, we also assist companies from various sectors that require tech talent to drive their digital transformation initiatives."
+  },
+  {
+    id: '7',
+    title: "How can I post a job opening on Techihub's platform?",
+    des: "Posting a job opening on Techihub is straightforward. Simply register as an employer, create your company profile, and start posting your job listings to reach our extensive network of tech professionals."
+  },
+  {
+    id: '8',
+    title: "Does Techihub offer any additional services to companies?",
+    des: "Yes, besides talent sourcing, we provide consulting services to help companies optimize their tech recruitment strategies and build effective tech teams."
+  },
+  {
+    id: '9',
+    title: " I'm a tech professional. How can I benefit from Techihub?",
+    des: "As a tech professional, Techihub offers you access to a global job board featuring diverse career opportunities, career advice, networking events, and community support."
   }
 ]
 
