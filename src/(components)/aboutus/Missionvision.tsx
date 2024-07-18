@@ -17,10 +17,10 @@ const data = [
 function Missionvision() {
   return (
     <section>
-      <div className='flex flex-col lg:flex-row gap-[40px] lg:gap-0 lg:justify-between items-center pt-[40px]'>
+      <div className='flex flex-col lg:flex-row gap-[40px] lg:gap-0 lg:justify-between items-center lg:items-start pt-[40px]'>
         {
           data.map((dat) => (
-            <div key={dat.id} className='flex flex-col gap-[40px] justify-center items-center max-w-[550px]'>
+            <div key={dat.id} className='flex flex-col gap-[40px] justify-start items-center max-w-[550px]'>
               <h2 className='text-center'>
                 {dat.title}
               </h2>
