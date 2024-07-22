@@ -104,6 +104,7 @@ function Footer() {
           </div>
           <div className="w-[249px] flex flex-row items-start justify-start py-0 px-1 box-border">
             <div className="flex-1 flex flex-row items-start justify-between opacity-[0.5] z-[1]">
+              <a href="https://whatsapp.com/channel/0029Va0XfdbK5cD9KtZWk93D" target="_blank" rel="noopener noreferrer">
               <Image
                 className="relative overflow-hidden cursor-pointer"
                 loading="lazy"
@@ -112,6 +113,8 @@ function Footer() {
                 height={35}
                 src="/images/shared/Facebook.svg"
               />
+              </a>
+              <a href=" https://x.com/_Techihub" target="_blank" rel="noopener noreferrer">
               <Image
                 className="relative overflow-hidden cursor-pointer"
                 loading="lazy"
@@ -120,6 +123,8 @@ function Footer() {
                 height={35}
                 src="/images/shared/Twitter.svg"
               />
+              </a>
+              <a href="https://www.instagram.com/_techihub?igsh=dHcxZGViNWZyYjRx" target="_blank" rel="noopener noreferrer">
               <Image
                 className="relative overflow-hidden cursor-pointer"
                 loading="lazy"
@@ -128,6 +133,8 @@ function Footer() {
                 height={35}
                 src="/images/shared/Instagram.svg"
               />
+              </a>
+              <a href="https://www.linkedin.com/company/techihub/posts/?feedView=all" target="_blank" rel="noopener noreferrer">
               <Image
                 className="relative overflow-hidden cursor-pointer"
                 loading="lazy"
@@ -136,6 +143,7 @@ function Footer() {
                 height={35}
                 src="/images/shared/LinkedIn.svg"
               />
+              </a>
             </div>
           </div>
         </div>

@@ -6,7 +6,7 @@ const data =[
     id: 1,
     title: "Data Community",
     img: "/images/community/icon1.svg",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs",
+    des: "Connecting data enthusiasts to innovate and analyze insights globally.",
     link: "",
     text: "Join Community"
   },
@@ -14,7 +14,7 @@ const data =[
     id: 2,
     title: "UX/UI Design",
     img: "/images/community/icon2.svg",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs",
+    des: "Inspiring creativity and user-centric design solutions for seamless digital experiences.",
     link: "",
     text: "Join Community"
   },
@@ -22,7 +22,7 @@ const data =[
     id: 3,
     title: "Women in Tech ",
     img: "/images/community/icon3.svg",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs",
+    des: "Championing diversity and empowerment for women in the tech industry.",
     link: "",
     text: "Join Community"
   },
@@ -30,7 +30,7 @@ const data =[
     id: 4,
     title: "Devs under 20",
     img: "/images/community/icon4.svg",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs",
+    des: "Empowering young developers to shape the future of technology.",
     link: "",
     text: "Join Community"
   },
@@ -38,7 +38,7 @@ const data =[
     id: 5,
     title: "IT Support & Devops",
     img: "/images/community/icon5.svg",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs",
+    des: "Sharing expertise in IT support and DevOps for optimized tech operations.",
     link: "",
     text: "Join Community"
   },
@@ -46,7 +46,7 @@ const data =[
     id: 6,
     title: "Product Developers",
     img: "/images/community/icon6.svg",
-    des: "Techiehub talent sourcing services offer a seamless journey, from identifying your hiring needs",
+    des: "Collaborating on product innovation and development strategies for organization & market success.",
     link: "",
     text: "Join Community"
   }
