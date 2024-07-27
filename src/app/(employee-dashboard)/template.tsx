@@ -92,7 +92,7 @@ export default function EmployeeTemplate({ children }: { children: React.ReactNo
   );
 
   return (
-    <section className="flex flex-col xl:flex-row">
+    <section className="flex flex-col xl:flex-row ">
       <aside className="w-full xl:w-64 sticky top-0 z-10">
         {isMobile ? (
           <div className="sticky top-0 bg-white shadow-xl">
