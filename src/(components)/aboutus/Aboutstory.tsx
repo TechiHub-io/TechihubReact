@@ -86,7 +86,7 @@ function Aboutstory() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-[32px]">
           <Image
             src="/images/aboutus/image1.svg"
             alt="about us"

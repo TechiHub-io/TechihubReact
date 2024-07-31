@@ -3,8 +3,8 @@ import Bgbutton from '../shared/Bgbutton'
 
 function Abouthero() {
   return (
-    <section className='relative  w-full !h-[661px]'>
-      <div className='absolute inset-0 w-full h-[661px] overflow-hidden'>
+    <section className='relative w-full h-screen'>
+      <div className='absolute inset-0 w-full h-full overflow-hidden'>
         <img
           src='/images/aboutus/herobg.svg'
           className='w-full h-full object-cover'
@@ -12,7 +12,7 @@ function Abouthero() {
         />
       </div>
       
-      <div className='relative w-[90%] mx-auto flex flex-col gap-[32px] items-center lg:items-baseline lg:flex-row lg:justify-between lg:gap-0 py-[40px] lg:py-[77px] min-h-[661px] max-w-[1440px]'>
+      <div className='relative w-full h-full max-w-[1440px] mx-auto px-[5%] flex flex-col gap-[32px] items-center lg:items-baseline lg:flex-row lg:justify-between lg:gap-0 py-[40px] lg:py-[77px]'>
         <h1 className='max-w-[842px] text-center lg:text-left text-white z-10'>
           About us
         </h1>
