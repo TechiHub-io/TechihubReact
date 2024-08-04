@@ -45,7 +45,7 @@ function JourneySection() {
   return (
     <section className='sectembla gap-[27px] w-[90%] mx-auto flex flex-col justify-center items-center lg:gap-[77px]'>
       <h2 className='text-center min-w-[348px] flex justify-center items-center'>
-        Getting Started with Techiehub
+        Getting Started with Techihub
       </h2>
       <EmblaCarousela slides={alldata} options={OPTIONS} />
     </section>

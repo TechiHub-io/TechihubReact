@@ -23,6 +23,24 @@ const initialState = {
   message: "",
 };
 
+type JobType = string;
+
+interface JobTypeOption {
+  value: JobType;
+  label: string;
+}
+
+const jobTypes: JobTypeOption[] = [
+  { value: 'fulltime', label: 'Fulltime' },
+  { value: 'parttime', label: 'Partime' },
+  { value: 'freelance', label: 'Freelance' },
+  { value: 'internship', label: 'Internship' },
+  { value: 'remote', label: 'Remote' },
+  { value: 'onsite', label: 'Onsite' },
+  { value: 'hybrid', label: 'Hybrid' },
+];
+
+
 const PostJob = () => {
   const [applicationMethod, setApplicationMethod] = useState<string>("email");
   const url = "/techihub/list";
@@ -44,6 +62,16 @@ const PostJob = () => {
   }, 2000);
 
   const [statejob, handleSubmit] = useFormState(PostedJob, initialState);
+  const [selectedJobTypes, setSelectedJobTypes] = useState<JobType[]>([]);
+
+  const handleJobTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSelectedJobTypes((prevSelected: JobType[]) =>
+      event.target.checked
+        ? [...prevSelected, value]
+        : prevSelected.filter((type: JobType) => type !== value)
+    );
+  };
   const handleReset = () => {
     // @ts-ignore
     document.getElementById("handleProfileForm")?.reset();
@@ -104,9 +132,17 @@ const PostJob = () => {
                     name="jobCategory"
                   >
                     <option value="">Choose job category</option>
-                    <option value="it">IT</option>
-                    <option value="finance">Finance</option>
                     <option value="marketing">Marketing</option>
+                    <option value="software-development">Software Development</option>
+                    <option value="data-science">Data Science and Analytics</option>
+                    <option value="ai-ml">Artificial Intelligence and Machine Learning</option>
+                    <option value="cybersecurity">Cybersecurity</option>
+                    <option value="cloud-computing">Cloud Computing</option>
+                    <option value="devops">DevOps and Site Reliability Engineering</option>
+                    <option value="network-engineering">Network Engineering</option>
+                    <option value="it-support">IT Support and Help Desk</option>
+                    <option value="ux-ui-design">UX/UI Design</option>
+                    <option value="product-management">Product Management</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg
@@ -199,11 +235,10 @@ const PostJob = () => {
                     name="experience"
                   >
                     <option value="">Experience level</option>
-                    <option value="entry">Entry Level (0-2 years)</option>
-                    <option value="intermediate">
-                      Intermediate (3-5 years)
-                    </option>
-                    <option value="senior">Senior (6+ years)</option>
+                    <option value="0-2">(0-2 years)</option>
+                    <option value="3-5">(3-5 years)</option>
+                    <option value="5-8">(5-8 years)</option>
+                    <option value="8+">(8+ years)</option>
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg
@@ -218,21 +253,27 @@ const PostJob = () => {
               </div>
             </div>
             <div className="flex flex-wrap -mx-3 mb-4">
-              <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="jobType"
-                >
-                  Job type
-                </label>
-                <input
-                  className="shadow appearance-none border rounded-[10px] w-full p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="jobType"
-                  name="jobType"
-                  type="text"
-                  placeholder="Job type"
-                />
+            <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Job type
+              </label>
+              <div className="shadow border rounded-[10px] w-full p-[10px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                {jobTypes.map(type => (
+                  <div key={type.value} className="mb-2">
+                    <label className="inline-flex items-center">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-5 w-5 text-gray-600"
+                        value={type.value}
+                        checked={selectedJobTypes.includes(type.value)}
+                        onChange={handleJobTypeChange}
+                      />
+                      <span className="ml-2 text-gray-700">{type.label}</span>
+                    </label>
+                  </div>
+                ))}
               </div>
+            </div>
               <div className="w-full md:w-1/2 px-3">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
@@ -246,7 +287,6 @@ const PostJob = () => {
                     id="jobLevel"
                     name="jobLevel"
                   >
-                    <option value="">Job level</option>
                     <option value="entry">Entry Level</option>
                     <option value="mid">Mid level</option>
                     <option value="experienced">Experienced</option>
