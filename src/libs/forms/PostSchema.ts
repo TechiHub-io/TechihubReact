@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { number, z } from 'zod'
 
 export const ProfileFormDataSchema = z.object({
   jobTitle: z.string().min(3, 'JOb Title is required'),
@@ -56,20 +56,19 @@ export const FormProfile = z.object({
 
 export const PostingJob = z.object({
   title: z.string().min(3, 'Job Titleis required'),
-  location: z.string().min(3, "Location Of the Job"),
-  salary: z.string().min(4, 'Salary in Ksh is required'),
-  companyName: z.string().min(1, 'Company Name is required'),
-  companyWebsiteLink: z.string().min(1, 'Your company webisite link is required'),
-  desires: z.string().min(1, 'Your Job desires are required'),
-  jobType: z.string().min(2, 'Your Job Type is required'),
-  deadline: z.null(),
-  employer: z.null(),
-  logoUpload: z.null(),
   description: z.string().min(2, 'Your Job description is required'),
-  about: z.string().min(1, 'Job About is required'),
-  jobBenefits: z.string().min(1, 'Job Benefits are required'),
-  requirements: z.string().min(1, 'Job requirements are required'),
-  experience: z.string().min(1, 'Job experience are required'),
+  location: z.string().min(3, "Location Of the Job"),
+  category: z.string().min(1, 'Job category Name is required'),
+  minSalary: z.number().min(1, "min salary is required"),
+  maxSalary: z.number().min(1, "max salary is required"),
+  companyWebsiteLink: z.string().min(1, 'Your company webisite link is required'),
+  jobType: z.string().min(2, 'Your Job Type is required'),
+  jobLevel: z.string().min(2, 'Your Job Level is required'),  
+  education: z.string().min(1, 'Job education is required'),
+  receivingMethod: z.string().min(1, 'Receiving method is required'),
+  employer: z.object({id: z.number()}),
+  expirationDate: z.string().min(1, 'Expiration date is required'),
+  // experience: z.string().min(1, 'Job experience are required'),
 })
 
 export const FormEducation = z.object({

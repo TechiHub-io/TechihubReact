@@ -232,35 +232,36 @@ export async function CreateExperience(state: {message: string}, formData: FormD
 export async function PostedJob(state: {message: string}, formData: FormData){
   
   const session = await auth();
-
   const experiencepost = PostingJob.parse({
   title: formData.get("jobTitle"),
-  location: formData.get("location"),
-  salary: formData.get("salary"),
-  logoUpload: null,
-  companyName: formData.get("companyName"),
-  companyWebsiteLink: formData.get("companyWebsiteLink"),
-  desires: formData.get("desires"),
+  description: formData.get("jobDescription"),
+  location: formData.get("jobLocation"),
+  category: formData.get("jobCategory"),
+  minSalary: Number(formData.get("salaryMin")),
+  maxSalary: Number(formData.get("salaryMax")),
+  companyWebsiteLink: formData.get("applicationReceiver"),
   jobType: formData.get("jobType"),
-  deadline: null,
-  employer: null,
-  description: formData.get("description"),
-  about: formData.get("about"),
-  jobBenefits: formData.get("jobBenefits"),
-  requirements: formData.get("requirements"),
-  experience: formData.get("experience")
+  jobLevel: formData.get("jobLevel"),
+  education: formData.get("education"),
+  receivingMethod: formData.get("applicationMethod"),
+  employer: {
+    id: 46,
+  },
+  expirationDate: formData.get("expirationDate")+"T15:30:00"
+  // experience: formData.get("experience")
   })
   try {
     // @ts-ignore
     const response = await axios.post(`${baseurl}/techihub/save`, experiencepost).then(response => response.data).catch(error => error)
+
     if(response === ''){
-      return {message: 'session timeout'}
+      return {message: 'session timeout', statuscode: response.statusCode}
     }
     
-    return {message: `Congratulations succesfuly created education fill in to create more`}
+    return {message: `Congratulations succesfuly created education fill in to create more`, statuscode: response.statusCode}
   
   } catch (error) {
-    return {message: `Error encountered ${error}`}
+    return {message: `Error encountered ${error}`, statuscode: 403}
   }
 }
 

@@ -1,11 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
+import { Content } from '@tiptap/react';
 import { useFormState, useFormStatus } from "react-dom";
+import { MinimalTiptapEditor } from '@/(components)/minimal-tiptap'
 import { PostedJob } from "@/app/action";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 function SubmittingButton({ text }: any) {
   const { pending } = useFormStatus();
   return (
@@ -43,6 +51,16 @@ const jobTypes: JobTypeOption[] = [
 
 const PostJob = () => {
   const [applicationMethod, setApplicationMethod] = useState<string>("email");
+  const [value, setValue] = useState('');
+  const router = useRouter();
+  
+  const [selectedJobTypes, setSelectedJobTypes] = useState<JobType[]>([]);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleChange = (newValue: Content) => {
+    setValue(typeof newValue === 'string' ? newValue : '');
+  };
   const url = "/techihub/list";
   const { data: session } = useSession({
     required: true,
@@ -61,9 +79,52 @@ const PostJob = () => {
     callout();
   }, 2000);
 
-  const [statejob, handleSubmit] = useFormState(PostedJob, initialState);
-  const [selectedJobTypes, setSelectedJobTypes] = useState<JobType[]>([]);
 
+  const validateForm = () => {
+    const newErrors: {[key: string]: string} = {};
+
+    // Validate TipTap editor content
+    if (!value.trim()) {
+      newErrors.jobDescription = 'Job description is required';
+    }
+
+    // Validate job types
+    if (selectedJobTypes.length === 0) {
+      newErrors.jobType = 'At least one job type must be selected';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
+  const formAction = async (prevState: any, formData: FormData) => {
+    if (!validateForm()) {
+      toast.error('Please fill in all required fields', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce
+      });
+      return { message: "Validation failed" };
+    }
+
+    
+
+    // Add the TipTap editor content and selected job types to the form data
+    formData.append('jobDescription', value);
+    formData.append('jobType', JSON.stringify(selectedJobTypes));
+
+    // Call the original PostedJob function
+    return PostedJob(prevState, formData);
+  };
+
+  
   const handleJobTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSelectedJobTypes((prevSelected: JobType[]) =>
@@ -76,19 +137,54 @@ const PostJob = () => {
     // @ts-ignore
     document.getElementById("handleProfileForm")?.reset();
   };
+  const [statejob, handleSubmit] = useFormState(formAction, initialState);
+   
+  useEffect(() => {
+    
+    statejob?.message && statejob?.message !== "Validation failed" ? toast.success(`${statejob?.message}`, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce
+    }) : statejob?.message === "Validation failed" ? toast.error('Please fill in all required fields', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce
+    }) : ''
+  }, [statejob, handleSubmit])
+  
   return (
     <section className="mx-[32px] max-w-[1220px]">
-      <div>
-        
-      </div>
+      <ToastContainer />
       <p
         aria-live="polite"
-        className=" text-[#ff0000] text-center text-[16px]"
+        className=" text-center text-[16px]"
         role="status"
-      >
-        {statejob?.message}
+      > 
+        
+        
       </p>
-      
+      <div className="flex justify-start pb-4">
+        <h3 className="flex-[0.5] flex items-center ">
+          <span onClick={() => router.push('/e-dashboard')} className=" cursor-pointer bg-[#364187] py-2 flex justify-center w-[40px] items-center ">
+            <ArrowLeft className="text-[#fff]" />
+          </span>          
+        </h3>
+        <h3 className=" text-[#364187]">
+          New job
+        </h3>
+      </div>
       <form
         action={handleSubmit}
         className="w-full max-w-[1220px] mx-auto bg-white shadow-md rounded-[10px] px-8 pt-6 pb-8 mb-4"
@@ -107,13 +203,14 @@ const PostJob = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="jobTitle"
               >
-                Job Title
+                Job Title*
               </label>
               <input
                 className="shadow appearance-none border rounded-[10px] w-full p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="jobTitle"
                 name="jobTitle"
                 type="text"
+                required
                 placeholder="Enter job title"
               />
             </div>
@@ -123,16 +220,16 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="jobCategory"
                 >
-                  Job Category
+                  Job Category*
                 </label>
                 <div className="relative">
                   <select
                     className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="jobCategory"
+                    id="jobCategory" 
+                    required                   
                     name="jobCategory"
                   >
                     <option value="">Choose job category</option>
-                    <option value="marketing">Marketing</option>
                     <option value="software-development">Software Development</option>
                     <option value="data-science">Data Science and Analytics</option>
                     <option value="ai-ml">Artificial Intelligence and Machine Learning</option>
@@ -160,12 +257,13 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="jobLocation"
                 >
-                  Job Location
+                  Job Location*
                 </label>
                 <div className="relative">
                   <select
                     className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="jobLocation"
+                    required
                     name="jobLocation"
                   >
                     <option value="">Select location</option>
@@ -197,12 +295,13 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="education"
                 >
-                  Education
+                  Education*
                 </label>
                 <div className="relative">
                   <select
                     className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="education"
+                    required
                     name="education"
                   >
                     <option value="">Choose education level</option>
@@ -226,12 +325,13 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="experience"
                 >
-                  Experience
+                  Experience*
                 </label>
                 <div className="relative">
                   <select
                     className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="experience"
+                    required
                     name="experience"
                   >
                     <option value="">Experience level</option>
@@ -255,16 +355,18 @@ const PostJob = () => {
             <div className="flex flex-wrap -mx-3 mb-4">
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
               <label className="block text-gray-700 text-sm font-bold mb-2">
-                Job type
+                Job type*
               </label>
               <div className="shadow border rounded-[10px] w-full p-[10px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 {jobTypes.map(type => (
                   <div key={type.value} className="mb-2">
-                    <label className="inline-flex items-center">
+                    <label  className="inline-flex items-center">
                       <input
-                        type="checkbox"
+                        type="checkbox"                        
                         className="form-checkbox h-5 w-5 text-gray-600"
                         value={type.value}
+                        name="jobType"
+                        id="jobType"
                         checked={selectedJobTypes.includes(type.value)}
                         onChange={handleJobTypeChange}
                       />
@@ -279,12 +381,13 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="jobLevel"
                 >
-                  Job level
+                  Job level*
                 </label>
                 <div className="relative">
                   <select
                     className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="jobLevel"
+                    required
                     name="jobLevel"
                   >
                     <option value="entry">Entry Level</option>
@@ -309,11 +412,12 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="expirationDate"
                 >
-                  Expiration date
+                  Expiration date*
                 </label>
                 <input
                   className="shadow appearance-none border rounded-[10px] w-full p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   id="expirationDate"
+                  required
                   name="expirationDate"
                   type="date"
                 />
@@ -323,12 +427,13 @@ const PostJob = () => {
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="salaryRange"
                 >
-                  Salary range
+                  Salary range*
                 </label>
                 <div className="flex">
                   <select
                     className="block appearance-none bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px]-l leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     id="salaryCurrency"
+                    required
                     name="salaryCurrency"
                   >
                     <option value="USD">USD</option>
@@ -339,14 +444,16 @@ const PostJob = () => {
                     className="shadow appearance-none border border-l-0 w-1/2 p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="salaryMin"
                     name="salaryMin"
-                    type="text"
+                    required
+                    type="number"
                     placeholder="Min monthly"
                   />
                   <input
                     className="shadow appearance-none border border-l-0 rounded-[10px]-r w-1/2 p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     id="salaryMax"
                     name="salaryMax"
-                    type="text"
+                    required
+                    type="number"
                     placeholder="Max monthly"
                   />
                 </div>
@@ -357,11 +464,28 @@ const PostJob = () => {
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="jobDescription"
               >
-                Job Description
+                Job Description*
               </label>
+              <MinimalTiptapEditor
+                value={value}
+                onChange={handleChange}
+                throttleDelay={2000}
+                className="w-full"
+                editorContentClassName="p-5"
+                output="html"
+                placeholder="Type your description here..."
+                autofocus={true}
+                immediatelyRender={true}
+                editable={true}
+                injectCSS={true}
+                shouldRerenderOnTransaction={false}
+                editorClassName="focus:outline-none"
+              />
               <textarea
                 className="shadow appearance-none  h-[191px] border rounded-[10px] w-full p-[10px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="jobDescription"
+                value={value}
+                hidden
                 name="jobDescription"
                 placeholder="Enter job description"
               ></textarea>
@@ -376,6 +500,7 @@ const PostJob = () => {
               <select
                 className="block appearance-none w-full lg:w-[269px] h-[50px] bg-white border border-gray-200 text-gray-700 p-[10px] pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 id="applicationMethod"
+                required
                 name="applicationMethod"
                 value={applicationMethod}
                 onChange={(e) => setApplicationMethod(e.target.value)}
@@ -385,11 +510,12 @@ const PostJob = () => {
               </select>
               <div className="flex flex-col">
                 <label htmlFor="applicationReceiver" className="capitalize">
-                  {applicationMethod}
+                  {applicationMethod}*
                 </label>
                 <input
                   className="shadow appearance-none border w-full lg:w-[269px] border-l-0 rounded-[10px]  p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   id="applicationReceiver"
+                  required
                   name="applicationReceiver"
                   type="text"
                   placeholder={
