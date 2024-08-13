@@ -100,7 +100,6 @@ const Dashboard = () => {
   const url2 = `/api/user-profile/${session?.user?.userId}`;
   const { data, error, isLoading } = Swrgetdat(url);
   const {data:data3, error:error2, isLoading:isLoading2} = Swrgetdat(url2);
-  console.log("daa", data3?.userProfile)
   if (isLoading) {
     return <div>loading ...</div>;
   }

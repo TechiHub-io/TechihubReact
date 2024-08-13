@@ -1,4 +1,5 @@
 "use client";
+// @ts-nocheck
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -6,14 +7,18 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { Content } from '@tiptap/react';
 import { useFormState, useFormStatus } from "react-dom";
-import { MinimalTiptapEditor } from '@/(components)/minimal-tiptap'
+import dynamic from "next/dynamic";
+// import { MinimalTiptapEditor } from '@/(components)/minimal-tiptap'
 import { PostedJob } from "@/app/action";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
+const MinimalTiptapEditor = dynamic(
+  () => import('@/(components)/minimal-tiptap').then((mod) => mod.MinimalTiptapEditor),
+  { ssr: false, loading: () => <p>Loading editor...</p> }
+);
 function SubmittingButton({ text }: any) {
   const { pending } = useFormStatus();
   return (
@@ -133,10 +138,7 @@ const PostJob = () => {
         : prevSelected.filter((type: JobType) => type !== value)
     );
   };
-  const handleReset = () => {
-    // @ts-ignore
-    document.getElementById("handleProfileForm")?.reset();
-  };
+
   const [statejob, handleSubmit] = useFormState(formAction, initialState);
    
   useEffect(() => {
@@ -466,21 +468,24 @@ const PostJob = () => {
               >
                 Job Description*
               </label>
-              <MinimalTiptapEditor
-                value={value}
-                onChange={handleChange}
-                throttleDelay={2000}
-                className="w-full"
-                editorContentClassName="p-5"
-                output="html"
-                placeholder="Type your description here..."
-                autofocus={true}
-                immediatelyRender={true}
-                editable={true}
-                injectCSS={true}
-                shouldRerenderOnTransaction={false}
-                editorClassName="focus:outline-none"
-              />
+              {/* //@ts-ignore */}
+              {typeof window !== 'undefined' && (
+                <MinimalTiptapEditor
+                  value={value}
+                  onChange={handleChange}
+                  throttleDelay={2000}
+                  className="w-full"
+                  editorContentClassName="p-5"
+                  output="html"
+                  placeholder="Type your description here..."
+                  autofocus={true}
+                  immediatelyRender={true}
+                  editable={true}
+                  injectCSS={true}
+                  shouldRerenderOnTransaction={false}
+                  editorClassName="focus:outline-none"
+                />
+              )}
               <textarea
                 className="shadow appearance-none  h-[191px] border rounded-[10px] w-full p-[10px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="jobDescription"
