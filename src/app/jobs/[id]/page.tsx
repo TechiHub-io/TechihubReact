@@ -6,6 +6,7 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import HTMLContentDisplay from '@/(components)/minimal-tiptap/hooks/HTMLContentDisplay';
 
 function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   const url = `/techihub/get/${params.id}`;
@@ -66,10 +67,9 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
       </section>
       <section className='flex flex-col lg:flex-row justify-between gap-[24px] pt-[42px]'>
         <div className='flex flex-col gap-[16px] max-w-[732px]'>
-          <h4 className='text-[18px] font-medium'>job des</h4>
-          <p>
-            {data.description}
-          </p>
+          <div>
+          <HTMLContentDisplay htmlContent={data.description} />
+          </div>
           <h4 className='text-[18px] font-medium'>Requirements</h4>
           <p>
             {data.requirements}
