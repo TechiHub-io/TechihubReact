@@ -45,7 +45,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
         <div className='flex flex-col gap-[12px]'>
           <h4 className='text-[24px] leading-[120%] font-[400]'>{data.title}</h4>
           <div className='flex gap-[8px] items-center'>
-            <p className='bg-[#0BA02C] rounded-[3px] py-[4px] px-[12px] text-[14px] text-[#fff]'>
+            <p className='bg-[#0BA02C] rounded-[3px] capitalize py-[4px] px-[12px] text-[14px] text-[#fff]'>
               {data.jobType}
             </p>
             <p className='bg-[#FFEDED] rounded-[52px] py-[4px] px-[12px] text-[14px] text-[#E05151]'>
@@ -83,7 +83,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
               </p>
               <p className='text-[#0BA02C] text-[20px] font-medium'>salary</p>
               <p className='text-[#767F8C] font-[400] text-[14px]'>
-                {data.salary}
+                ${data.minSalary? data.minSalary : 0} - ${data.maxSalary ? data.maxSalary  : 0}
               </p>
             </div>
             <hr className='border-[1px] border-[#E7F0FA] h-[80%] my-auto' />
@@ -157,10 +157,10 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                     Job expire in:
                   </p>
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
-                    {data.deadline}
+                    {data.expirationDate}
                   </p>
                 </div>
-                <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
+                {/* <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
                   <p className=''>
                     <svg
                       xmlns='http://www.w3.org/2000/svg'
@@ -181,7 +181,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
                     {data.experience}
                   </p>
-                </div>
+                </div> */}
                 {/* <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>
                   <p className=''>
                     <svg
