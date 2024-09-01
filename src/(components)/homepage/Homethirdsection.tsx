@@ -4,7 +4,7 @@ import Homethirdsectioncomponent from './Homethirdsectioncomponent';
 const data = [
   {
     id: 1,
-    rating: "⭐⭐⭐⭐⭐",
+    rating: "⭐⭐⭐⭐",
     name: "Emma Mutuku,",
     avator: "/images/homepage/person.svg",
     role: "People Operations Manager at SnappyCX",
@@ -20,7 +20,7 @@ const data = [
   },
   {
     id: 3,
-    rating: "⭐⭐⭐⭐⭐",
+    rating: "⭐⭐⭐⭐",
     name: "Angel  Keza",
     avator: "/images/homepage/person.svg",
     role: "Product Designer",
@@ -31,7 +31,7 @@ const data = [
 const datab = [
   {
     id: 1,
-    rating: "⭐⭐⭐⭐⭐",
+    rating: "⭐⭐⭐⭐",
     name: "Leslie Alexander",
     avator: "/images/homepage/person.svg",
     role: "Freelance React Developer",
@@ -39,7 +39,7 @@ const datab = [
   },
   {
     id: 2,
-    rating: "⭐⭐⭐⭐⭐",
+    rating: "⭐⭐⭐⭐",
     name: "Jacob Jones",
     avator: "/images/homepage/person.svg",
     role: "Digital Marketer",

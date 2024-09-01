@@ -11,7 +11,7 @@ interface HomethirdsectioncomponentProps {
 function Homethirdsectioncomponent({rating, name, role, des, avator}: HomethirdsectioncomponentProps) {
   return (
     <div
-      className='max-w-[382px] min-h-[310px] bg-white shadow-[0px_42.4px_61.31px_rgba(0,_0,_0,_0.08)] flex flex-col items-start justify-start pt-7 pb-[30px] pr-7 pl-[29px] box-border gap-[56px] z-[1] text-left '
+      className='max-w-[382px] min-h-[310px] !h-full bg-white shadow-[0px_42.4px_61.31px_rgba(0,_0,_0,_0.08)] flex flex-col items-start justify-start pt-7 pb-[30px] pr-7 pl-[29px] box-border gap-[56px] z-[1] text-left '
     >
       <div className='self-stretch flex flex-col items-start justify-start gap-[34px]'>
         <p
