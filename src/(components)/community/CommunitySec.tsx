@@ -7,7 +7,7 @@ const data =[
     title: "Data Community",
     img: "/images/community/icon1.svg",
     des: "Connecting data enthusiasts to innovate and analyze insights globally.",
-    link: "",
+    link: "https://discord.gg/X9UMWS7GQE",
     text: "Join Community"
   },
   {
@@ -15,7 +15,7 @@ const data =[
     title: "UX/UI Design",
     img: "/images/community/icon2.svg",
     des: "Inspiring creativity and user-centric design solutions for seamless digital experiences.",
-    link: "",
+    link: "https://discord.gg/NnbBn4mStu",
     text: "Join Community"
   },
   {
@@ -23,7 +23,7 @@ const data =[
     title: "Women in Tech ",
     img: "/images/community/icon3.svg",
     des: "Championing diversity and empowerment for women in the tech industry.",
-    link: "",
+    link: "https://discord.gg/Rvxr9KPSTr",
     text: "Join Community"
   },
   {
@@ -31,7 +31,7 @@ const data =[
     title: "Devs under 20",
     img: "/images/community/icon4.svg",
     des: "Empowering young developers to shape the future of technology.",
-    link: "",
+    link: "https://discord.gg/PHAXQE2KCD",
     text: "Join Community"
   },
   {
@@ -39,7 +39,7 @@ const data =[
     title: "IT Support & Devops",
     img: "/images/community/icon5.svg",
     des: "Sharing expertise in IT support and DevOps for optimized tech operations.",
-    link: "",
+    link: "https://discord.gg/hpdea4d7xW",
     text: "Join Community"
   },
   {
@@ -47,7 +47,7 @@ const data =[
     title: "Product Developers",
     img: "/images/community/icon6.svg",
     des: "Collaborating on product innovation and development strategies for organization & market success.",
-    link: "",
+    link: "https://discord.gg/aX2tRCzC9S",
     text: "Join Community"
   }
 ]
