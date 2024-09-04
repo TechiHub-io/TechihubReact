@@ -12,16 +12,16 @@ const Settings = () => {
     }
   })
   const route = useRouter();
-  // useEffect(() => {
-  //   const callout = () => {
-  //     // @ts-ignore
-  //     if(session?.user?.role === "EMPLOYER") {
-  //     route.push("/e-dashboard");
-  //     //  redirect("/e-dashboard'");
-  //     }
-  //   }
-  //   callout();
-  // })
+  useEffect(() => {
+    const callout = () => {
+      // @ts-ignore
+      if(session?.user?.role === "EMPLOYER") {
+      route.push("/e-dashboard");
+      //  redirect("/e-dashboard'");
+      }
+    }
+    callout();
+  })
   return (
     <div className="flex max-w-[1024px]">
       <motion.div
