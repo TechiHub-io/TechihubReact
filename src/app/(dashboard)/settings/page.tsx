@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
-import Multistep from './(components)/Multistep';
+import Multistepa from './(components)/Multistepa';
 import {motion} from 'framer-motion'
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
@@ -29,7 +29,7 @@ const Settings = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-      <Multistep />
+      <Multistepa />
       </motion.div>
     </div>
   )
