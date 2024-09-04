@@ -51,6 +51,7 @@ const data =[
     text: "Join Community"
   }
 ]
+
 const CommunitySec = () => {
   return (
     <main>
