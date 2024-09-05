@@ -7,6 +7,7 @@ import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import HTMLContentDisplay from '@/(components)/minimal-tiptap/hooks/HTMLContentDisplay';
+import Loading from '../loading';
 
 function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   const url = `/techihub/get/${params.id}`;
@@ -27,11 +28,10 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   // })
 
   const { data, error, isLoading } = Swrgetdat2(url);
-  console.log("data", data)
   if (isLoading) {
     return (
       <div>
-        <Skeleton />
+        <Loading />
       </div>
     );
   }

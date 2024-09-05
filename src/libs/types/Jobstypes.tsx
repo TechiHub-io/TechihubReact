@@ -6,7 +6,7 @@ export type Jobsprops = {
   companyName?: string | null;
   jobType?: string | null;
   employer?: string | null;
-}
+};
 
 export interface City {
   name: string;
@@ -29,6 +29,7 @@ export interface Jobsd {
   salary: string;
   companyName: string;
   jobType: string;
+  jobLevel: string;
   employer: string;
 }
 
@@ -36,6 +37,7 @@ export interface JobsProps {
   filters: {
     jobType?: string;
     location?: string;
+    jobLevel?: string;
   };
 }
 
@@ -46,17 +48,18 @@ export interface JobComponentProps {
   salary: string;
   companyName: string;
   jobType: string;
+  jobLevel: string;
   employer: string;
 }
 
 export interface State {
   jobType: string;
   location: string;
-  // level?: string;
+  jobLevel?: string;
   // experience?: string;
 }
 
 export interface Action {
-  type: 'SET_JOBTYPE' | 'SET_LOCATION';
+  type: "SET_JOBTYPE" | "SET_LOCATION" | "SET_JOBLEVEL";
   payload: string;
 }

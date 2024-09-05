@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import citiesData from '@/libs/data/cities.json';
 
 const MinimalTiptapEditor = dynamic(
   () => import('@/(components)/minimal-tiptap').then((mod) => mod.MinimalTiptapEditor),
@@ -269,9 +270,11 @@ const PostJob = () => {
                     name="jobLocation"
                   >
                     <option value="">Select location</option>
-                    <option value="remote">Remote</option>
-                    <option value="onsite">On-site</option>
-                    <option value="hybrid">Hybrid</option>
+                    {citiesData.map((city: any, index: number) => (
+                      <option key={index} value={city.name}>
+                        {city.name}, {city.country_name}
+                      </option>
+                    ))}
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <svg

@@ -1,32 +1,49 @@
-
 'use client';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Swrgetdat } from '@/libs/hooks/Swrgetdat';
 import Job from './Job';
 import { Jobsd, Jobsprops } from '@/libs/types/Jobstypes';
 import { Skeleton } from '../ui/skeleton';
+import BouncingCirclesLoader from '@/components/animations/BouncingCircleLoader';
 
 // @ts-ignore
-
 function Jobs({ filters }) {
   const url = '/techihub/list';
   const { data, error, isLoading } = Swrgetdat(url);
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const filteredJobs = useMemo(() => {
     if (!data) return [];
+    let jobs = [...data.jobs];
+    
+    // Sort jobs in descending order (assuming there's an 'id' field)
+    jobs.sort((a: Jobsd, b: Jobsd) => {
+      return (b.id as any) - (a.id as any);
+    });
+
     if (Object.keys(filters).length === 0) {
-      return data.jobs;
+      return jobs;
     } else {
-        return data.jobs.filter((job: Jobsd) => {
+        return jobs.filter((job: Jobsd) => {
             return (
                 (!filters.jobType || job?.jobType === filters?.jobType || job?.jobType?.toLowerCase() === filters?.jobType?.toLowerCase() || job?.jobType?.toUpperCase() === filters?.jobType?.toUpperCase() ) &&
-                (!filters.location || job?.location?.toLowerCase() === filters?.location.toLowerCase() )
+                (!filters.location || job?.location?.toLowerCase() === filters?.location.toLowerCase() ) &&
+                (!filters.jobLevel || job?.jobLevel === filters?.jobLevel || job?.jobLevel?.toLowerCase() === filters?.jobLevel?.toLowerCase() || job?.jobLevel?.toUpperCase() === filters?.jobLevel?.toUpperCase() )
             );
         });
     }
   }, [data, filters]);
 
-  if (isLoading) {
-    return <div><Skeleton /></div>;
+  if (isLoading || showLoader) {
+    return <div className="flex justify-center items-center h-screen"><BouncingCirclesLoader /></div>;
   }
 
   if (error) {

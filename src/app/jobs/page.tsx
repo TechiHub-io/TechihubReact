@@ -8,7 +8,7 @@ import { Action, State } from '@/libs/types/Jobstypes';
 const initialState = {
   jobType: '',
   location: '',
-  // level: '',
+  level: '',
   // experience: ''
 };
 
@@ -18,6 +18,8 @@ function reducer(state: State, action: Action) {
       return { ...state, jobType: action.payload };
     case 'SET_LOCATION':
       return { ...state, location: action.payload };
+    case 'SET_JOBLEVEL':
+      return { ...state, jobLevel: action.payload };
     default:
       return state;
   }
