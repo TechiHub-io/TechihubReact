@@ -62,7 +62,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
               src='/images/jobs/book.svg'
             />
           </div> */}
-          <Bgbutton link={data.companyWebsiteLink} text='Apply now ' btntype='withborder' />
+          <Bgbutton link={data.receivingMethod === "Email" ? `mailto:${data.companyWebsiteLink}` : ''} text='Apply now ' btntype='withborder' />
         </div>
       </section>
       <section className='flex flex-col lg:flex-row justify-between gap-[24px] pt-[42px]'>
