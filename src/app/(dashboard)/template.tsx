@@ -33,7 +33,7 @@ const data = [
   {
     id: 2,
     url: '/images/dashboard/settings.svg',
-    text: 'Edit Profile',
+    text: 'Settings',
     redirect: '/settings',
   },
   {
@@ -121,7 +121,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
           </div>
         )}
       </aside>
-      <main className="flex-1 p-6 xl:ml-4">
+      <main className="flex-1 p-1 md:p-4 lg:p-6 xl:ml-4">
         {children}
       </main>
     </section>

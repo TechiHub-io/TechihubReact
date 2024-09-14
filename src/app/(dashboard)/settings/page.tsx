@@ -23,7 +23,7 @@ const Settings = () => {
   //   callout();
   // })
   return (
-    <div className="flex max-w-[1024px]">
+    <div className="flex ">
       <motion.div
           initial={{ x: 200, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
