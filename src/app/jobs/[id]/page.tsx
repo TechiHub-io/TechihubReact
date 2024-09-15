@@ -6,8 +6,15 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import HTMLContentDisplay from '@/(components)/minimal-tiptap/hooks/HTMLContentDisplay';
+// import HTMLContentDisplay from '@/(components)/minimal-tiptap/hooks/HTMLContentDisplay';
 import Loading from '../loading';
+import dynamic from 'next/dynamic';
+
+const DynamicHTMLContent = dynamic(() => import('@/(components)/minimal-tiptap/hooks/HTMLContentDisplay'), {
+  loading: () => <p>Loading...</p>,
+  ssr: false
+});
+
 
 function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
   const url = `/techihub/get/${params.id}`;
@@ -40,6 +47,8 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
     return <div>Error: {error.message}</div>;
   }
 
+  console.log(data.description)
+
   return (
     <main className='max-w-[1330px] mx-auto w-[90%]'>
       <section className='flex flex-col lg:flex-row justify-between lg:px-[19px] gap-[32px] lg:gap-0'>
@@ -69,7 +78,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
       <section className='flex flex-col lg:flex-row justify-between gap-[24px] pt-[42px]'>
         <div className='flex flex-col gap-[16px] max-w-[732px]'>
           <div>
-          <HTMLContentDisplay htmlContent={data.description} />
+          <DynamicHTMLContent htmlContent={data.description || ''} />
           </div>
           <h4 className='text-[18px] font-medium'>Requirements</h4>
           <p>
