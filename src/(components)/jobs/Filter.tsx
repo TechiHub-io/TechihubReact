@@ -11,7 +11,7 @@ const Filter: React.FC<FilterProps> = ({ dispatch }) => {
   useEffect(() => {
     const cityOptions = citiesData.map(city => ({
       value: city.name,
-      label: `${city.name}, ${city.country_name}`
+      label: `${city.name}`
     }));
     setCities(cityOptions);
     setLoading(false);

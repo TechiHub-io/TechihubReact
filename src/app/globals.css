@@ -29,9 +29,9 @@
     @apply font-[300] text-[16px] leading-[150%] text-[#000]
   }
 
-  b { 
+  /* b { 
     @apply font-bold text-[16px] leading-[150%] text-[#000]
-  }
+  } */
 
   .withborder {
     @apply rounded-lg min-w-[116px] text-[#fff] w-[250px] bg-[#0CCE68] border-[2px] border-solid border-transparent shadow-[0px_4px_4px_rgba(0,_0,_0,_0.25)] leading-[150%] font-medium overflow-hidden flex flex-row items-center justify-center py-2.5 px-[67px] whitespace-nowrap duration-500
@@ -59,7 +59,7 @@
     }
 
     h3 {
-      @apply font-medium   text-[24px] text-[#18181B]
+      @apply font-medium  text-[24px] text-[#18181B]
     }
   }
 

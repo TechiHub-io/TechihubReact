@@ -3,6 +3,7 @@ import { StarterKit } from '@tiptap/starter-kit'
 import type { Content, UseEditorOptions } from '@tiptap/react'
 import { useEditor } from '@tiptap/react'
 import type { Editor } from '@tiptap/core'
+import Bold from '@tiptap/extension-bold'
 import { Typography } from '@tiptap/extension-typography'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { TextStyle } from '@tiptap/extension-text-style'
@@ -25,6 +26,7 @@ const createExtensions = (placeholder: string) => [
   StarterKit.configure({
     horizontalRule: false,
     codeBlock: false,
+    bold: false,
     paragraph: { HTMLAttributes: { class: 'text-node' } },
     heading: { HTMLAttributes: { class: 'heading-node' } },
     blockquote: { HTMLAttributes: { class: 'block-node' } },
@@ -32,6 +34,11 @@ const createExtensions = (placeholder: string) => [
     orderedList: { HTMLAttributes: { class: 'list-node' } },
     code: { HTMLAttributes: { class: 'inline', spellcheck: 'false' } },
     dropcursor: { width: 2, class: 'ProseMirror-dropcursor border' }
+  }),
+  Bold.configure({
+    HTMLAttributes: {
+      class: 'font-bold',
+    },
   }),
   Link,
   Image,

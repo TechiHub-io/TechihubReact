@@ -272,7 +272,7 @@ const PostJob = () => {
                     <option value="">Select location</option>
                     {citiesData.map((city: any, index: number) => (
                       <option key={index} value={city.name}>
-                        {city.name}, {city.country_name}
+                        {city.name}
                       </option>
                     ))}
                   </select>
