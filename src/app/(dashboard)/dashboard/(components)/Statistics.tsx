@@ -1,8 +1,17 @@
 import Image from 'next/image'
 import React from 'react'
-import { thetypes } from '../page'
 
-const Statistics = ({id, url, urlcolor, color, text, bg, stat}: thetypes) => {
+interface StatisticsProps {
+  id: string;
+  url: string;
+  urlcolor: string;
+  color: string;
+  text: string;
+  bg: string;
+  stat: string;
+}
+
+const Statistics: React.FC<StatisticsProps> = ({id, url, urlcolor, color, text, bg, stat}) => {
   return (
     <div className={`min-w-[253px] min-h-[133px] py-[27px] px-[16px] bg-[${bg}] rounded-lg`}>
       <div className='flex justify-between items-center'>
