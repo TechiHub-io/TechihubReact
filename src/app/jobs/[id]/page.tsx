@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 // import HTMLContentDisplay from '@/(components)/minimal-tiptap/hooks/HTMLContentDisplay';
 import Loading from '../loading';
 import dynamic from 'next/dynamic';
+import { DateFormatter } from '@/libs/DateFormatter';
 
 const DynamicHTMLContent = dynamic(() => import('@/(components)/minimal-tiptap/hooks/HTMLContentDisplay'), {
   loading: () => <p>Loading...</p>,
@@ -167,7 +168,7 @@ function JobDetails({ params }: Readonly<{ params: { id: number } }>) {
                     Job expire in:
                   </p>
                   <p className='text-[#767F8C] font-[400] text-[14px]'>
-                    {data.expirationDate}
+                    {DateFormatter.formatDateOnly(data.expirationDate)}
                   </p>
                 </div>
                 {/* <div className='flex items-center justify-center text-center flex-col gap-[12px] p-[32px] '>

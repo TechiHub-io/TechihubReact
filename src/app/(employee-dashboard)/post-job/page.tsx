@@ -45,8 +45,8 @@ interface JobTypeOption {
 }
 
 const jobTypes: JobTypeOption[] = [
-  { value: 'fulltime', label: 'Fulltime' },
-  { value: 'parttime', label: 'Partime' },
+  { value: 'full-time', label: 'Full-time' },
+  { value: 'part-time', label: 'Part-time' },
   { value: 'freelance', label: 'Freelance' },
   { value: 'internship', label: 'Internship' },
   { value: 'remote', label: 'Remote' },
@@ -442,8 +442,8 @@ const PostJob = () => {
                     name="salaryCurrency"
                   >
                     <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
+                    {/* <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option> */}
                   </select>
                   <input
                     className="shadow appearance-none border border-l-0 w-1/2 p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"

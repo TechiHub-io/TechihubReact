@@ -53,8 +53,8 @@ const Filter: React.FC<FilterProps> = ({ dispatch }) => {
         <div className=' bg-[#fff] rounded-[8px] max-w-[1076px] w-[95%] lg:w-auto grid grid-cols-1 mx-auto md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 py-[31px] px-[41px] relative md:absolute left-[50%] translate-x-[-50%] bottom-[-45px] h-[100%] md:h-[90px] gap-[42px] justify-between items-center shadow-[4px_0px_10px_1px_#0cce68]'>
           <select name="jobType" className='bg-transparent w-[200px] border-[1px] p-[8px] text-[18px] font-semibold' onChange={handleFilterChange}>
             <option value="">Job Type</option>
-            <option value="fulltime">Full-time</option>
-            <option value="parttime">Part-time</option>
+            <option value="full-time">Full-time</option>
+            <option value="part-time">Part-time</option>
             <option value="Onsite">Onsite</option>
             <option value="remote">Remote</option>
             <option value="internship">Internship</option>
