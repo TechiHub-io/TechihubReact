@@ -51,7 +51,6 @@ const ProfilePage = () => {
     const hasExperience = userProfile.experiences.length > 0;
     return Math.round(((filledFields + (hasEducation ? 1 : 0) + (hasExperience ? 1 : 0)) / (fields.length + 2)) * 100);
   };
-  console.log(decodeProfilePhotoUrl(userProfile.profile_photo_url))
   return (
     <main className='bg-[#f2f5fc]'>
       <div className="container mx-auto px-4 py-8 ">
