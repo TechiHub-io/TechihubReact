@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { signIn } from "next-auth/react"
 import Sign from './Sign';
 import { useSession } from 'next-auth/react';
+import { SignOut } from './Sign-out';
 
 function Header() {
   const [nav, setNav] = useState(false);
@@ -110,6 +111,10 @@ function Header() {
               <NavLink href='/about-us'>About us</NavLink>
               <NavLink href='/our-services'>Our Services</NavLink>
               <NavLink href='/jobs'>Job board</NavLink>
+              {
+                !session?.user ? <NavLink href='/sign-in'>Sign-in</NavLink> :<SignOut />
+              }
+              
               {employee !== "EMPLOYER" ? (
                 <NavLink children href="/dashboard"></NavLink>
               ) : employee === "EMPLOYER" ? (
@@ -167,6 +172,9 @@ function Header() {
             <hr />
             <li className='outline-none cursor-pointer'>
               <NavLink href='/jobs'>Job board</NavLink>
+            </li>
+            <li className='outline-none cursor-pointer'>
+              <SignOut />
             </li>
             <hr />
             {/* <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>

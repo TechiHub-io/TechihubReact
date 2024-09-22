@@ -32,7 +32,6 @@ function SubmittingButton({ text }: any) {
     </button>
   );
 }
-
 const initialState = {
   message: "",
 };

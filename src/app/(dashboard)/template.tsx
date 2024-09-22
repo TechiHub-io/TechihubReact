@@ -112,7 +112,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
             )}
           </div>
         ) : (
-          <div className="sticky top-0 max-h-screen overflow-y-auto bg-white shadow-xl">
+          <div className="sticky top-0 xl:w-64 max-h-screen overflow-y-auto bg-white shadow-xl">
             <ul className="flex flex-col w-full">
               {data.map((dat) => (
                 <MenuItem key={dat.id} dat={dat} />

@@ -118,8 +118,9 @@ const Signin = () => {
               </div>
             
             </form>
-
-            
+            <div className='mt-4 text-center'>
+              <p>Don't have an account? <a href="/sign-up" className='font-semibold text-indigo-600 hover:text-indigo-500'>Sign up here</a></p>
+            </div>
           </div>
         </div>
         <img src="/images/blogs/signc.jpg" className='hidden lg:block w-[480px] xl:w-[500px] object-cover' alt="image" />

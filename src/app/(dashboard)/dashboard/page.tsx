@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import MetricCard from './(components)/MetricCard';
@@ -63,13 +63,29 @@ const generateMockData = (): MockData => {
 };
 
 const Dashboard: React.FC = () => {
+  const route = useRouter();
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/home")
     }
   });
+  useEffect(() => {
+    const callout = () => {
+      // @ts-ignore
+      if(session?.user?.role === "EMPLOYER") {
+      route.push("/e-dashboard");
+      //  redirect("/e-dashboard'");
+      }
+    }
+    setTimeout(() => {
+      callout();
+    }, 2000)
+  })
+  
 
+  
+  
   const [mockData, setMockData] = useState<MockData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -253,21 +269,6 @@ export default Dashboard;
 
 
 
-  // useEffect(() => {
-  //   const callout = () => {
-  //     // @ts-ignore
-  //     if(session?.user?.role === "EMPLOYER") {
-  //     route.push("/e-dashboard");
-  //     //  redirect("/e-dashboard'");
-  //     }
-  //   }
-  //   callout();
-  // })
-  
 
-  
-  // setTimeout(() => {
-  //   callout();
-  // }, 2000)
 
   

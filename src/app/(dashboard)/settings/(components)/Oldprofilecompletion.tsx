@@ -6,14 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from 'next/navigation';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, Loader2, Upload, Check, Trash2, Loader2Icon } from 'lucide-react';
+import { ArrowLeft, Loader2, Upload, Check, Trash2 } from 'lucide-react';
 import ProfilePictureUpload from './ProfilePictureUpload';
 import { CreateProfile, UploadProfilePicture } from '@/app/action';
 import { toast, Bounce } from 'react-toastify';
 import { useFormState } from 'react-dom';
 import WorkExperience from './WorkExperience';
 import Education from './Education';
-import { useFormStatus } from 'react-dom';
 
 type PersonalDetails = {
   firstName: string;
@@ -54,28 +53,6 @@ type FormData = {
 type AccordionStep = 'profile-picture' | 'personal-details' | 'work-experience' | 'education';
 
 type FormErrors = Partial<Record<keyof FormData, string>> & { form?: string };
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button 
-      type="submit" 
-      className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
-      disabled={pending}
-    >
-      {pending ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
-          Saving...
-        </>
-      ) : (
-        'Save Personal Details'
-      )}
-    </Button>
-  );
-}
-
 
 const ProfileCompletionForm: React.FC = () => {
   const { theme } = useTheme();
@@ -319,12 +296,12 @@ const ProfileCompletionForm: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    if (completedSteps.length === 4) {
+    if (completedSteps.length === 5) {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
-        router.push('/user-profile');
-      }, 500);
+        router.push('/profile');
+      }, 1000);
     } else {
       setErrors({ form: 'Please complete all sections before submitting.' });
     }
@@ -335,7 +312,7 @@ const ProfileCompletionForm: React.FC = () => {
   const renderAccordionItem = (step: AccordionStep, title: string, content: React.ReactNode) => {
     const isCompleted = isStepCompleted(step);
     const canOpen = step === 'profile-picture' || isStepCompleted(steps[steps.indexOf(step) - 1]);
-  
+
     return (
       <AccordionItem value={step} className="mb-4">
         <AccordionTrigger 
@@ -346,19 +323,9 @@ const ProfileCompletionForm: React.FC = () => {
         </AccordionTrigger>
         <AccordionContent className="bg-white p-4 rounded-b-lg">
           {content}
-          {step === 'profile-picture' && (
-            <Button disabled={isUploading} onClick={handleSaveAndContinue} className="mt-4 bg-green-500 hover:bg-green-600 text-white">
-             {
-                isUploading ? <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Saving</span>
-              </> : <>
-              Save and Continue
-              </>
-             }
-             
-            </Button>
-          )}
+          <Button onClick={handleSaveAndContinue} className="mt-4 bg-green-500 hover:bg-green-600 text-white">
+            Save and Continue
+          </Button>
         </AccordionContent>
       </AccordionItem>
     );
@@ -375,126 +342,99 @@ const ProfileCompletionForm: React.FC = () => {
   );
 
 
-  const renderPersonalDetails = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-  
-    return (
-      <div className="space-y-6 bg-white p-6 rounded-lg shadow-md">
-        <h3 className="text-2xl font-semibold text-gray-800 mb-6">Personal Details</h3>
-        {/* @ts-ignore */}
-        <form action={createProfileAction} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="firstname" className="text-sm font-medium text-gray-700">First Name</Label>
-              <Input
-                id="firstname"
-                name="firstname"
-                defaultValue={formData.personalDetails.firstName}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <Label htmlFor="lastname" className="text-sm font-medium text-gray-700">Last Name</Label>
-              <Input
-                id="lastname"
-                name="lastname"
-                defaultValue={formData.personalDetails.lastName}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              />
-            </div>
-          </div>
-  
+  const renderPersonalDetails = () => (
+    <div className="space-y-4">
+      {/* @ts-ignore */}
+      <form action={createProfileAction}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+            <Label htmlFor="firstname">First Name</Label>
             <Input
-              id="email"
-              name="email"
-              type="email"
-              defaultValue={formData.personalDetails.email}
+              id="firstname"
+              name="firstname"
+              defaultValue={formData.personalDetails.firstName}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
             />
           </div>
-  
           <div>
-            <Label htmlFor="address" className="text-sm font-medium text-gray-700">Address</Label>
+            <Label htmlFor="lastname">Last Name</Label>
             <Input
-              id="address"
-              name="address"
-              defaultValue={formData.personalDetails.address}
+              id="lastname"
+              name="lastname"
+              defaultValue={formData.personalDetails.lastName}
               required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
             />
           </div>
-  
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="jobTitle" className="text-sm font-medium text-gray-700">Job Title</Label>
-              <Input
-                id="jobTitle"
-                name="jobTitle"
-                defaultValue={formData.personalDetails.jobTitle}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">Phone Number</Label>
-              <Input
-                id="phoneNumber"
-                name="phoneNumber"
-                defaultValue={formData.personalDetails.phoneNumber}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              />
-            </div>
-          </div>
-  
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="githubUrl" className="text-sm font-medium text-gray-700">GitHub URL</Label>
-              <Input
-                id="githubUrl"
-                name="githubUrl"
-                defaultValue={formData.personalDetails.githubUrl}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              />
-            </div>
-            <div>
-              <Label htmlFor="linkedinUrl" className="text-sm font-medium text-gray-700">LinkedIn URL</Label>
-              <Input
-                id="linkedinUrl"
-                name="linkedinUrl"
-                defaultValue={formData.personalDetails.linkedinUrl}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              />
-            </div>
-          </div>
-  
-          <div>
-            <Label htmlFor="about" className="text-sm font-medium text-gray-700">About</Label>
-            <Textarea
-              id="about"
-              name="about"
-              defaultValue={formData.personalDetails.about}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-              rows={4}
-            />
-          </div>
-  
-          <SubmitButton />
-        </form>
-        {errors.personalDetails && (
-          <p className="text-red-500 text-sm mt-2 bg-red-100 border border-red-400 rounded-md p-2">
-            {errors.personalDetails}
-          </p>
-        )}
-      </div>
-    );
-  };
+        </div>
+        <div>
+          <Label htmlFor="address">Address</Label>
+          <Input
+            id="address"
+            name="address"
+            defaultValue={formData.personalDetails.address}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            defaultValue={formData.personalDetails.email}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="jobTitle">Job Title</Label>
+          <Input
+            id="jobTitle"
+            name="jobTitle"
+            defaultValue={formData.personalDetails.jobTitle}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="phoneNumber">Phone Number</Label>
+          <Input
+            id="phoneNumber"
+            name="phoneNumber"
+            defaultValue={formData.personalDetails.phoneNumber}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="githubUrl">GitHub URL</Label>
+          <Input
+            id="githubUrl"
+            name="githubUrl"
+            defaultValue={formData.personalDetails.githubUrl}
+          />
+        </div>
+        <div>
+          <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
+          <Input
+            id="linkedinUrl"
+            name="linkedinUrl"
+            defaultValue={formData.personalDetails.linkedinUrl}
+          />
+        </div>
+        <div>
+          <Label htmlFor="about">About</Label>
+          <Textarea
+            id="about"
+            name="about"
+            defaultValue={formData.personalDetails.about}
+            required
+          />
+        </div>
+        <Button type="submit" className="mt-4 bg-green-500 hover:bg-green-600 text-white">
+          Save Personal Details
+        </Button>
+      </form>
+      {errors.personalDetails && <p className="text-red-500 text-sm">{errors.personalDetails}</p>}
+    </div>
+  );
 
   const renderResumeUpload = () => (
     <div className="space-y-4">
@@ -527,6 +467,54 @@ const ProfileCompletionForm: React.FC = () => {
     />
   );
 
+//   const renderWorkExperience = () => (
+//     <div className="space-y-4">
+//       {formData.workExperience.map((exp, index) => (
+//         <div key={index} className="space-y-2 border p-4 rounded relative">
+//           <Input
+//             placeholder="Title"
+//             value={exp.title}
+//             onChange={(e) => handleInputChange('workExperience', 'title', e.target.value, index)}
+//           />
+//           <Input
+//             placeholder="Company"
+//             value={exp.company}
+//             onChange={(e) => handleInputChange('workExperience', 'company', e.target.value, index)}
+//           />
+//           <div className="grid grid-cols-2 gap-2">
+//             <Input
+//               type="date"
+//               placeholder="Start Date"
+//               value={exp.startDate}
+//               onChange={(e) => handleInputChange('workExperience', 'startDate', e.target.value, index)}
+//             />
+//             <Input
+//               type="date"
+//               placeholder="End Date"
+//               value={exp.endDate}
+//               onChange={(e) => handleInputChange('workExperience', 'endDate', e.target.value, index)}
+//             />
+//           </div>
+//           <Textarea
+//             placeholder="Work Summary"
+//             value={exp.workSummary}
+//             onChange={(e) => handleInputChange('workExperience', 'workSummary', e.target.value, index)}
+//           />
+//           {formData.workExperience.length > 1 && (
+//            <Button
+//            onClick={() => removeExperience('workExperience', index)}
+//            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+//          >
+//            <Trash2 size={16} />
+//          </Button>
+//        )}
+//      </div>
+//    ))}
+//    <Button onClick={() => addExperience('workExperience')}>Add Work Experience</Button>
+//    {errors.workExperience && <p className="text-red-500 text-sm">{errors.workExperience}</p>}
+//  </div>
+// );
+
 
 const renderEducation = () => (
   <Education 
@@ -535,12 +523,58 @@ const renderEducation = () => (
     completedSteps={completedSteps}
   />
 );
-
+// const renderEducation = () => (
+//  <div className="space-y-4">
+//    {formData.education.map((edu, index) => (
+//      <div key={index} className="space-y-2 border p-4 rounded relative">
+//        <Input
+//          placeholder="Course"
+//          value={edu.course}
+//          onChange={(e) => handleInputChange('education', 'course', e.target.value, index)}
+//        />
+//        <Input
+//          placeholder="School Name"
+//          value={edu.schoolName}
+//          onChange={(e) => handleInputChange('education', 'schoolName', e.target.value, index)}
+//        />
+//        <div className="grid grid-cols-2 gap-2">
+//          <Input
+//            type="date"
+//            placeholder="Start Date"
+//            value={edu.startDate}
+//            onChange={(e) => handleInputChange('education', 'startDate', e.target.value, index)}
+//          />
+//          <Input
+//            type="date"
+//            placeholder="End Date"
+//            value={edu.endDate}
+//            onChange={(e) => handleInputChange('education', 'endDate', e.target.value, index)}
+//          />
+//        </div>
+//        <Textarea
+//          placeholder="Summary"
+//          value={edu.summary}
+//          onChange={(e) => handleInputChange('education', 'summary', e.target.value, index)}
+//        />
+//        {formData.education.length > 1 && (
+//          <Button
+//            onClick={() => removeExperience('education', index)}
+//            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+//          >
+//            <Trash2 size={16} />
+//          </Button>
+//        )}
+//      </div>
+//    ))}
+//    <Button onClick={() => addExperience('education')}>Add Education</Button>
+//    {errors.education && <p className="text-red-500 text-sm">{errors.education}</p>}
+//  </div>
+// );
 
 const steps: AccordionStep[] = ['profile-picture', 'personal-details', 'work-experience', 'education'];
 
 return (
- <div className={`w-full min-h-screen flex items-start justify-center bg-gray-100 ${theme === 'dark' ? 'dark' : ''} p-2 md:p-4`}>
+ <div className={`w-full min-h-screen flex items-center justify-center bg-gray-100 ${theme === 'dark' ? 'dark' : ''} p-2 md:p-4`}>
    <div className="bg-white rounded-lg shadow-lg w-full max-w-full overflow-hidden">
      <div className="p-2 md:p-6">
        <h2 className="text-2xl font-bold mb-4">Get started</h2>
