@@ -62,6 +62,39 @@ const PostJob = () => {
   const [selectedJobTypes, setSelectedJobTypes] = useState<JobType[]>([]);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const formRef = useRef<HTMLFormElement>(null);
+  const [cityInput, setCityInput] = useState('');
+  const [filteredCities, setFilteredCities] = useState<{ name: string }[]>([]);
+  const [showCities, setShowCities] = useState(false);
+  const cityInputRef = useRef<HTMLInputElement>(null);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cityInputRef.current && !cityInputRef.current.contains(event.target as Node)) {
+        setShowCities(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleCityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCityInput(value);
+    const filtered = citiesData.filter(city => 
+      city.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredCities(filtered);
+    setShowCities(true);
+  };
+
+  const handleCitySelect = (cityName: string) => {
+    setCityInput(cityName);
+    setShowCities(false);
+  };
 
   const handleChange = (newValue: Content) => {
     setValue(typeof newValue === 'string' ? newValue : '');
@@ -261,30 +294,31 @@ const PostJob = () => {
                 >
                   Job Location*
                 </label>
-                <div className="relative">
-                  <select
-                    className="block appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[10px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="jobLocation"
-                    required
-                    name="jobLocation"
-                  >
-                    <option value="">Select location</option>
-                    {citiesData.map((city: any, index: number) => (
-                      <option key={index} value={city.name}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                    <svg
-                      className="fill-current h-4 w-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
+                <div className="relative" ref={cityInputRef}>
+              <input
+                type="text"
+                id="jobLocation"
+                name="jobLocation"
+                value={cityInput}
+                onChange={handleCityInputChange}
+                required
+                placeholder="Search job location"
+                className="shadow appearance-none border rounded-[10px] w-full p-[10px] h-[50px] text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+              {showCities && filteredCities.length > 0 && (
+                <ul className="absolute z-10 w-full bg-white border border-gray-300 mt-1 max-h-60 overflow-auto rounded-[10px]">
+                  {filteredCities.map((city, index) => (
+                    <li 
+                      key={index} 
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleCitySelect(city.name)}
                     >
-                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                    </svg>
-                  </div>
-                </div>
+                      {city.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
               </div>
             </div>
           </div>

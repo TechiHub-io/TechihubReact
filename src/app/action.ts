@@ -339,7 +339,7 @@ export async function PostedJob(state: {message: string}, formData: FormData){
   try {
     // @ts-ignore
     const response = await axios.post(`${baseurl}/techihub/save`, experiencepost).then(response => response.data).catch(error => error)
-
+    console.log("post", response);
     if(response === ''){
       return {message: 'session timeout', statuscode: response.statusCode}
     }

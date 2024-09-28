@@ -174,7 +174,10 @@ function Header() {
               <NavLink href='/jobs'>Job board</NavLink>
             </li>
             <li className='outline-none cursor-pointer'>
-              <SignOut />
+            {
+                !session?.user ? <NavLink href='/sign-in'>Sign-in</NavLink> :<SignOut />
+            }
+              
             </li>
             <hr />
             {/* <div className='w-[207px] flex flex-col items-start justify-start gap-[2rem] text-[#fff] '>

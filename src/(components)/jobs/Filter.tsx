@@ -1,5 +1,4 @@
-'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 import citiesData from '@/libs/data/cities.json';
 import { FilterProps } from '@/libs/types/Jobstypes';
@@ -7,6 +6,10 @@ import { FilterProps } from '@/libs/types/Jobstypes';
 const Filter: React.FC<FilterProps> = ({ dispatch }) => {
   const [cities, setCities] = useState<{ value: string; label: string }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cityInput, setCityInput] = useState('');
+  const [filteredCities, setFilteredCities] = useState<{ value: string; label: string }[]>([]);
+  const [showCities, setShowCities] = useState(false);
+  const cityInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const cityOptions = citiesData.map(city => ({
@@ -17,9 +20,42 @@ const Filter: React.FC<FilterProps> = ({ dispatch }) => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cityInputRef.current && !cityInputRef.current.contains(event.target as Node)) {
+        setShowCities(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     dispatch({ type: `SET_${name.toUpperCase()}`, payload: value });
+  };
+
+  const handleCityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setCityInput(value);
+    if (value === '') {
+      dispatch({ type: 'SET_LOCATION', payload: '' }); // Clear location filter
+    } else {
+      const filtered = cities.filter(city => 
+        city.label.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredCities(filtered);
+      setShowCities(true);
+    }
+  };
+
+  const handleCitySelect = (city: { value: string; label: string }) => {
+    setCityInput(city.label);
+    setShowCities(false);
+    dispatch({ type: 'SET_LOCATION', payload: city.value });
   };
 
   if (loading) {
@@ -50,8 +86,8 @@ const Filter: React.FC<FilterProps> = ({ dispatch }) => {
             alt='sql'
           />
         </div>
-        <div className=' bg-[#fff] rounded-[8px] max-w-[1076px] w-[95%] lg:w-auto grid grid-cols-1 mx-auto md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 py-[31px] px-[41px] relative md:absolute left-[50%] translate-x-[-50%] bottom-[-45px] h-[100%] md:h-[90px] gap-[42px] justify-between items-center shadow-[4px_0px_10px_1px_#0cce68]'>
-          <select name="jobType" className='bg-transparent w-[200px] border-[1px] p-[8px] text-[18px] font-semibold' onChange={handleFilterChange}>
+        <div className=' bg-[#fff] rounded-[8px] max-w-[1076px] w-[95%] xl:w-auto grid grid-cols-1 mx-auto md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 py-[31px] px-[41px] relative md:absolute left-[50%] translate-x-[-50%] bottom-[-45px] h-[100%] md:h-[90px] gap-[42px] justify-between items-center shadow-[4px_0px_10px_1px_#0cce68]'>
+          <select name="jobType" className='bg-transparent lg:w-[200px] border-[1px] p-[8px] text-[18px] font-semibold' onChange={handleFilterChange}>
             <option value="">Job Type</option>
             <option value="full-time">Full-time</option>
             <option value="part-time">Part-time</option>
@@ -60,20 +96,30 @@ const Filter: React.FC<FilterProps> = ({ dispatch }) => {
             <option value="internship">Internship</option>
           </select>
           
-          <select 
-            name="location" 
-            className='bg-transparent w-[200px] border-[1px] p-[8px] text-[18px] font-semibold'
-            onChange={handleFilterChange}
-          >
-            <option value="">Select Location</option>
-            {cities.map((city, index) => (
-              <option key={index} value={city.value}>
-                {city.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative" ref={cityInputRef}>
+            <input
+              type="text"
+              value={cityInput}
+              onChange={handleCityInputChange}
+              placeholder="Select Location (All Jobs)"
+              className='bg-transparent lg:w-[200px] border-[1px] p-[8px] text-[18px] font-semibold'
+            />
+            {showCities && filteredCities.length > 0 && (
+              <ul className="absolute z-10 w-full bg-white border border-gray-300 mt-1 max-h-60 overflow-auto">
+                {filteredCities.map((city, index) => (
+                  <li 
+                    key={index} 
+                    className="p-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleCitySelect(city)}
+                  >
+                    {city.label}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
-          <select name="jobLevel" className='bg-transparent w-[200px] border-[1px] p-[8px] text-[18px] font-semibold' onChange={handleFilterChange}>
+          <select name="jobLevel" className='bg-transparent lg:w-[200px] border-[1px] p-[8px] text-[18px] font-semibold' onChange={handleFilterChange}>
             <option value="">Job Level</option>
             <option value="entry">Entry Level</option>
             <option value="mid">Mid level</option>
