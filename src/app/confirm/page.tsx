@@ -28,8 +28,8 @@ const ConfirmContent = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center flex-col gap-16 items-center">
-        <h1 className="text-32 text-black">
+      <div className="flex max-w-[767px] mx-auto justify-center flex-col gap-16 items-center">
+        <h1 className="text-12 text-black">
           Sorry, we could not confirm your email. Please sign in again to receive a confirmation email.
         </h1>
         <a className="text-black text-18 underline hover:opacity-80" href="/sign-up">
