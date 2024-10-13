@@ -7,6 +7,7 @@ import {auth, signIn} from '../../auth'
 const baseurl =   'https://techihubjobsproject.azurewebsites.net'
 export async function signUserUp(state: { message: string }, formData: FormData){
   const baseurl =   'https://techihubjobsproject.azurewebsites.net'
+
   const rawformData = Signupschema.parse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -19,7 +20,12 @@ export async function signUserUp(state: { message: string }, formData: FormData)
   
   try {
     const response = await axios.post(`${baseurl}/api/users/register/user`, rawformData).then(response => response.data).catch(error =>  error);
-   
+  
+    
+    if (response?.statusCode == 200) {
+      return {message: `${response.message}`}
+    }
+
     if (response?.error) {
       return { message: "", error: response.error };
     }
@@ -27,7 +33,7 @@ export async function signUserUp(state: { message: string }, formData: FormData)
     if(response.message === "Request failed with status code 400"){
       return {message: "Try refreshing the page or use another email type, contact us if it all fails"}
     }else if(response.statusCode === 200) {
-      redirect('/verification');
+      return {message: `${response.message}`}
     }else if( response.statusCode !== 200){
       return {message: `${response.message}`}
     }

@@ -3,6 +3,7 @@ import React, { useState, FormEvent } from 'react';
 import { signUserUp } from '@/app/action';
 import { useFormStatus, useFormState } from 'react-dom';
 import { Check, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type FormState = {
   message: string;
@@ -12,7 +13,6 @@ type PasswordRequirement = {
   check: boolean;
   text: string;
 };
-
 type PasswordRequirementProps = {
   isMet: boolean;
   text: string;
@@ -45,7 +45,12 @@ const PasswordRequirement: React.FC<PasswordRequirementProps> = ({ isMet, text }
 const CandidateSignup: React.FC = () => {
   const [state, handleSubmit] = useFormState(signUserUp, initialState);
   const [password, setPassword] = useState<string>('');
+  const router = useRouter();
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+
+  if(state?.message === "User registered successfully. Redirect to login: redirect:/login") {
+    router.push('/verification')
+  }
 
   const passwordRequirements: PasswordRequirement[] = [
     { check: password.length >= 12, text: "At least 12 characters long" },
@@ -75,7 +80,7 @@ const CandidateSignup: React.FC = () => {
               Get Started as a Candidate
             </h2>
           </div>
-          <p aria-live='polite' className='text-[#ff0000] text-center text-[16px]' role='status'>
+          <p aria-live='polite' className={`${state?.message !== "User registered successfully. Redirect to login: redirect:/login" ? 'text-[#ff0000]' : 'text-[#31ac54]'} text-center text-[16px]`} role='status'>
             {state?.message}
           </p>
           <div className='mt-2 sm:mx-auto sm:w-full sm:max-w-sm'>
