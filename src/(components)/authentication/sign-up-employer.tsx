@@ -70,7 +70,7 @@ const Signup = () => {
               Get Started Now
             </h2>
           </div>
-          <p aria-live='polite' className='text-[#ff0000] text-center text-[16px]' role='status'>
+          <p aria-live='polite' className={`${stateemployee?.message !== "User registered successfully. Redirect to login: redirect:/login" ? 'text-[#ff0000]' : 'text-[#31ac54]'} text-center text-[16px]`} role='status'>
             {stateemployee?.message}
           </p>
           <div className='mt-2 sm:mx-auto sm:w-full sm:max-w-sm'>
