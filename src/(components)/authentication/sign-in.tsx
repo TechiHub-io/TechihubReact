@@ -31,7 +31,7 @@ const Signin = () => {
   useEffect(() => {
     if (state.message === "Success signin") {
       // Perform a hard refresh
-      window.location.href = '/dashboard';
+      window.location.href = '/settings';
     }
   }, [state]);
   

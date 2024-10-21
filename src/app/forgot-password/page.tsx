@@ -19,6 +19,9 @@ function SignUpButton(){
 
 const ForgotPassword = () => {
   const [state, handleSubmit] = useFormState(ForgotPasswordsetup, initialState);
+  if (/Password reset link sent to email/.test(state?.message)) {
+    window.location.href = '/reset-password';
+  }
   return (
     <main>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -29,7 +32,7 @@ const ForgotPassword = () => {
         </div>
         <p
           aria-live="polite"
-          className=" text-[#ff0000] text-center text-[16px]"
+          className={`text-center text-[16px] ${/Password reset link sent to email/.test(state?.message) ? 'text-green-500' : 'text-red-500'}`}
           role="status"
         >
           {state?.message}

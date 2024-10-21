@@ -22,6 +22,7 @@ const ProfilePage = () => {
 
   // @ts-ignore
   const userId = session?.user?.userId;
+  console.log(userId);
   const { data, isLoading, error } = Swrgetdat(`/api/user-profile/${userId}`);
 
   if (isLoading) return <div>Loading...</div>;

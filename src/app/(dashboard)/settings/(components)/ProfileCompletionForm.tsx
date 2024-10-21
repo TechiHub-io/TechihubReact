@@ -339,7 +339,7 @@ const ProfileCompletionForm: React.FC = () => {
     return (
       <AccordionItem value={step} className="mb-4">
         <AccordionTrigger 
-          className={`bg-blue-100 p-4 rounded-t-lg flex justify-between items-center ${!canOpen ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-[#85C4FF] py-2 px-7 text-base font-bold flex justify-between items-center ${!canOpen ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={!canOpen}
         >
           <span>{title}</span>
@@ -540,45 +540,52 @@ const renderEducation = () => (
 const steps: AccordionStep[] = ['profile-picture', 'personal-details', 'work-experience', 'education'];
 
 return (
- <div className={`w-full min-h-screen flex items-start justify-center bg-gray-100 ${theme === 'dark' ? 'dark' : ''} p-2 md:p-4`}>
-   <div className="bg-white rounded-lg shadow-lg w-full max-w-full overflow-hidden">
-     <div className="p-2 md:p-6">
-       <h2 className="text-2xl font-bold mb-4">Get started</h2>
-       <div className="mb-4 bg-gray-200 rounded-full h-2.5">
-         <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
-       </div>
-       <div className="flex flex-col lg:flex-row gap-6">
-         <div className="hidden lg:block lg:w-1/4">
-           <h3 className="font-semibold mb-2">Personal Information</h3>
-           <ul className="space-y-2 text-sm text-gray-600">
-             <li className={isStepCompleted('profile-picture') ? 'text-green-500' : ''}>Upload profile picture</li>
-             <li className={isStepCompleted('personal-details') ? 'text-green-500' : ''}>Personal details</li>
+ <div className={`w-full min-h-screen py-8 lg:py-16 flex items-start justify-center bg-[#f2f5fc] ${theme === 'dark' ? 'dark' : ''}`}>
+   <div className="  w-full max-w-full overflow-hidden">
+     
+     <div className="">
+       
+       <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 min-h-screen">
+         <div className="hidden lg:block lg:w-1/4 lg:max-w-[320px] lg:mt-[7rem] lg:max-h-fit bg-[#fff] shadow-xl">
+           <h3 className="font-semibold text-sm mb-2 py-[8px] px-[16px]">Personal Information</h3>
+           <ul className="space-y-2 pl-5 w-full text-sm text-gray-600">
+             <li className={isStepCompleted('profile-picture') ? 'text-green-500' : 'py-[8px] text-[#72838C]  px-[16px]'}>Upload profile picture</li>
+             <li className={isStepCompleted('personal-details') ? 'text-green-500' : 'py-[8px] text-[#72838C] border-y-solid border-y-[1px]  px-[16px]'}>Personal details</li>
              {/* <li className={isStepCompleted('resume-upload') ? 'text-green-500' : ''}>Upload resume</li> */}
            </ul>
-           <h3 className="font-semibold mt-4 mb-2">Profile Information</h3>
-           <ul className="space-y-2 text-sm text-gray-600">
-             <li className={isStepCompleted('work-experience') ? 'text-green-500' : ''}>Work experience</li>
-             <li className={isStepCompleted('education') ? 'text-green-500' : ''}>Education</li>
+           <h3 className="font-semibold text-sm mt-4 mb-2 py-[8px] px-[16px]">Profile Information</h3>
+           <ul className="space-y-2 pl-5 text-sm text-gray-600">
+             <li className={isStepCompleted('work-experience') ? 'text-green-500' : 'py-[8px] text-[#72838C] px-[16px]'}>Work experience</li>
+             <li className={isStepCompleted('education') ? 'text-green-500' : 'py-[8px] text-[#72838C] border-y-solid border-y-[1px] px-[16px]'}>Education</li>
            </ul>
          </div>
-         <div className="lg:w-3/4">
-           <Accordion type="single" value={activeStep} onValueChange={(value) => setActiveStep(value as AccordionStep)}>
-             {renderAccordionItem('profile-picture', 'Upload Profile Picture', renderProfilePicture())}
-             {renderAccordionItem('personal-details', 'Personal Details', renderPersonalDetails())}
-             {/* {renderAccordionItem('resume-upload', 'Upload Resume', renderResumeUpload())} */}
-             {renderAccordionItem('work-experience', 'Work Experience', renderWorkExperience())}
-             {renderAccordionItem('education', 'Education', renderEducation())}
-           </Accordion>
-          
-              <Button 
-                onClick={handleSubmit} 
-                disabled={isLoading || completedSteps.length !== steps.length} 
-                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Finish
-              </Button>
-              {errors.form && <p className="text-red-500 text-sm mt-2">{errors.form}</p>}
+         <div className="lg:w-3/4 max-w-[1020px] ">
+          <h2 className="text-[2rem] font-semibold text-center text-[#364187] lg:pb-[3.5rem] mb-4">Get started</h2>
+          <div className="mb-4 bg-gray-200 rounded-full h-2.5 ">
+            <div className="bg-[#85C4FF] h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+          </div>
+          <div className='bg-[#fff] rounded-[8px] shadow-lg p-6 max-h-fit'>
+            <h3 className='text-xl py-6 text-center'>Personal Information</h3>
+            <Accordion type="single" value={activeStep} onValueChange={(value) => setActiveStep(value as AccordionStep)}>
+              {renderAccordionItem('profile-picture', 'Upload Profile Picture', renderProfilePicture())}
+              {renderAccordionItem('personal-details', 'Personal Details', renderPersonalDetails())}
+              {/* {renderAccordionItem('resume-upload', 'Upload Resume', renderResumeUpload())} */}
+              <h3 className='text-xl py-6 text-center'>Personal Information</h3>
+              {renderAccordionItem('work-experience', 'Work Experience', renderWorkExperience())}
+              {renderAccordionItem('education', 'Education', renderEducation())}
+            </Accordion>
+            
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={isLoading || completedSteps.length !== steps.length} 
+                  className="mt-4 w-full bg-[#0CCE68] hover:bg-[#0cce67b7] text-white font-bold py-2 px-4 rounded-[4px] lg:max-w-[250px]"
+                >
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Finish
+                </Button>
+                {errors.form && <p className="text-red-500 text-sm mt-2">{errors.form}</p>}
+                
+            </div>
          </div>
        </div>
      </div>

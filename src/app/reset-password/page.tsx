@@ -1,5 +1,5 @@
 'use client'
-import React from "react";
+import React, { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { ResetPasswordsetup } from "../action";
 const initialState = {
@@ -19,6 +19,21 @@ function SignUpButton(){
 
 const ResetPassword = () => {
   const [state, handleSubmit] = useFormState(ResetPasswordsetup, initialState);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const passwordRequirements = [
+    { check: password.length >= 12, text: "At least 12 characters long" },
+    { check: /[A-Z]/.test(password), text: "Contains uppercase letter" },
+    { check: /[a-z]/.test(password), text: "Contains lowercase letter" },
+    { check: /\d/.test(password), text: "Contains number" },
+    { check: /[!@#$%^&*(),.?":{}|<>]/.test(password), text: "Contains special character" },
+    { check: password === confirmPassword, text: "Passwords match" }
+  ];
+
+  if (state?.message === "Password reset successfully") {
+    window.location.href = "/sign-in";
+  }
+  
   return (
     <main>
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -29,7 +44,7 @@ const ResetPassword = () => {
         </div>
         <p
           aria-live="polite"
-          className=" text-[#ff0000] text-center text-[16px]"
+          className={`text-center text-[16px] ${/Password reset successfully/.test(state?.message) ? 'text-green-500' : 'text-red-500'}`}
           role="status"
         >
           {state?.message}
@@ -73,6 +88,7 @@ const ResetPassword = () => {
                   name="password"
                   autoComplete="current-password"
                   required
+                  onChange={(e) => setPassword(e.target.value)}
                   className="block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -90,9 +106,17 @@ const ResetPassword = () => {
                   type="password"
                   name="confirmPassword"
                   required
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="block px-2 w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
+              <ul>
+                {passwordRequirements.map((requirement, index) => (
+                  <li key={index} className={requirement.check ? 'text-green-500' : 'text-red-500'}>
+                    {requirement.check ? <>&#10004;</> : <>&#10006;</>} {requirement.text}
+                  </li>
+                ))}
+              </ul>
             </div>
             <div>
               <SignUpButton />

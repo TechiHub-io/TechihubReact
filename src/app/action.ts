@@ -109,7 +109,7 @@ export async function ResetPasswordsetup(state: {message: string}, formData: For
     if(response?.statusCode !== 200){
       return {message: `${response.message}`}
     }
-    return {message: `Email does not Exist ${response?.message}`}
+    return {message: `${response?.message}`}
 
   } catch (error: any) {
     return {message: `Error encountered ${error}`}

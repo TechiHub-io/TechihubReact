@@ -8,7 +8,6 @@ const initialState = {
   message: ""
 }
 
-
 type PasswordRequirement = {
   check: boolean;
   text: string;

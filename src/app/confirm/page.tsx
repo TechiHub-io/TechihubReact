@@ -28,7 +28,7 @@ const ConfirmContent = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white p-4">
+      <div className="flex items-center justify-center  bg-white p-4">
         <div
           className="w-full mx-auto bg-white rounded-lg shadow-lg text-center"
           style={{ maxWidth: "767px", padding: "2rem" }}
@@ -40,7 +40,7 @@ const ConfirmContent = () => {
 
           <a
             className="text-black text-base mb-8 underline hover:opacity-80"
-            href="/sign-up"
+            href="/sign-in"
           >
             Sign In here
           </a>

@@ -1,29 +1,39 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Multistepa from './(components)/Multistep';
 import {motion} from 'framer-motion'
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
 const Settings = () => {
-  const {data:session}= useSession({
+  const {data:session, status} = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/api/auth/signin?callbackUrl=/dashboard")
     }
   })
+  const [isLoading, setIsLoading] = useState(true);
   const route = useRouter();
+
   useEffect(() => {
     const callout = () => {
       // @ts-ignore
       if(session?.user?.role === "EMPLOYER") {
-      route.push("/e-dashboard");
-      //  redirect("/e-dashboard'");
+        route.push("/e-dashboard");
       }
+      setIsLoading(false);
     }
-    callout();
-  })
+
+    if (status === 'authenticated') {
+      callout();
+    }
+  }, [session, status])
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="flex ">
+    <div className="flex">
       <motion.div
           initial={{ x: 200, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
