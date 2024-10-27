@@ -21,7 +21,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ phone, email, linkedin 
   };
 
   return (
-    <Card className="mb-6 bg-white shadow-sm rounded-lg max-w-[379px]">
+    <Card className="mb-6 bg-white shadow-sm rounded-lg lg:max-w-[379px]">
       <CardHeader className="pb-3">
         <CardTitle className="text-xl font-semibold text-[#18191C]">Contact</CardTitle>
       </CardHeader>

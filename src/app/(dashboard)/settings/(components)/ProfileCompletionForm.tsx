@@ -540,13 +540,13 @@ const renderEducation = () => (
 const steps: AccordionStep[] = ['profile-picture', 'personal-details', 'work-experience', 'education'];
 
 return (
- <div className={`w-full min-h-screen py-8 lg:py-16 flex items-start justify-center bg-[#f2f5fc] ${theme === 'dark' ? 'dark' : ''}`}>
+ <div className={`w-full min-h-screen py-8 lg:pb-16 flex items-start justify-center bg-[#f2f5fc] ${theme === 'dark' ? 'dark' : ''}`}>
    <div className="  w-full max-w-full overflow-hidden">
      
      <div className="">
        
-       <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 min-h-screen">
-         <div className="hidden lg:block lg:w-1/4 lg:max-w-[320px] lg:mt-[7rem] lg:max-h-fit bg-[#fff] shadow-xl">
+       <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 ">
+         <div className="hidden lg:block lg:w-1/4 lg:max-w-[320px] lg:mt-[7rem] h-fit bg-[#fff] shadow-xl">
            <h3 className="font-semibold text-sm mb-2 py-[8px] px-[16px]">Personal Information</h3>
            <ul className="space-y-2 pl-5 w-full text-sm text-gray-600">
              <li className={isStepCompleted('profile-picture') ? 'text-green-500' : 'py-[8px] text-[#72838C]  px-[16px]'}>Upload profile picture</li>
@@ -560,7 +560,7 @@ return (
            </ul>
          </div>
          <div className="lg:w-3/4 max-w-[1020px] ">
-          <h2 className="text-[2rem] font-semibold text-center text-[#364187] lg:pb-[3.5rem] mb-4">Get started</h2>
+          <h2 className="text-[2rem] font-semibold text-center text-[#364187] lg:pb-[3.5rem] mb-4">Get started </h2>
           <div className="mb-4 bg-gray-200 rounded-full h-2.5 ">
             <div className="bg-[#85C4FF] h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
           </div>

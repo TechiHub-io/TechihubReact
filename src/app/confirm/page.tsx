@@ -2,11 +2,12 @@
 import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Swrgetdat } from "@/libs/hooks/Swrgetdat";
+import BouncingCirclesLoader from "@/components/animations/BouncingCircleLoader";
 
 const Confirm = () => {
   // Wrap useSearchParams in Suspense
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<p><BouncingCirclesLoader /></p>}>
       <ConfirmContent />
     </Suspense>
   );
@@ -21,7 +22,7 @@ const ConfirmContent = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center">
-        <p>Loading...</p>
+        <p><BouncingCirclesLoader /></p>
       </div>
     );
   }

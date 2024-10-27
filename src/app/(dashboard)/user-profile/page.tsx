@@ -11,6 +11,7 @@ import ExperienceSection from './(components)/ExperienceSection';
 import EducationSection from './(components)/EducationSection';
 import ContactSection from './(components)/ContactSection';
 import WebLinksSection from './(components)/WebLinksSection';
+import BouncingCirclesLoader from '@/components/animations/BouncingCircleLoader';
 
 const ProfilePage = () => {
   const { data: session } = useSession({
@@ -24,8 +25,8 @@ const ProfilePage = () => {
   const userId = session?.user?.userId;
   console.log(userId);
   const { data, isLoading, error } = Swrgetdat(`/api/user-profile/${userId}`);
-
-  if (isLoading) return <div>Loading...</div>;
+  console.log("my data", data);
+  if (isLoading) return <div><BouncingCirclesLoader /></div>;
   if (error) return <div>Error loading profile</div>;
 
   const userProfile = data?.userProfile;
@@ -53,8 +54,8 @@ const ProfilePage = () => {
     return Math.round(((filledFields + (hasEducation ? 1 : 0) + (hasExperience ? 1 : 0)) / (fields.length + 2)) * 100);
   };
   return (
-    <main className='bg-[#f2f5fc]'>
-      <div className="container mx-auto px-4 py-8 ">
+    <main className='bg-[#f2f5fc] h-full'>
+      <div className="container mx-auto xl:mx-0 px-4 py-8 ">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column */}
           <div className="lg:col-span-1 space-y-6">

@@ -1,5 +1,5 @@
+import BlueHeader from "@/(components)/shared/BlueHeader"
 import Footer from "@/(components)/shared/Footer"
-import Header from "@/(components)/shared/Header"
 
 export default function DashboardLayout({
   children,
@@ -8,7 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
   <section>
-    <Header />
+    <BlueHeader />
     {children}
     <Footer />
   </section>)

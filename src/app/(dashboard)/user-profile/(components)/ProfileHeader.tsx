@@ -10,7 +10,7 @@ interface ProfileHeaderProps {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, role, profilePhotoUrl, completionPercentage }) => {
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm" style={{ maxWidth: '379px', width: '100%' }}>
+    <div className="bg-white rounded-lg p-6 shadow-sm lg:max-w-[379px]" style={{  width: '100%' }}>
       <div className="flex flex-col items-center text-center">
         <Avatar className="w-24 h-24 mb-4">
           <AvatarImage src={profilePhotoUrl} alt={name} />

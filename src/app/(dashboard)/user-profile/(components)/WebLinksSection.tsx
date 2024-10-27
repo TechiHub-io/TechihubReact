@@ -7,7 +7,7 @@ interface WebLinksSectionProps {
 
 const WebLinksSection: React.FC<WebLinksSectionProps> = ({ githubUrl, linkedinUrl }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 max-w-[379px]">
+    <div className="bg-white rounded-lg shadow-sm p-6 lg:max-w-[379px]">
       <h2 className="text-xl font-semibold text-[#18191C] mb-4">On the web</h2>
       <div className="space-y-3">
         <div className="flex items-center justify-between">

@@ -4,6 +4,8 @@ import Multistepa from './(components)/Multistep';
 import {motion} from 'framer-motion'
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
+import BlueHeader from '@/(components)/shared/BlueHeader';
+import BouncingCirclesLoader from '@/components/animations/BouncingCircleLoader';
 const Settings = () => {
   const {data:session, status} = useSession({
     required: true,
@@ -29,7 +31,7 @@ const Settings = () => {
   }, [session, status])
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div><BouncingCirclesLoader /></div>;
   }
 
   return (
@@ -40,6 +42,7 @@ const Settings = () => {
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className='w-full'
         >
+          <BlueHeader />
       <Multistepa />
       </motion.div>
     </div>

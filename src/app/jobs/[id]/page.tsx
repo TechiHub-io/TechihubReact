@@ -10,9 +10,10 @@ import { useRouter } from 'next/navigation';
 import Loading from '../loading';
 import dynamic from 'next/dynamic';
 import { DateFormatter } from '@/libs/DateFormatter';
+import BouncingCirclesLoader from '@/components/animations/BouncingCircleLoader';
 
 const DynamicHTMLContent = dynamic(() => import('@/(components)/minimal-tiptap/hooks/HTMLContentDisplay'), {
-  loading: () => <p>Loading...</p>,
+  loading: () => <p><BouncingCirclesLoader /></p>,
   ssr: false
 });
 
