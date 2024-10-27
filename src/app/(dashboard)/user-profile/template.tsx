@@ -194,7 +194,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
   return (
     <section className="flex flex-col xl:flex-row ">
-      <aside className="w-full xl:block xl:w-72 sticky top-0 xl:fixed xl:mt-20 xl:inset-y-0 z-10">
+      <aside className="w-full xl:block xl:w-72 sticky !top-16 xl:fixed xl:mt-20 xl:inset-y-0 z-10" >
         {isMobile ? (
           <div className="sticky top-0 bg-white shadow-xl">
             <button

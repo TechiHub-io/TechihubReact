@@ -10,6 +10,5 @@ export default function DashboardLayout({
   <section>
     <BlueHeader />
     {children}
-    <Footer />
   </section>)
 }
