@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react'
 import { useSession } from 'next-auth/react';
 import { redirect, useRouter } from 'next/navigation';
+import { TopBar, FavouriteJobComponent } from './components/FavouriteJobComponent';
 function FavouriteJobs() {
   const {data:session}= useSession({
     required: true,
@@ -21,8 +22,9 @@ function FavouriteJobs() {
     callout();
   })
   return (
-    <div>
-      Favourite
+    <div className='min-h-screen bg-gray-50'>
+       <TopBar />
+       <FavouriteJobComponent title="Favourite Jobs" />
     </div>
   )
 }

@@ -1,7 +1,14 @@
-export default function FavouritejobsLayout({
+import BlueHeader from "@/(components)/shared/BlueHeader"
+import Footer from "@/(components)/shared/Footer"
+
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <section>{children}</section>
+  return (
+  <section>
+    <BlueHeader />
+    {children}
+  </section>)
 }
