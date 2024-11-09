@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { ChevronDown, ChevronUp, LogOut } from 'lucide-react';
+import { Swrgetdat } from '@/libs/hooks/Swrgetdat';
+import BouncingCirclesLoader from '@/components/animations/BouncingCircleLoader';
+import { useProfilePhoto } from './hooks/ProfilePhotoHandling';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const data = [
   {
@@ -89,6 +93,21 @@ export default function Template({ children }: { children: React.ReactNode }) {
   const [isMobile, setIsMobile] = useState(false);
   const { data: session, status } = useSession();
 
+   // @ts-ignore
+   const userId = session?.user?.userId;
+  //  get image from user profile data
+  const { data : profileData, isLoading, error } = Swrgetdat(`/api/user-profile/${userId}`);
+ 
+  if (isLoading) return <div><BouncingCirclesLoader /></div>;
+  if (error) return <div>Error loading profile</div>;
+
+  const userProfile = profileData?.userProfile;
+  const name = `${userProfile.first_name} ${userProfile.last_name}`;
+  console.log("sessionimage", decodeProfilePhotoUrl(userProfile.profile_photo_url))
+
+  // download and get data 
+  const { photoUrl, isLoading: getLoading, error: getError } = useProfilePhoto(decodeProfilePhotoUrl(userProfile.profile_photo_url));
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1280);
@@ -98,7 +117,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
+  
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const MenuItem = ({ dat }: { dat: DataTypes }) => (
@@ -144,20 +163,28 @@ export default function Template({ children }: { children: React.ReactNode }) {
       <div className="p-6 border-b">
         <div className="flex items-center flex-col justify-center ">
           <div className="relative w-12 h-12 rounded-full overflow-hidden">
-            {session?.user?.image ? (
-              <Image
-                src={decodeProfilePhotoUrl(session.user.image)}
-                alt="Profile"
-                fill
-                className="object-cover"
-              />
+          <Avatar className="w-12 h-12 mb-4">
+            {isLoading ? (
+              <AvatarFallback>...</AvatarFallback>
+            ) : error ? (
+              <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
             ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500 text-xl">
-                  {session?.user?.name?.[0] || 'U'}
-                </span>
-              </div>
+              <AvatarImage 
+                src={photoUrl || ''} 
+                alt={name}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  // Show fallback
+                  const fallback = target.nextElementSibling;
+                  if (fallback) {
+                    fallback.setAttribute('data-state', 'visible');
+                  }
+                }}
+              />
             )}
+            <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          </Avatar>
           </div>
           <div className="flex-1">
             <h3 className="font-medium text-center text-gray-900 truncate">

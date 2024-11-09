@@ -23,9 +23,8 @@ const ProfilePage = () => {
 
   // @ts-ignore
   const userId = session?.user?.userId;
-  console.log(userId);
   const { data, isLoading, error } = Swrgetdat(`/api/user-profile/${userId}`);
-  console.log("my data", data);
+ 
   if (isLoading) return <div><BouncingCirclesLoader /></div>;
   if (error) return <div>Error loading profile</div>;
 

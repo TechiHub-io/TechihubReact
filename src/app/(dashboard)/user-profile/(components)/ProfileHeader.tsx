@@ -1,5 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useProfilePhoto } from '../hooks/ProfilePhotoHandling';
 
 interface ProfileHeaderProps {
   name: string;
@@ -9,11 +10,31 @@ interface ProfileHeaderProps {
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, role, profilePhotoUrl, completionPercentage }) => {
+  const { photoUrl, isLoading, error } = useProfilePhoto(profilePhotoUrl);
+
   return (
     <div className="bg-white rounded-lg p-6 shadow-sm lg:max-w-[379px]" style={{  width: '100%' }}>
       <div className="flex flex-col items-center text-center">
-        <Avatar className="w-24 h-24 mb-4">
-          <AvatarImage src={profilePhotoUrl} alt={name} />
+      <Avatar className="w-24 h-24 mb-4">
+          {isLoading ? (
+            <AvatarFallback>...</AvatarFallback>
+          ) : error ? (
+            <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+          ) : (
+            <AvatarImage 
+              src={photoUrl || ''} 
+              alt={name}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                // Show fallback
+                const fallback = target.nextElementSibling;
+                if (fallback) {
+                  fallback.setAttribute('data-state', 'visible');
+                }
+              }}
+            />
+          )}
           <AvatarFallback>{name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
         </Avatar>
         <h1 className="text-2xl font-semibold text-gray-800 mb-2">{name}</h1>
