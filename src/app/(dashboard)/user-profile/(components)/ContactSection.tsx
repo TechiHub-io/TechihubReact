@@ -1,13 +1,31 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import EditProfileDialog from '@/(components)/homepage/EditProfileDialogProps';
+import { Button } from '@/components/ui/button';
+
+interface UserProfile {
+  // Add the actual properties of your user profile
+  id?: string;
+  first_name: any;
+  last_name: any;
+  address: any;
+  email: any;
+  role_name: any;
+  phone_number: any;
+  githubUrl: any;
+  linkedinUrl: any;
+  about: any;
+}
+
 
 interface ContactSectionProps {
   phone: string;
   email: string;
   linkedin: string;
+  userProfile: UserProfile;
 }
 
-const ContactSection: React.FC<ContactSectionProps> = ({ phone, email, linkedin }) => {
+const ContactSection: React.FC<ContactSectionProps> = ({ phone, email, userProfile, linkedin }) => {
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -22,8 +40,9 @@ const ContactSection: React.FC<ContactSectionProps> = ({ phone, email, linkedin 
 
   return (
     <Card className="mb-6 bg-white shadow-sm rounded-lg lg:max-w-[379px]">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 ">
         <CardTitle className="text-xl font-semibold text-[#18191C]">Contact</CardTitle>
+        
       </CardHeader>
       <CardContent >
         <div className='flex justify-between'>
@@ -77,6 +96,14 @@ const ContactSection: React.FC<ContactSectionProps> = ({ phone, email, linkedin 
             <path d="M10 14L21 3" stroke="#364187" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
+        <EditProfileDialog
+            userProfile={userProfile}
+            trigger={
+              <Button variant="ghost" size="sm" className="flex items-center w-full justify-center bg-[#31ac54] text-[#fff] mt-2 hover:bg-[#31ac54be] hover:text-[#fff]">
+                Edit
+              </Button>
+            }
+          />
       </CardContent>
     </Card>
   );

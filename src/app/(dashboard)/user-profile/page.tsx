@@ -63,11 +63,13 @@ const ProfilePage = () => {
               role={userProfile.role_name}
               profilePhotoUrl={decodeProfilePhotoUrl(userProfile.profile_photo_url)}
               completionPercentage={calculateProfileCompletion()}
+              userProfile={userProfile}
             />
             <ContactSection
               phone={userProfile.phone_number}
               email={userProfile.email}
               linkedin={userProfile.linkedinUrl}
+              userProfile={userProfile}
             />
             <WebLinksSection
               githubUrl={userProfile.githubUrl}
