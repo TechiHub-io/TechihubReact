@@ -23,7 +23,7 @@ const UserProfileCheck: React.FC<UserProfileCheckProps> = ({ children }) => {
   // @ts-ignore
   const userId = session?.user?.userId;
   const { data, isLoading, error } = Swrgetdat(`/api/user-profile/${userId}`);
-
+  console.log("data", data)
   useEffect(() => {
     if (!isLoading && !error) {
       if (!data || !data.userProfile) {

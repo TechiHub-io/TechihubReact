@@ -59,16 +59,16 @@ export async function signUserUpEmployee(state: { message: string }, formData: F
   try {
     const response = await axios.post(`${baseurl}/api/users/register/employer`, rawformData).then(response => response.data).catch(error =>  error);
     
-    if(response.message === "Request failed with status code 400"){
+    if(response.response.data.message === "Request failed with status code 400"){
       return {message: "Try refreshing the page or use another email type, contact us if it all fails"}
-    } else if(response.statusCode === 400) {
-      return {message: `You have encountered an error ${response.message}`}
-    } else if(response.statusCode === 200) {
+    } else if(response.response.data.statusCode === 400) {
+      return {message: `You have encountered an error ${response.response.data.message}`}
+    } else if(response.response.data.statusCode === 200) {
        redirect('/verification');
-    }else if( response.statusCode !== 200){
-      return {message: `${response.message}`}
+    }else if( response.response.data.statusCode !== 200){
+      return {message: `${response.response.data.message}`}
     }
-    return {message: `${response.message}`}
+    return {message: `${response.response.data.message}`}
 
   } catch (error: any) {
     console.error('SignIn error:', error);
