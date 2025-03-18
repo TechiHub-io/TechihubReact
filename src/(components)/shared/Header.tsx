@@ -110,10 +110,10 @@ function Header() {
               <NavLink href='/home'>Home</NavLink>
               <NavLink href='/about-us'>About us</NavLink>
               <NavLink href='/our-services'>Our Services</NavLink>
-              <NavLink href='/jobs'>Job board</NavLink>
-              {
+              {/* <NavLink href='/jobs'>Job board</NavLink> */}
+              {/* {
                 !session?.user ? <NavLink href='/sign-in'>Sign-in</NavLink> :<SignOut />
-              }
+              } */}
               
               {employee !== "EMPLOYER" ? (
                 <NavLink children href="/dashboard"></NavLink>

@@ -6,8 +6,8 @@ export default function SettingsLayout({
   children: React.ReactNode
 }) {
   return <section>
-    <UserProfileCheck>
+    {/* <UserProfileCheck> */}
      {children}
-    </UserProfileCheck>
+    {/* </UserProfileCheck>  */}
     </section>
 }

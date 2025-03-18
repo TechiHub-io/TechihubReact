@@ -115,9 +115,6 @@ const ProfileCompletionForm: React.FC = () => {
 
   const [createProfileState, createProfileAction] = useFormState(formAction, { message: '' });
 
-
-
-
   useEffect(() => {
     updateProgress();
   }, [formData, completedSteps]);

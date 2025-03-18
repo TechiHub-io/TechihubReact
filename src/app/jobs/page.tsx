@@ -29,8 +29,19 @@ function Page() {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <main>
-      <Filter dispatch={dispatch} />
+      {/* <Filter dispatch={dispatch} />
       <Jobs filters={state} />
+      */}
+      
+      <div className="bg-gray-100 py-16 px-4 text-center">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Coming Soon</h2>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+          We're working hard to bring you an amazing job search experience. 
+          Stay tuned for our comprehensive job listings and advanced filtering options.
+        </p>
+       
+      </div>
+      
       <Homethirdsection title={'What People say about Techihub'} />
     </main>
   );
