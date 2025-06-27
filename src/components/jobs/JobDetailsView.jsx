@@ -31,7 +31,7 @@ import {
 export default function JobDetailsView({ jobId }) {
   const router = useRouter();
   const { currentJob, fetchJobById, toggleJobStatus, loading, error } = useJobs();
-
+  
   // Add saved jobs hook for job seekers
   const { 
     isJobSaved, 
@@ -59,6 +59,24 @@ export default function JobDetailsView({ jobId }) {
   // Check if current user owns this job
   const isOwner = isEmployer && company && currentJob && 
     (currentJob.company_id === company.id || currentJob.company_name === company.name);
+
+  // Helper function to safely render HTML content
+  const createMarkup = (htmlContent) => {
+    // If content is plain text (no HTML tags), convert line breaks to <br> tags
+    if (htmlContent && !htmlContent.includes('<')) {
+      return { __html: htmlContent.replace(/\n/g, '<br>') };
+    }
+    // If content already contains HTML, use it as is
+    return { __html: htmlContent || '' };
+  };
+
+  // Helper function to check if content has meaningful text
+  const hasContent = (htmlContent) => {
+    if (!htmlContent) return false;
+    // Remove HTML tags and check if there's actual text content
+    const textContent = htmlContent.replace(/<[^>]*>/g, '').trim();
+    return textContent.length > 0;
+  };
   
   useEffect(() => {
     // Only load data once
@@ -87,7 +105,7 @@ export default function JobDetailsView({ jobId }) {
     return () => {
       isMounted.current = false;
     };
-  }, [jobId]); // Only include jobId in the dependency array, not fetchJobById
+  }, [jobId]);
   
   // Handle job activation/deactivation
   const handleToggleStatus = async () => {
@@ -381,25 +399,6 @@ export default function JobDetailsView({ jobId }) {
                 </div>
               )}
               
-              {!isEmployer && (
-                <>
-                  <Link
-                    href={`/jobs/${jobId}/apply`}
-                    className="block w-full px-4 py-2 bg-[#0CCE68] text-white text-center rounded-md hover:bg-[#0BBE58]"
-                  >
-                    Apply for Job
-                  </Link>
-                  
-                  <ContactEmployerButton 
-                    job={currentJob}
-                    jobDetails={currentJob} 
-                    variant="button"
-                    size="md"
-                    className="w-full"
-                  />
-                </>
-              )}
-
               {currentJob.application_deadline && (
                 <div className="flex items-center text-gray-500 dark:text-gray-400">
                   <Clock className="w-4 h-4 mr-1.5" />
@@ -410,6 +409,8 @@ export default function JobDetailsView({ jobId }) {
               )}
             </div>
           </div>
+
+          {/* Company Info Section */}
           {currentJob?.company && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -442,7 +443,7 @@ export default function JobDetailsView({ jobId }) {
                 {/* Actions */}
                 <div className="flex space-x-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                   <Link
-                    href={`/companies/${currentJob.company.id}`}
+                    href={`/company/${currentJob.company.id}`}
                     className="text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium"
                   >
                     View Company Profile
@@ -459,41 +460,45 @@ export default function JobDetailsView({ jobId }) {
               </div>
             </div>
           )}
+          
           {/* Job description */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Description
             </h3>
-            <div className="prose max-w-none dark:prose-invert text-gray-700 dark:text-gray-300">
-              {currentJob.description ? (
-                <p className="whitespace-pre-line">{currentJob.description}</p>
-              ) : (
-                <p className="text-gray-500 dark:text-gray-400">No description provided</p>
-              )}
-            </div>
+            {hasContent(currentJob.description) ? (
+              <div 
+                className="job-content text-gray-700 dark:text-gray-300"
+                dangerouslySetInnerHTML={createMarkup(currentJob.description)}
+              />
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 italic">No description provided</p>
+            )}
           </div>
           
           {/* Responsibilities */}
-          {currentJob.responsibilities && (
+          {hasContent(currentJob.responsibilities) && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Responsibilities
               </h3>
-              <div className="prose max-w-none dark:prose-invert text-gray-700 dark:text-gray-300">
-                <p className="whitespace-pre-line">{currentJob.responsibilities}</p>
-              </div>
+              <div 
+                className="job-content text-gray-700 dark:text-gray-300"
+                dangerouslySetInnerHTML={createMarkup(currentJob.responsibilities)}
+              />
             </div>
           )}
           
           {/* Requirements */}
-          {currentJob.requirements && (
+          {hasContent(currentJob.requirements) && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              <h3 className="text-lg font-semibent text-gray-900 dark:text-white mb-4">
                 Requirements
               </h3>
-              <div className="prose max-w-none dark:prose-invert text-gray-700 dark:text-gray-300">
-                <p className="whitespace-pre-line">{currentJob.requirements}</p>
-              </div>
+              <div 
+                className="job-content text-gray-700 dark:text-gray-300"
+                dangerouslySetInnerHTML={createMarkup(currentJob.requirements)}
+              />
             </div>
           )}
           
@@ -524,14 +529,15 @@ export default function JobDetailsView({ jobId }) {
           )}
           
           {/* Benefits */}
-          {currentJob.benefits && (
+          {hasContent(currentJob.benefits) && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Benefits
               </h3>
-              <div className="prose max-w-none dark:prose-invert text-gray-700 dark:text-gray-300">
-                <p className="whitespace-pre-line">{currentJob.benefits}</p>
-              </div>
+              <div 
+                className="job-content text-gray-700 dark:text-gray-300"
+                dangerouslySetInnerHTML={createMarkup(currentJob.benefits)}
+              />
             </div>
           )}
         </div>
@@ -639,6 +645,14 @@ export default function JobDetailsView({ jobId }) {
                     size="md"
                     showText={true}
                     className="w-full justify-center border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  />
+
+                  <ContactEmployerButton 
+                    job={currentJob}
+                    jobDetails={currentJob} 
+                    variant="button"
+                    size="md"
+                    className="w-full"
                   />
                 </>
               )}

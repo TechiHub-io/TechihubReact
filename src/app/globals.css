@@ -275,3 +275,306 @@
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+
+/* Quill Editor Dark Theme Support */
+.dark .ql-snow .ql-toolbar {
+  border-color: rgb(75 85 99);
+  background-color: rgb(55 65 81);
+}
+
+.dark .ql-snow .ql-container {
+  border-color: rgb(75 85 99);
+  background-color: rgb(31 41 55);
+  color: rgb(229 231 235);
+}
+
+.dark .ql-snow .ql-editor {
+  color: rgb(229 231 235);
+}
+
+.dark .ql-snow .ql-editor.ql-blank::before {
+  color: rgb(156 163 175);
+}
+
+.dark .ql-snow .ql-stroke {
+  stroke: rgb(229 231 235);
+}
+
+.dark .ql-snow .ql-fill {
+  fill: rgb(229 231 235);
+}
+
+.dark .ql-snow .ql-picker {
+  color: rgb(229 231 235);
+}
+
+.dark .ql-snow .ql-picker-options {
+  background-color: rgb(55 65 81);
+  border-color: rgb(75 85 99);
+}
+
+.dark .ql-snow .ql-picker-item:hover {
+  background-color: rgb(75 85 99);
+}
+
+.dark .ql-snow .ql-active {
+  color: #0CCE68;
+}
+
+.dark .ql-snow .ql-toolbar button:hover,
+.dark .ql-snow .ql-toolbar button.ql-active {
+  color: #0CCE68;
+}
+
+/* Responsive Quill Editor */
+@media (max-width: 640px) {
+  .ql-toolbar {
+    flex-wrap: wrap;
+  }
+  
+  .ql-toolbar .ql-formats {
+    margin-right: 8px;
+    margin-bottom: 4px;
+  }
+}
+
+
+/* Job Content Styling - Display Lists as Formatted */
+.job-content {
+  line-height: 1.6;
+}
+
+.job-content p {
+  margin: 0.75em 0;
+}
+
+.job-content p:first-child {
+  margin-top: 0;
+}
+
+.job-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Unordered Lists */
+.job-content ul {
+  margin: 1em 0;
+  padding-left: 1.5em;
+  list-style-type: disc;
+}
+
+.job-content ul ul {
+  margin: 0.5em 0;
+  list-style-type: circle;
+}
+
+.job-content ul ul ul {
+  list-style-type: square;
+}
+
+/* Ordered Lists */
+.job-content ol {
+  margin: 1em 0;
+  padding-left: 1.5em;
+  list-style-type: decimal;
+}
+
+.job-content ol ol {
+  margin: 0.5em 0;
+  list-style-type: lower-alpha;
+ }
+ 
+ .job-content ol ol ol {
+  list-style-type: lower-roman;
+ }
+ 
+ /* List Items */
+ .job-content li {
+  margin: 0.25em 0;
+  padding-left: 0.25em;
+ }
+ 
+ .job-content li > p {
+  margin: 0.25em 0;
+ }
+ 
+ /* Nested Lists */
+ .job-content li > ul,
+ .job-content li > ol {
+  margin: 0.5em 0;
+ }
+ 
+ /* Headings in Job Content */
+ .job-content h1 {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin: 1.5em 0 0.75em 0;
+  color: rgb(17 24 39);
+ }
+ 
+ .job-content h2 {
+  font-size: 1.3em;
+  font-weight: 600;
+  margin: 1.25em 0 0.5em 0;
+  color: rgb(17 24 39);
+ }
+ 
+ .job-content h3 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 1em 0 0.5em 0;
+  color: rgb(17 24 39);
+ }
+ 
+ .job-content h1:first-child,
+ .job-content h2:first-child,
+ .job-content h3:first-child {
+  margin-top: 0;
+ }
+ 
+ /* Text Formatting */
+ .job-content strong {
+  font-weight: 600;
+  color: rgb(17 24 39);
+ }
+ 
+ .job-content em {
+  font-style: italic;
+ }
+ 
+ .job-content u {
+  text-decoration: underline;
+ }
+ 
+ /* Dark Mode Styles */
+ .dark .job-content {
+  color: rgb(229 231 235);
+ }
+ 
+ .dark .job-content h1,
+ .dark .job-content h2,
+ .dark .job-content h3 {
+  color: rgb(255 255 255);
+ }
+ 
+ .dark .job-content strong {
+  color: rgb(255 255 255);
+ }
+ 
+ /* List Markers in Dark Mode */
+ .dark .job-content ul {
+  color: rgb(229 231 235);
+ }
+ 
+ .dark .job-content ol {
+  color: rgb(229 231 235);
+ }
+ 
+ .dark .job-content li {
+  color: rgb(229 231 235);
+ }
+ 
+ /* Ensure list markers are visible */
+ .job-content ul li::marker {
+  color: currentColor;
+ }
+ 
+ .job-content ol li::marker {
+  color: currentColor;
+  font-weight: normal;
+ }
+ 
+ /* Responsive adjustments */
+ @media (max-width: 640px) {
+  .job-content ul,
+  .job-content ol {
+    padding-left: 1.25em;
+  }
+  
+  .job-content h1 {
+    font-size: 1.4em;
+  }
+  
+  .job-content h2 {
+    font-size: 1.2em;
+  }
+  
+  .job-content h3 {
+    font-size: 1.05em;
+  }
+ }
+ 
+ /* Print Styles */
+ @media print {
+  .job-content {
+    color: black;
+  }
+  
+  .job-content ul,
+  .job-content ol {
+    break-inside: avoid;
+  }
+  
+  .job-content li {
+    break-inside: avoid;
+  }
+ }
+ 
+ /* Ensure proper spacing for mixed content */
+ .job-content > *:first-child {
+  margin-top: 0;
+ }
+ 
+ .job-content > *:last-child {
+  margin-bottom: 0;
+ }
+ 
+ /* Handle empty paragraphs from Quill */
+ .job-content p:empty {
+  margin: 0.5em 0;
+  min-height: 1em;
+ }
+ 
+ .job-content br {
+  line-height: 1.6;
+ }
+ 
+ /* Custom bullet styles to ensure visibility */
+ .job-content ul > li {
+  position: relative;
+ }
+ 
+ .job-content ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1em;
+  top: 0.6em;
+  width: 4px;
+  height: 4px;
+  background-color: currentColor;
+  border-radius: 50%;
+ }
+ 
+ /* Remove default list styling and use custom */
+ .job-content ul {
+  list-style: none;
+ }
+ 
+ .job-content ol {
+  list-style: decimal;
+ }
+ 
+ /* Nested list custom styling */
+ .job-content ul ul > li::before {
+  border: 1px solid currentColor;
+  background-color: transparent;
+ }
+ 
+ .job-content ul ul ul > li::before {
+  clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+  background-color: currentColor;
+  border: none;
+  width: 6px;
+  height: 6px;
+ }
