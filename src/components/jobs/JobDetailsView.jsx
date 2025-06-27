@@ -443,7 +443,7 @@ export default function JobDetailsView({ jobId }) {
                 {/* Actions */}
                 <div className="flex space-x-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                   <Link
-                    href={`/company/${currentJob.company.id}`}
+                    href={`${isEmployer ? `/company/${currentJob.company.id}` : `/dashboard/jobseeker/companies/${currentJob.company.id}`}`}
                     className="text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium"
                   >
                     View Company Profile
