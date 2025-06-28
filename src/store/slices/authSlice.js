@@ -116,7 +116,7 @@ export const createAuthSlice = (set, get) => ({
         const errorData = await response.json();
         
         throw new Error(
-          errorData.detail || "Login failed. Please check your credentials."
+          errorData.detail || errorData.message || "Login failed. Please check your credentials."
         );
       }
 
