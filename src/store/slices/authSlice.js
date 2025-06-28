@@ -111,11 +111,12 @@ export const createAuthSlice = (set, get) => ({
         credentials: "include",
         body: JSON.stringify(credentials),
       });
-
+     
       if (!response.ok) {
         const errorData = await response.json();
+        
         throw new Error(
-          errorData.message || "Login failed. Please check your credentials."
+          errorData.detail || "Login failed. Please check your credentials."
         );
       }
 
@@ -625,7 +626,6 @@ export const createAuthSlice = (set, get) => ({
     try {
       const data = await socialAuth(provider, accessToken);
       
-      console.log('Social auth response:', data);
       
       // ✅ Set ALL required middleware cookies
       
@@ -751,7 +751,6 @@ export const createAuthSlice = (set, get) => ({
       else {
         try {
           const profileStrength = data.profile?.profile_strength || 0;
-          console.log(`Profile strength for Google user: ${profileStrength}`);
           
           // ✅ Use > 20 threshold as requested
           const hasCompletedProfile = profileStrength > 20;
@@ -762,7 +761,6 @@ export const createAuthSlice = (set, get) => ({
             path: "/",
           });
           
-          console.log(`Profile completion status: ${hasCompletedProfile}`);
         } catch (error) {
           console.error("Error checking profile strength:", error);
           Cookies.set("has_completed_profile", "false", {
@@ -793,7 +791,6 @@ export const createAuthSlice = (set, get) => ({
         }
       });
 
-      console.log('All cookies set - middleware will handle redirect');
       return data;
     } catch (error) {
       console.error("Social login error:", error);
