@@ -211,7 +211,7 @@ export default function TeamSettings() {
           )}
 
           {/* Quick Invite */}
-          <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+          {/* <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
               Quick Invite
             </h4>
@@ -240,7 +240,7 @@ export default function TeamSettings() {
                 {sendingInvite ? 'Sending...' : 'Send Invite'}
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* Link to Full Team Management */}
           <Link
