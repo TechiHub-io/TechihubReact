@@ -48,8 +48,10 @@ export const createTeamSlice = (set, get) => ({
 
       const data = await response.json();
 
+      const members = Array.isArray(data) ? data : (data.results || []);
+
       set((state) => {
-        state.teamMembers = data;
+        state.teamMembers = members;
         state.loading = false;
       });
 
@@ -95,9 +97,10 @@ export const createTeamSlice = (set, get) => ({
       }
 
       const data = await response.json();
+      const invitations = Array.isArray(data) ? data : (data.results || []);
 
       set((state) => {
-        state.teamInvitations = data;
+        state.teamInvitations = invitations;
         state.loading = false;
       });
 

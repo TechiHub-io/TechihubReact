@@ -78,6 +78,7 @@ const LoginPage = () => {
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -86,9 +87,21 @@ const LoginPage = () => {
     }
     
     try {
-      await login(formData);
+      // Normalize email to lowercase before sending
+      const normalizedFormData = {
+        ...formData,
+        email: formData.email.toLowerCase()
+      };
       
-      // After successful login, check cookies to determine redirect
+      const result = await login(normalizedFormData);
+      
+      // Check for pending invitations in the response
+      if (result?.has_pending_invitations) {
+        router.push('/dashboard/invitations');
+        return;
+      }
+      
+      // Normal login flow - check cookies to determine redirect
       const hasCompany = Cookies.get('has_company') === 'true';
       const hasMultipleCompanies = Cookies.get('has_multiple_companies') === 'true';
       const isEmployerRole = Cookies.get('user_role') === 'employer';
@@ -96,23 +109,18 @@ const LoginPage = () => {
       if (isEmployerRole) {
         if (hasCompany) {
           if (hasMultipleCompanies) {
-            // If user has multiple companies, go to company selection page
             window.location.href = '/companies/select';
           } else {
-            // User has one company, go to employer dashboard
             window.location.href = '/dashboard/employer';
           }
         } else {
-          // Employer without company, go to setup
           window.location.href = '/company/setup';
         }
       } else {
-        // Job seeker - go to jobseeker dashboard
         window.location.href = '/dashboard/jobseeker';
       }
     } catch (error) {
       console.error('Login failed:', error);
-      // Error is handled by the store and displayed below
     }
   };
 

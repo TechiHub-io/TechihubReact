@@ -13,6 +13,8 @@ export const createAuthSlice = (set, get) => ({
   error: null,
   verificationEmail: null,
   sessionValid: true,
+  pendingInvitations: [],
+  hasPendingInvitations: false,
 
   // Actions
   setUser: (user) =>
@@ -111,26 +113,42 @@ export const createAuthSlice = (set, get) => ({
         credentials: "include",
         body: JSON.stringify(credentials),
       });
-     
+
       if (!response.ok) {
         const errorData = await response.json();
-        
         throw new Error(
-          errorData.detail || errorData.message || "Login failed. Please check your credentials."
+          errorData.detail || "Login failed. Please check your credentials."
         );
       }
 
       const data = await response.json();
 
-      // Set auth cookies
+      // ✅ NEW: Handle pending invitations
+      if (data.has_pending_invitations && data.pending_invitations) {
+        // Store invitations in sessionStorage for the invitations page
+        sessionStorage.setItem('pending_invitations', JSON.stringify(data.pending_invitations));
+        
+        // Set a flag in cookies for middleware
+        Cookies.set("has_pending_invitations", "true", {
+          expires: 1,
+          sameSite: "strict",
+          path: "/",
+        });
+      } else {
+        // Clear any existing invitation flags
+        Cookies.remove("has_pending_invitations", { path: "/" });
+        sessionStorage.removeItem('pending_invitations');
+      }
+
+      // Set auth cookies (existing code)
       Cookies.set("auth_token", data.access, {
-        expires: 1, // 1 day
+        expires: 1,
         sameSite: "strict",
         path: "/",
       });
 
       Cookies.set("refresh_token", data.refresh, {
-        expires: 7, // 7 days
+        expires: 7,
         sameSite: "strict",
         path: "/",
       });
@@ -145,7 +163,6 @@ export const createAuthSlice = (set, get) => ({
       let userCompanies = [];
       if (data?.user?.is_employer) {
         try {
-          // Call the companies/me/ endpoint
           const companiesResponse = await fetch(`${API_URL}/companies/me/`, {
             headers: {
               Authorization: `Bearer ${data.access}`,
@@ -155,22 +172,17 @@ export const createAuthSlice = (set, get) => ({
 
           if (companiesResponse.ok) {
             userCompanies = await companiesResponse.json();
-
             if (Array.isArray(userCompanies) && userCompanies.length > 0) {
-
-              // Set company ID in cookies
               Cookies.set("company_id", userCompanies[0].id, {
                 expires: 7,
                 sameSite: "strict",
                 path: "/",
               });
-
               Cookies.set("has_company", "true", {
                 expires: 7,
                 sameSite: "strict",
                 path: "/",
               });
-
               if (userCompanies.length > 1) {
                 Cookies.set("has_multiple_companies", "true", {
                   expires: 7,
@@ -206,11 +218,9 @@ export const createAuthSlice = (set, get) => ({
           });
         }
       } 
-      // Enhanced job seeker flow with profile strength check
+      // Enhanced job seeker flow (existing logic)
       else {
         try {
-          
-          // First get the profile ID
           const profileIdResponse = await fetch(`${API_URL}/user/profile-id/`, {
             headers: {
               Authorization: `Bearer ${data.access}`,
@@ -222,7 +232,6 @@ export const createAuthSlice = (set, get) => ({
             const { profile_id } = await profileIdResponse.json();
             
             if (profile_id) {
-              // Fetch the full profile to get profile_strength
               const profileResponse = await fetch(`${API_URL}/profiles/${profile_id}/`, {
                 headers: {
                   Authorization: `Bearer ${data.access}`,
@@ -234,8 +243,6 @@ export const createAuthSlice = (set, get) => ({
                 const profileData = await profileResponse.json();
                 const profileStrength = profileData.profile_strength || 0;
                 
-                
-                // Set profile completion status based on strength
                 if (profileStrength >= 20) {
                   Cookies.set("has_completed_profile", "true", {
                     expires: 7,
@@ -250,7 +257,6 @@ export const createAuthSlice = (set, get) => ({
                   });
                 }
                 
-                // Store profile data in the state for immediate use
                 set((state) => {
                   state.profile = profileData;
                   state.profileId = profile_id;
@@ -278,7 +284,6 @@ export const createAuthSlice = (set, get) => ({
           }
         } catch (error) {
           console.error("Error checking profile strength:", error);
-          // Default to incomplete profile on error
           Cookies.set("has_completed_profile", "false", {
             expires: 7,
             sameSite: "strict",
@@ -287,7 +292,7 @@ export const createAuthSlice = (set, get) => ({
         }
       }
 
-      // Update auth state with all the data including companies
+      // Update auth state
       set((state) => {
         state.user = data.user;
         state.token = data.access;
@@ -296,8 +301,16 @@ export const createAuthSlice = (set, get) => ({
         state.isEmployer = data?.user?.is_employer;
         state.sessionValid = true;
         state.loading = false;
+        
+        // ✅ NEW: Store invitation data in state
+        if (data.has_pending_invitations) {
+          state.pendingInvitations = data.pending_invitations;
+          state.hasPendingInvitations = true;
+        } else {
+          state.pendingInvitations = [];
+          state.hasPendingInvitations = false;
+        }
 
-        // Also update companies in the state directly here for employers
         if (data?.user?.is_employer) {
           state.companies = userCompanies;
           if (userCompanies.length > 0) {
@@ -461,6 +474,86 @@ export const createAuthSlice = (set, get) => ({
       });
       throw error;
     }
+  },
+
+  acceptInvitation: async (invitationToken) => {
+    set((state) => {
+      state.loading = true;
+      state.error = null;
+    });
+  
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
+      const response = await fetch(`${API_URL}/companies/invitations/${invitationToken}/accept/`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${get().token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to accept invitation');
+      }
+  
+      const data = await response.json();
+  
+      // Remove the accepted invitation from state
+      set((state) => {
+        state.pendingInvitations = state.pendingInvitations.filter(
+          inv => inv.token !== invitationToken
+        );
+        state.hasPendingInvitations = state.pendingInvitations.length > 0;
+        state.loading = false;
+      });
+  
+      // Update sessionStorage
+      const updatedInvitations = get().pendingInvitations;
+      if (updatedInvitations.length > 0) {
+        sessionStorage.setItem('pending_invitations', JSON.stringify(updatedInvitations));
+      } else {
+        sessionStorage.removeItem('pending_invitations');
+        Cookies.remove("has_pending_invitations", { path: "/" });
+      }
+  
+      return data;
+    } catch (error) {
+      console.error("Accept invitation error:", error);
+      set((state) => {
+        state.error = error.message;
+        state.loading = false;
+      });
+      throw error;
+    }
+  },
+  
+  declineInvitation: async (invitationId) => {
+    // Remove the invitation from state (you might want to add a backend endpoint for this)
+    set((state) => {
+      state.pendingInvitations = state.pendingInvitations.filter(
+        inv => inv.id !== invitationId
+      );
+      state.hasPendingInvitations = state.pendingInvitations.length > 0;
+    });
+  
+    // Update sessionStorage
+    const updatedInvitations = get().pendingInvitations;
+    if (updatedInvitations.length > 0) {
+      sessionStorage.setItem('pending_invitations', JSON.stringify(updatedInvitations));
+    } else {
+      sessionStorage.removeItem('pending_invitations');
+      Cookies.remove("has_pending_invitations", { path: "/" });
+    }
+  },
+  
+  clearInvitations: () => {
+    set((state) => {
+      state.pendingInvitations = [];
+      state.hasPendingInvitations = false;
+    });
+    sessionStorage.removeItem('pending_invitations');
+    Cookies.remove("has_pending_invitations", { path: "/" });
   },
 
   verifyEmail: async (token) => {
@@ -823,6 +916,9 @@ export const createAuthSlice = (set, get) => ({
       "has_completed_profile",
       "profile_id",
       
+      // Invitation cookies
+      "has_pending_invitations",
+
       // Registration flow cookies
       "registration_type",
       
@@ -852,6 +948,7 @@ export const createAuthSlice = (set, get) => ({
       localStorage.removeItem("user_data");
       localStorage.removeItem("company_data");
       localStorage.removeItem("profile_data");
+      sessionStorage.removeItem('pending_invitations');
       
       // Clear all localStorage (if you want complete cleanup)
       const localStorageKeys = Object.keys(localStorage);
@@ -879,6 +976,8 @@ export const createAuthSlice = (set, get) => ({
       state.error = null;
       state.verificationEmail = null;
       state.sessionValid = false;
+      state.pendingInvitations = [];
+      state.hasPendingInvitations = false;
       
       // Company state
       state.company = null;

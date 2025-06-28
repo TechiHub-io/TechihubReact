@@ -120,20 +120,31 @@ const EmployerRegisterPage = () => {
     if (!validateForm()) {
       return;
     }
-
+  
     try {
       const userData = {
         ...formData,
+        email: formData.email.toLowerCase(), // Normalize email
         isEmployer: true,
       };
-      await register(userData);
-      router.push("/auth/verification");
+      
+      const result = await register(userData);
+      
+      // Check if there were accepted invitations
+      if (result?.accepted_invitations && result.accepted_invitations.length > 0) {
+        // Show success message about invitations
+        console.log('Invitations accepted:', result.accepted_invitations);
+        router.push("/dashboard");
+      } else {
+        router.push("/auth/verification");
+      }
     } catch (err) {
-      if (err.message && err.message.includes("This field must be unique")) {
+      if (err.response?.data?.has_invitations) {
+        router.push("/auth/login?message=pending_invitations");
+      } else if (err.message && err.message.includes("already registered")) {
         setValidationErrors((prev) => ({
           ...prev,
-          email:
-            "This email is already registered. Please use a different email or try to login.",
+          email: "This email is already registered. Please try to login instead.",
         }));
       } else {
         console.error("Registration failed:", err);
