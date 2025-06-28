@@ -4,10 +4,12 @@ import { useCompany } from '@/hooks/useCompany';
 import { useNotification } from '@/hooks/useNotification';
 import { ImageIcon, Plus, Trash2, Upload, X } from 'lucide-react';
 
-export default function CompanyGallerySection({ company, isOwner, companyId }) {
-  const { addCompanyImage, deleteImage, isAddingImage } = useCompany();
+export default function CompanyGallerySection({  isOwner, companyId }) {
+  const { company, addCompanyImage, deleteImage, isAddingImage } = useCompany();
   const { showSuccess, showError } = useNotification();
   
+  
+
   // State for uploading images
   const [isAddingMode, setIsAddingMode] = useState(false);
   const [uploadData, setUploadData] = useState({
@@ -117,7 +119,7 @@ export default function CompanyGallerySection({ company, isOwner, companyId }) {
   };
   
   const hasImages = company?.images && company.images.length > 0;
-  
+
   // Filter and ensure unique images with valid IDs
   const validImages = hasImages ? company.images.filter((image, index, arr) => {
     // Filter out images without IDs or with duplicate IDs

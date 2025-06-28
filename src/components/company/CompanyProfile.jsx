@@ -219,17 +219,13 @@ export default function CompanyProfile({ company, isOwner, companyId }) {
       />
       
       <CompanyBenefitsSection 
-        company={company} 
         isOwner={isOwner} 
         companyId={companyId} 
       />
       
       <CompanyGallerySection 
-        key={refreshKey} 
-        company={company} 
         isOwner={isOwner} 
         companyId={companyId} 
-        onRefresh={handleRefresh}
       />
       
       {/* <CompanyTeamSection 

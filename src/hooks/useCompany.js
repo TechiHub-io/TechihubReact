@@ -115,24 +115,30 @@ export function useCompany() {
         throw new Error('Company ID is required');
       }
       
-      // Use the store method if available, otherwise make direct API call
+      let response;
+      
+      // Use the store method if available
       if (typeof storeAddCompanyBenefit === 'function') {
-        return await storeAddCompanyBenefit(benefitData);
+        response = await storeAddCompanyBenefit(benefitData);
+      } else {
+        // Direct API call if store method not available
+        const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
+        const apiResponse = await axios.post(`${API_URL}/companies/${companyId}/add_benefit/`, benefitData);
+        response = apiResponse.data;
       }
       
-      // Direct API call if store method not available
-      const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
-      const response = await axios.post(`${API_URL}/companies/${companyId}/add_benefit/`, benefitData);
+      // Extract the actual benefit data from the response
+      const actualBenefitData = response.data || response; // Changed variable name to avoid conflict
       
-      // Manually update company state if needed
-      if (company) {
+      // ALWAYS update local state after successful API call
+      if (company && actualBenefitData) {
         setCompany({
           ...company,
-          benefits: company.benefits ? [...company.benefits, response.data] : [response.data]
+          benefits: company.benefits ? [...company.benefits, actualBenefitData] : [actualBenefitData]
         });
       }
       
-      return response.data;
+      return actualBenefitData;
     } catch (error) {
       console.error('Error adding company benefit:', error);
       throw error;
@@ -184,43 +190,56 @@ export function useCompany() {
       if (!companyId) {
         throw new Error('Company ID is required');
       }
+  
+      console.log('Before adding image - current company images:', company?.images?.length);
+      
+      let response;
       
       // Use store method if available
       if (typeof storeAddCompanyImage === 'function') {
-        return await storeAddCompanyImage(imageData);
-      }
-      
-      // Direct API call if store method not available
-      // Create form data for image upload
-      const formData = new FormData();
-      if (imageData.image) {
-        formData.append('image', imageData.image);
-      }
-      if (imageData.caption) {
-        formData.append('caption', imageData.caption);
-      }
-      if (imageData.display_order) {
-        formData.append('display_order', imageData.display_order);
-      }
-      
-      const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
-      const response = await axios.post(
-        `${API_URL}/companies/${companyId}/add_image/`,
-        formData,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' }
+        console.log('Using store method for adding image');
+        response = await storeAddCompanyImage(imageData);
+      } else {
+        console.log('Using direct API call for adding image');
+        const formData = new FormData();
+        if (imageData.image) {
+          formData.append('image', imageData.image);
         }
-      );
-      
-      // Update local state
-      if (company) {
-        setCompany({
-          ...company,
-          images: company.images ? [...company.images, response.data] : [response.data]
-        });
+        if (imageData.caption) {
+          formData.append('caption', imageData.caption);
+        }
+        if (imageData.display_order) {
+          formData.append('display_order', imageData.display_order);
+        }
+        
+        const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
+        const apiResponse = await axios.post(
+          `${API_URL}/companies/${companyId}/add_image/`,
+          formData,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          }
+        );
+        response = apiResponse.data;
       }
       
-      return response.data;
+      console.log('API response for image:', response);
+      
+      // Extract the actual image data from the response
+      const actualImageData = response.data || response; // Changed variable name to avoid conflict
+      
+      // ALWAYS update local state after successful API call
+      if (company && actualImageData) {
+        const updatedCompany = {
+          ...company,
+          images: company.images ? [...company.images, actualImageData] : [actualImageData]
+        };
+        
+        console.log('Updating company state - before:', company.images?.length, 'after:', updatedCompany.images?.length);
+        setCompany(updatedCompany);
+      }
+      
+      return actualImageData; // Return the actual image data
     } catch (error) {
       console.error('Error uploading company image:', error);
       throw error;

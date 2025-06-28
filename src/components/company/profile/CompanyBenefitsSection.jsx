@@ -4,8 +4,8 @@ import { useCompany } from '@/hooks/useCompany';
 import { useNotification } from '@/hooks/useNotification';
 import { HeartHandshake, Plus, Trash2, Save, X } from 'lucide-react';
 
-export default function CompanyBenefitsSection({ company, isOwner, companyId }) {
-  const { addCompanyBenefit, deleteBenefit, error, isAddingBenefit } = useCompany();
+export default function CompanyBenefitsSection({ isOwner, companyId }) {
+  const {company, addCompanyBenefit, deleteBenefit, error, isAddingBenefit } = useCompany();
   const { showSuccess, showError } = useNotification();
   
   // States for adding/editing benefits
