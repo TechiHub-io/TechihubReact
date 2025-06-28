@@ -25,35 +25,12 @@ export default function InvitationAcceptPage() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch invitation details
+  // Fetch invitation details - this doesn't need to exist as an endpoint
+  // since we can't get invitation details without knowing the company_id
+  // Instead, we'll handle this during the accept process
   useEffect(() => {
-    const fetchInvitation = async () => {
-      try {
-        const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
-        const response = await fetch(`${API_URL}/companies/invitations/${token}/`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setInvitation(data);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.detail || 'Invalid or expired invitation');
-        }
-      } catch (error) {
-        setError('Failed to load invitation details');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (token) {
-      fetchInvitation();
-    }
+    // Just set loading to false since we'll handle validation during acceptance
+    setLoading(false);
   }, [token]);
 
   // Handle accepting invitation (when user is logged in)
@@ -63,20 +40,33 @@ export default function InvitationAcceptPage() {
       return;
     }
 
-    // Check if logged-in user email matches invitation email
-    if (user.email.toLowerCase() !== invitation.email.toLowerCase()) {
-      showError(`This invitation is for ${invitation.email}. Please log out and log in with the correct account.`);
-      return;
-    }
-
     setProcessing(true);
     
     try {
-      await acceptInvitation(token);
-      showSuccess(`Successfully joined ${invitation.company_name}!`);
-      router.push('/dashboard/employer');
+      // The acceptInvitation method uses the correct API endpoint:
+      // POST /api/v1/companies/invitations/{token}/accept/
+      const result = await acceptInvitation(token);
+      
+      // The API response should include invitation details
+      showSuccess(`Successfully joined ${result.company_name || 'the company'}!`);
+      
+      // Redirect based on user type
+      if (user.is_employer) {
+        router.push('/dashboard/employer');
+      } else {
+        router.push('/dashboard/jobseeker');
+      }
     } catch (error) {
-      showError(error.message || 'Failed to accept invitation');
+      // Handle specific error cases
+      if (error.message.includes('expired')) {
+        setError('This invitation has expired');
+      } else if (error.message.includes('already accepted')) {
+        setError('This invitation has already been accepted');
+      } else if (error.message.includes('different email')) {
+        setError('This invitation is for a different email address');
+      } else {
+        setError(error.message || 'Failed to accept invitation');
+      }
     } finally {
       setProcessing(false);
     }
@@ -92,14 +82,14 @@ export default function InvitationAcceptPage() {
   const handleLogin = () => {
     // Store invitation token for after login
     sessionStorage.setItem('pending_invitation_token', token);
-    router.push(`/auth/login?email=${encodeURIComponent(invitation.email)}`);
+    router.push('/auth/login');
   };
 
   // Handle register redirect
   const handleRegister = () => {
     // Store invitation token for after registration
     sessionStorage.setItem('pending_invitation_token', token);
-    router.push(`/auth/register/employer?email=${encodeURIComponent(invitation.email)}`);
+    router.push('/auth/register/employer');
   };
 
   if (loading) {
@@ -110,7 +100,7 @@ export default function InvitationAcceptPage() {
     );
   }
 
-  if (error || !invitation) {
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="max-w-md mx-auto text-center p-6">
@@ -121,7 +111,7 @@ export default function InvitationAcceptPage() {
             Invalid Invitation
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error || 'This invitation link is invalid or has expired.'}
+            {error}
           </p>
           <button
             onClick={() => router.push('/')}
@@ -147,28 +137,16 @@ export default function InvitationAcceptPage() {
               You've Been Invited!
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Join {invitation.company_name} on Techhub
+              Join a company team on Techhub
             </p>
           </div>
 
-          {/* Invitation Details */}
-          <div className="space-y-4 mb-6">
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                {invitation.company_name}
-              </h3>
-              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  Role: <span className="font-medium ml-1">{invitation.role_display}</span>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Expires: {new Date(invitation.expires_at).toLocaleDateString()}
-                </div>
-              </div>
+          {/* Invitation Token Display (for debugging - remove in production) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded text-xs text-gray-600 dark:text-gray-400">
+              Token: {token}
             </div>
-          </div>
+          )}
 
           {/* Action Buttons */}
           <div className="space-y-3">
@@ -195,8 +173,8 @@ export default function InvitationAcceptPage() {
                   Create Account & Accept
                 </button>
               </>
-            ) : user.email.toLowerCase() === invitation.email.toLowerCase() ? (
-              // Correct user is logged in
+            ) : (
+              // User is logged in - attempt to accept invitation
               <button
                 onClick={handleAcceptInvitation}
                 disabled={processing}
@@ -209,28 +187,22 @@ export default function InvitationAcceptPage() {
                 )}
                 {processing ? 'Accepting...' : 'Accept Invitation'}
               </button>
-            ) : (
-              // Wrong user is logged in
-              <div className="space-y-3">
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                    This invitation is for <strong>{invitation.email}</strong> but you're logged in as <strong>{user.email}</strong>.
-                  </p>
-                </div>
-                
-                <button
-                  onClick={handleLogout}
-                  className="w-full px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium"
-                >
-                  Log out and use correct account
-                </button>
-              </div>
+            )}
+
+            {/* Alternative logout option if needed */}
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium text-sm"
+              >
+                Use a different account
+              </button>
             )}
           </div>
 
-          {/* Footer */}
+          {/* Info Text */}
           <div className="text-center mt-6 text-xs text-gray-500 dark:text-gray-400">
-            Invited by {invitation.invited_by_name}
+            Click "Accept Invitation" to join the company team
           </div>
         </div>
       </div>
