@@ -17,8 +17,10 @@ import {
   Twitter, 
   Linkedin,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  ChevronDown
 } from 'lucide-react';
+import countriesData from '@/data/countries.json';
 
 export default function CompanyDetailsForm({ onComplete }) {
   const { createCompany, updateCompany, isCreatingCompany, isUpdatingCompany, error, company } = useStore(state => ({
@@ -33,7 +35,7 @@ export default function CompanyDetailsForm({ onComplete }) {
   const initialFormData = {
     name: '',
     industry: '',
-    location: '',
+    location: 'Kenya', // Default to Kenya
     size: '',
     founding_date: '',
     description: '',
@@ -49,26 +51,70 @@ export default function CompanyDetailsForm({ onComplete }) {
   const [validationErrors, setValidationErrors] = useState({});
   const [isEditing, setIsEditing] = useState(false);
 
+  // Phone country code state - defaults to Kenya
+  const [selectedPhoneCode, setSelectedPhoneCode] = useState('KE');
+  const [phoneDropdownOpen, setPhoneDropdownOpen] = useState(false);
+
+  // Convert countries object to array for dropdown
+  const countriesArray = Object.entries(countriesData).map(([code, data]) => ({
+    code,
+    name: data.name,
+    phoneCode: data.code
+  }));
+
+  // Get current phone code data
+  const currentPhoneData = countriesData[selectedPhoneCode] || countriesData['KE'];
+
+  // Extract phone number without country code for editing
+  const getPhoneNumberOnly = (fullPhone) => {
+    if (!fullPhone) return '';
+    
+    // Try to find a matching country code and extract the number
+    for (const [code, data] of Object.entries(countriesData)) {
+      if (fullPhone.startsWith(data.code)) {
+        return fullPhone.substring(data.code.length).trim();
+      }
+    }
+    return fullPhone; // Return as-is if no country code found
+  };
+
+  // Detect country code from existing phone number
+  const detectCountryFromPhone = (phone) => {
+    if (!phone) return 'KE'; // Default to Kenya
+    
+    for (const [code, data] of Object.entries(countriesData)) {
+      if (phone.startsWith(data.code)) {
+        return code;
+      }
+    }
+    return 'KE'; // Default to Kenya if no match
+  };
+
   // Pre-fill form if company exists
   useEffect(() => {
     const companyId = Cookies.get('company_id');
     const hasCompany = Cookies.get('has_company') === 'true';
     
     if (company && company.id && companyId && hasCompany) {
+      const phoneOnly = getPhoneNumberOnly(company.phone || '');
+      const detectedCountryCode = detectCountryFromPhone(company.phone || '');
+      
       setFormData({
         name: company.name || '',
         industry: company.industry || '',
-        location: company.location || '',
+        location: company.location || 'Kenya',
         size: company.size || '',
         founding_date: company.founding_date || '',
         description: company.description || '',
         website: company.website || '',
         email: company.email || '',
-        phone: company.phone || '',
+        phone: phoneOnly,
         linkedin: company.linkedin || '',
         twitter: company.twitter || '',
         facebook: company.facebook || ''
       });
+      
+      setSelectedPhoneCode(detectedCountryCode);
       setIsEditing(true);
     } else {
       setIsEditing(false);
@@ -100,6 +146,21 @@ export default function CompanyDetailsForm({ onComplete }) {
     }
   };
 
+  // Handle phone country code selection - also updates location field
+  const handlePhoneCodeSelect = (countryCode) => {
+    setSelectedPhoneCode(countryCode);
+    setPhoneDropdownOpen(false);
+    
+    // Auto-update the location field when phone country code changes
+    const selectedCountryData = countriesData[countryCode];
+    if (selectedCountryData) {
+      setFormData(prev => ({
+        ...prev,
+        location: selectedCountryData.name
+      }));
+    }
+  };
+
   const validateForm = () => {
     const errors = {};
     
@@ -126,10 +187,18 @@ export default function CompanyDetailsForm({ onComplete }) {
     if (!validateForm()) return;
     
     try {
+      // Format phone with country code if phone number exists
+      const formattedPhone = formData.phone ? `${currentPhoneData.code} ${formData.phone}` : formData.phone;
+      
+      const dataToSubmit = {
+        ...formData,
+        phone: formattedPhone
+      };
+
       if (isEditing && company?.id) {
-        await updateCompany(formData);
+        await updateCompany(dataToSubmit);
       } else {
-        const createdCompany = await createCompany(formData);
+        const createdCompany = await createCompany(dataToSubmit);
         
         if (createdCompany?.id) {
           Cookies.set('company_id', createdCompany.id, { 
@@ -254,12 +323,15 @@ export default function CompanyDetailsForm({ onComplete }) {
                   className={`pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 ${
                     validationErrors.location ? 'border-red-300 dark:border-red-600' : ''
                   }`}
-                  placeholder="e.g. San Francisco, CA or Remote-First"
+                  placeholder="e.g. Nairobi, Kenya or Remote-First"
                 />
                 {validationErrors.location && (
                   <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.location}</p>
                 )}
               </div>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                💡 This field updates automatically when you select a phone country code
+              </p>
             </div>
             
             <div>
@@ -278,251 +350,300 @@ export default function CompanyDetailsForm({ onComplete }) {
                 <option value="11-50">11-50 employees (Small)</option>
                 <option value="51-200">51-200 employees (Medium)</option>
                 <option value="201-500">201-500 employees (Large)</option>
-               <option value="501-1000">501-1000 employees (Enterprise)</option>
-               <option value="1001+">1001+ employees (Corporation)</option>
-             </select>
-           </div>
-           
-           <div>
-             <label htmlFor="founding_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               Founded
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Calendar className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="date"
-                 id="founding_date"
-                 name="founding_date"
-                 value={formData.founding_date}
-                 onChange={handleChange}
-                 className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
-               />
-             </div>
-           </div>
-         </div>
-       </div>
-       
-       {/* Company Description Section */}
-       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-           <Sparkles className="h-5 w-5 mr-2 text-[#0CCE68]" />
-           Company Story
-         </h3>
-         
-         <div>
-           <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-             Company Description <span className="text-red-500">*</span>
-           </label>
-           <textarea
-             id="description"
-             name="description"
-             rows={6}
-             value={formData.description}
-             onChange={handleChange}
-             className={`w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 resize-none ${
-               validationErrors.description ? 'border-red-300 dark:border-red-600' : ''
-             }`}
-             placeholder="Tell candidates about your company mission, values, culture, and what makes you unique. What's it like to work at your company?"
-           />
-           {validationErrors.description && (
-             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.description}</p>
-           )}
-           <div className="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-between">
-             <span>💡 Include your mission, values, and company culture</span>
-             <span>{formData.description.length}/1000</span>
-           </div>
-         </div>
-       </div>
-       
-       {/* Contact Information Section */}
-       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-           <Mail className="h-5 w-5 mr-2 text-[#0CCE68]" />
-           Contact Information
-         </h3>
-         
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           <div>
-             <label htmlFor="website" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               Company Website
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Globe className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="url"
-                 id="website"
-                 name="website"
-                 value={formData.website}
-                 onChange={handleChange}
-                 className={`pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 ${
-                   validationErrors.website ? 'border-red-300 dark:border-red-600' : ''
-                 }`}
-                 placeholder="https://yourcompany.com"
-               />
-               {validationErrors.website && (
-                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.website}</p>
-               )}
-             </div>
-           </div>
-           
-           <div>
-             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               Contact Email
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Mail className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="email"
-                 id="email"
-                 name="email"
-                 value={formData.email}
-                 onChange={handleChange}
-                 className={`pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 ${
-                   validationErrors.email ? 'border-red-300 dark:border-red-600' : ''
-                 }`}
-                 placeholder="hiring@yourcompany.com"
-               />
-               {validationErrors.email && (
-                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.email}</p>
-               )}
-             </div>
-           </div>
-           
-           <div>
-             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               Phone Number
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Phone className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="tel"
-                 id="phone"
-                 name="phone"
-                 value={formData.phone}
-                 onChange={handleChange}
-                 className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
-                 placeholder="+1 (555) 123-4567"
-               />
-             </div>
-           </div>
-         </div>
-       </div>
-       
-       {/* Social Media Section */}
-       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
-           <LinkIcon className="h-5 w-5 mr-2 text-[#0CCE68]" />
-           Social Media Presence
-         </h3>
-         
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           <div>
-             <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               LinkedIn Company Page
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Linkedin className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="url"
-                 id="linkedin"
-                 name="linkedin"
-                 value={formData.linkedin}
-                 onChange={handleChange}
-                 className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
-                 placeholder="https://linkedin.com/company/your-company"
-               />
-             </div>
-           </div>
-           
-           <div>
-             <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               Twitter/X Handle
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Twitter className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="url"
-                 id="twitter"
-                 name="twitter"
-                 value={formData.twitter}
-                 onChange={handleChange}
-                 className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
-                 placeholder="https://twitter.com/yourcompany"
-               />
-             </div>
-           </div>
-           
-           <div>
-             <label htmlFor="facebook" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-               Facebook Page
-             </label>
-             <div className="relative">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <Facebook className="h-5 w-5 text-gray-400" />
-               </div>
-               <input
-                 type="url"
-                 id="facebook"
-                 name="facebook"
-                 value={formData.facebook}
-                 onChange={handleChange}
-                 className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
-                 placeholder="https://facebook.com/yourcompany"
-               />
-             </div>
-           </div>
-         </div>
-       </div>
-       
-       {/* Information Note */}
-       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-         <div className="flex">
-           <div className="flex-shrink-0">
-             <Sparkles className="h-5 w-5 text-blue-500" />
-           </div>
-           <div className="ml-3 text-sm text-blue-700 dark:text-blue-400">
-             <p className="font-medium">Why complete your profile?</p>
-             <p className="mt-1">A detailed company profile increases candidate applications by up to 300% and helps you attract higher-quality talent who align with your company culture.</p>
-           </div>
-         </div>
-       </div>
-       
-       {/* Submit Button */}
-       <div className="flex justify-end pt-4">
-         <button
-           type="submit"
-           disabled={isLoading}
-           className="bg-gradient-to-r from-[#0CCE68] to-blue-500 text-white py-3 px-8 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-         >
-           {isLoading ? (
-             <span className="flex items-center justify-center">
-               <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-               </svg>
-               {isEditing ? 'Updating company...' : 'Creating company...'}
-             </span>
-           ) : (
-             <span className="flex items-center justify-center">
-               <Building className="h-5 w-5 mr-2" />
-               Continue to Benefits
-             </span>
-           )}
-         </button>
-       </div>
-     </form>
-   </div>
- );
+                <option value="501-1000">501-1000 employees (Enterprise)</option>
+                <option value="1001+">1001+ employees (Corporation)</option>
+              </select>
+            </div>
+            
+            <div>
+              <label htmlFor="founding_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Founded
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="date"
+                  id="founding_date"
+                  name="founding_date"
+                  value={formData.founding_date}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Company Description Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+            <Sparkles className="h-5 w-5 mr-2 text-[#0CCE68]" />
+            Company Story
+          </h3>
+          
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Company Description <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              rows={6}
+              value={formData.description}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 resize-none ${
+                validationErrors.description ? 'border-red-300 dark:border-red-600' : ''
+              }`}
+              placeholder="Tell candidates about your company mission, values, culture, and what makes you unique. What's it like to work at your company?"
+            />
+            {validationErrors.description && (
+              <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.description}</p>
+            )}
+            <div className="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-between">
+              <span>💡 Include your mission, values, and company culture</span>
+              <span>{formData.description.length}/1000</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Contact Information Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+            <Mail className="h-5 w-5 mr-2 text-[#0CCE68]" />
+            Contact Information
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="website" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Company Website
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Globe className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="url"
+                  id="website"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 ${
+                    validationErrors.website ? 'border-red-300 dark:border-red-600' : ''
+                  }`}
+                  placeholder="https://yourcompany.com"
+                />
+                {validationErrors.website && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.website}</p>
+                )}
+              </div>
+            </div>
+            
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Contact Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={`pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200 ${
+                    validationErrors.email ? 'border-red-300 dark:border-red-600' : ''
+                  }`}
+                  placeholder="hiring@yourcompany.com"
+                />
+                {validationErrors.email && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">{validationErrors.email}</p>
+                )}
+              </div>
+            </div>
+            
+            {/* Enhanced Phone Input with Country Code Selector */}
+            <div className="md:col-span-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Phone Number
+              </label>
+              <div className="flex gap-2">
+                {/* Country Code Dropdown */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setPhoneDropdownOpen(!phoneDropdownOpen)}
+                    className="flex items-center justify-between px-3 py-3 w-16 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                  >
+                    <span className="text-sm font-medium">{currentPhoneData.code}</span>
+                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                  </button>
+                  
+                  {/* Dropdown */}
+                  {phoneDropdownOpen && (
+                    <div className="absolute z-50 mt-1 w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                      {countriesArray.map((country) => (
+                        <button
+                          key={country.code}
+                          type="button"
+                          onClick={() => handlePhoneCodeSelect(country.code)}
+                          className={`w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors duration-150 ${
+                            selectedPhoneCode === country.code ? 'bg-gray-50 dark:bg-gray-700' : ''
+                          }`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-900 dark:text-white truncate mr-2">{country.name}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">{country.phoneCode}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Phone Input */}
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Phone className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                    placeholder="712 345 678"
+                  />
+                </div>
+              </div>
+              {formData.phone && (
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Full number: {currentPhoneData.code} {formData.phone}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Social Media Section */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
+            <LinkIcon className="h-5 w-5 mr-2 text-[#0CCE68]" />
+            Social Media Presence
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="linkedin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                LinkedIn Company Page
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Linkedin className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="url"
+                  id="linkedin"
+                  name="linkedin"
+                  value={formData.linkedin}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                  placeholder="https://linkedin.com/company/your-company"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label htmlFor="twitter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Twitter/X Handle
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Twitter className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="url"
+                  id="twitter"
+                  name="twitter"
+                  value={formData.twitter}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                  placeholder="https://twitter.com/yourcompany"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label htmlFor="facebook" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Facebook Page
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Facebook className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="url"
+                  id="facebook"
+                  name="facebook"
+                  value={formData.facebook}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                  placeholder="https://facebook.com/yourcompany"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Information Note */}
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <Sparkles className="h-5 w-5 text-blue-500" />
+            </div>
+            <div className="ml-3 text-sm text-blue-700 dark:text-blue-400">
+              <p className="font-medium">Why complete your profile?</p>
+              <p className="mt-1">A detailed company profile increases candidate applications by up to 300% and helpsyou attract higher-quality talent who align with your company culture.</p>
+</div>
+</div>
+</div>
+    {/* Submit Button */}
+    <div className="flex justify-end pt-4">
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="bg-gradient-to-r from-[#0CCE68] to-blue-500 text-white py-3 px-8 rounded-xl font-semibold text-lg hover:shadow-lg transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+      >
+        {isLoading ? (
+          <span className="flex items-center justify-center">
+            <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {isEditing ? 'Updating company...' : 'Creating company...'}
+          </span>
+        ) : (
+          <span className="flex items-center justify-center">
+            <Building className="h-5 w-5 mr-2" />
+            Continue to Benefits
+          </span>
+        )}
+      </button>
+    </div>
+  </form>
+
+  {/* Click outside to close dropdown */}
+  {phoneDropdownOpen && (
+    <div 
+      className="fixed inset-0 z-40" 
+      onClick={() => setPhoneDropdownOpen(false)}
+    ></div>
+  )}
+</div>
+);
 }

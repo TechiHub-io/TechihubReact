@@ -1,6 +1,7 @@
 // src/components/profile/setup/BasicInfoForm.jsx
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, Globe, Briefcase, AlertCircle, Sparkles } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Globe, Briefcase, AlertCircle, Sparkles, ChevronDown } from 'lucide-react';
+import countriesData from '@/data/countries.json';
 
 export default function BasicInfoForm({ initialData, onSubmit, loading, error, clearError }) {
   const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
     email: '',
     phone: '',
     job_title: '',
-    country: '', // Changed from location to country
+    country: 'Kenya', // Default to Kenya
     website: '',
     bio: '',
     years_experience: 0,
@@ -17,6 +18,20 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
     salary_max: '',
     salary_currency: 'USD'
   });
+
+  // Phone country code state - defaults to Kenya
+  const [selectedPhoneCode, setSelectedPhoneCode] = useState('KE');
+  const [phoneDropdownOpen, setPhoneDropdownOpen] = useState(false);
+
+  // Convert countries object to array for dropdown
+  const countriesArray = Object.entries(countriesData).map(([code, data]) => ({
+    code,
+    name: data.name,
+    phoneCode: data.code
+  }));
+
+  // Get current phone code data
+  const currentPhoneData = countriesData[selectedPhoneCode] || countriesData['KE'];
 
   // Update form data when initialData changes
   useEffect(() => {
@@ -27,7 +42,7 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
         email: initialData.email || '',
         phone: initialData.phone || '',
         job_title: initialData.job_title || '',
-        country: initialData.country || initialData.location || '', // Map location to country
+        country: initialData.country || initialData.location || 'Kenya', // Default to Kenya if no existing data
         website: initialData.website || '',
         bio: initialData.bio || '',
         years_experience: initialData.years_experience || 0,
@@ -35,6 +50,16 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
         salary_max: initialData.salary_max || '',
         salary_currency: initialData.salary_currency || 'USD'
       });
+
+      // If country is already set, try to find matching country code for phone
+      if (initialData.country) {
+        const matchingCountry = countriesArray.find(c => 
+          c.name.toLowerCase() === (initialData.country || initialData.location || '').toLowerCase()
+        );
+        if (matchingCountry) {
+          setSelectedPhoneCode(matchingCountry.code);
+        }
+      }
     }
   }, [initialData]);
 
@@ -54,17 +79,35 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
     });
   };
 
-  // Handle form submission - format data to match API structure
+  // Handle phone country code selection - also updates country field
+  const handlePhoneCodeSelect = (countryCode) => {
+    setSelectedPhoneCode(countryCode);
+    setPhoneDropdownOpen(false);
+    
+    // Auto-update the country field when phone country code changes
+    const selectedCountryData = countriesData[countryCode];
+    if (selectedCountryData) {
+      setFormData(prev => ({
+        ...prev,
+        country: selectedCountryData.name
+      }));
+    }
+  };
+
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Format data to match the expected API structure (like BasicInfoSection)
+    // Format phone with country code if phone number exists
+    const formattedPhone = formData.phone ? `${currentPhoneData.code} ${formData.phone}` : formData.phone;
+    
+    // Format data to match the expected API structure
     const submissionData = {
       // User fields
       first_name: formData.first_name,
       last_name: formData.last_name,
       email: formData.email,
-      phone: formData.phone,
+      phone: formattedPhone,
       
       // Profile fields
       job_title: formData.job_title,
@@ -161,24 +204,66 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
             </div>
           </div>
           
+          {/* Enhanced Phone Input with Country Code Selector */}
           <div>
             <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Phone
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Phone className="h-5 w-5 text-gray-400" />
+            <div className="flex gap-2">
+              {/* Country Code Dropdown */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setPhoneDropdownOpen(!phoneDropdownOpen)}
+                  className="flex items-center justify-between px-3 py-3 w-16 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                >
+                  <span className="text-sm font-medium">{currentPhoneData.code}</span>
+                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                </button>
+                
+                {/* Dropdown */}
+                {phoneDropdownOpen && (
+                  <div className="absolute z-50 mt-1 w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                    {countriesArray.map((country) => (
+                      <button
+                        key={country.code}
+                        type="button"
+                        onClick={() => handlePhoneCodeSelect(country.code)}
+                        className={`w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors duration-150 ${
+                          selectedPhoneCode === country.code ? 'bg-gray-50 dark:bg-gray-700' : ''
+                        }`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-900 dark:text-white truncate mr-2">{country.name}</span>
+                          <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">{country.phoneCode}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
-                placeholder="+1 (555) 123-4567"
-              />
+              
+              {/* Phone Input */}
+              <div className="flex-1 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Phone className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                  placeholder="712 345 678"
+                />
+              </div>
             </div>
+            {formData.phone && (
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Full number: {currentPhoneData.code} {formData.phone}
+              </p>
+            )}
           </div>
           
           <div>
@@ -234,10 +319,13 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
               value={formData.country}
               onChange={handleChange}
               required
-              placeholder="e.g. United States, Remote"
+              placeholder="e.g. Kenya, United States, Remote"
               className="pl-10 w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
             />
           </div>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            💡 This field updates automatically when you select a phone country code
+          </p>
         </div>
 
         <div>
@@ -361,6 +449,14 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
           )}
         </button>
       </form>
+
+      {/* Click outside to close dropdown */}
+      {phoneDropdownOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setPhoneDropdownOpen(false)}
+        ></div>
+      )}
     </div>
   );
 }

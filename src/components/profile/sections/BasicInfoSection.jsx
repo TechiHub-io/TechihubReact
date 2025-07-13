@@ -2,8 +2,9 @@
 'use client';
 import { useState, useRef } from 'react';
 import { useStore } from '@/hooks/useZustandStore';
-import { User, Mail, Phone, MapPin, Globe, Briefcase, Edit, Save, X, AlertCircle, Camera, Upload } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Globe, Briefcase, Edit, Save, X, AlertCircle, Camera, Upload, ChevronDown } from 'lucide-react';
 import useAuthAxios from '@/hooks/useAuthAxios';
+import countriesData from '@/data/countries.json';
 
 export default function BasicInfoSection({ profile }) {
   const axios = useAuthAxios();
@@ -13,6 +14,11 @@ export default function BasicInfoSection({ profile }) {
   const [uploadingPicture, setUploadingPicture] = useState(false);
   const [error, setError] = useState(null);
   const [picturePreview, setPicturePreview] = useState(null);
+  
+  // Phone country code state - defaults to Kenya
+  const [selectedPhoneCode, setSelectedPhoneCode] = useState('KE');
+  const [phoneDropdownOpen, setPhoneDropdownOpen] = useState(false);
+  
   const [formData, setFormData] = useState({
     first_name: profile?.user?.first_name || '',
     last_name: profile?.user?.last_name || '',
@@ -21,7 +27,7 @@ export default function BasicInfoSection({ profile }) {
     job_title: profile?.job_title || '',
     bio: profile?.bio || '',
     years_experience: profile?.years_experience || 0,
-    country: profile?.country || '',
+    country: profile?.country || 'Kenya', // Default to Kenya
     salary_min: profile?.salary_min || '',
     salary_max: profile?.salary_max || '',
     salary_currency: profile?.salary_currency || 'USD'
@@ -32,6 +38,41 @@ export default function BasicInfoSection({ profile }) {
     fetchProfile: state.fetchProfile,
     profileId: state.profileId
   }));
+
+  // Convert countries object to array for dropdown
+  const countriesArray = Object.entries(countriesData).map(([code, data]) => ({
+    code,
+    name: data.name,
+    phoneCode: data.code
+  }));
+
+  // Get current phone code data
+  const currentPhoneData = countriesData[selectedPhoneCode] || countriesData['KE'];
+
+  // Extract phone number without country code for editing
+  const getPhoneNumberOnly = (fullPhone) => {
+    if (!fullPhone) return '';
+    
+    // Try to find a matching country code and extract the number
+    for (const [code, data] of Object.entries(countriesData)) {
+      if (fullPhone.startsWith(data.code)) {
+        return fullPhone.substring(data.code.length).trim();
+      }
+    }
+    return fullPhone; // Return as-is if no country code found
+  };
+
+  // Detect country code from existing phone number
+  const detectCountryFromPhone = (phone) => {
+    if (!phone) return 'KE'; // Default to Kenya
+    
+    for (const [code, data] of Object.entries(countriesData)) {
+      if (phone.startsWith(data.code)) {
+        return code;
+      }
+    }
+    return 'KE'; // Default to Kenya if no match
+  };
 
   const validateImageFile = (file) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -101,19 +142,24 @@ export default function BasicInfoSection({ profile }) {
   };
 
   const handleEdit = () => {
+    const phoneOnly = getPhoneNumberOnly(profile?.user?.phone || '');
+    const detectedCountryCode = detectCountryFromPhone(profile?.user?.phone || '');
+    
     setFormData({
       first_name: profile?.user?.first_name || '',
       last_name: profile?.user?.last_name || '',
       email: profile?.user?.email || '',
-      phone: profile?.user?.phone || '',
+      phone: phoneOnly,
       job_title: profile?.job_title || '',
       bio: profile?.bio || '',
       years_experience: profile?.years_experience || 0,
-      country: profile?.country || '',
+      country: profile?.country || 'Kenya',
       salary_min: profile?.salary_min || '',
       salary_max: profile?.salary_max || '',
       salary_currency: profile?.salary_currency || 'USD'
     });
+    
+    setSelectedPhoneCode(detectedCountryCode);
     setIsEditing(true);
     setError(null);
   };
@@ -122,6 +168,7 @@ export default function BasicInfoSection({ profile }) {
     setIsEditing(false);
     setError(null);
     setPicturePreview(null);
+    setPhoneDropdownOpen(false);
   };
 
   const handleSave = async () => {
@@ -129,9 +176,18 @@ export default function BasicInfoSection({ profile }) {
     setError(null);
 
     try {
-      await updateProfile(formData);
+      // Format phone with country code if phone number exists
+      const formattedPhone = formData.phone ? `${currentPhoneData.code} ${formData.phone}` : formData.phone;
+      
+      const dataToSave = {
+        ...formData,
+        phone: formattedPhone
+      };
+      
+      await updateProfile(dataToSave);
       await fetchProfile(); // Refresh profile data
       setIsEditing(false);
+      setPhoneDropdownOpen(false);
     } catch (err) {
       setError(err.message || 'Failed to update profile');
     } finally {
@@ -145,6 +201,21 @@ export default function BasicInfoSection({ profile }) {
       ...prev,
       [name]: value
     }));
+  };
+
+  // Handle phone country code selection - also updates country field
+  const handlePhoneCodeSelect = (countryCode) => {
+    setSelectedPhoneCode(countryCode);
+    setPhoneDropdownOpen(false);
+    
+    // Auto-update the country field when phone country code changes
+    const selectedCountryData = countriesData[countryCode];
+    if (selectedCountryData) {
+      setFormData(prev => ({
+        ...prev,
+        country: selectedCountryData.name
+      }));
+    }
   };
 
   if (isEditing) {
@@ -314,22 +385,65 @@ export default function BasicInfoSection({ profile }) {
                 </div>
               </div>
 
+              {/* Enhanced Phone Input with Country Code Selector */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Phone
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-400" />
+                <div className="flex gap-2">
+                  {/* Country Code Dropdown */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setPhoneDropdownOpen(!phoneDropdownOpen)}
+                      className="flex items-center justify-between px-3 py-2 w-28 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                    >
+                      <span className="text-sm font-medium">{currentPhoneData.code}</span>
+                      <ChevronDown className="h-4 w-4 text-gray-400" />
+                    </button>
+                    
+                    {/* Dropdown */}
+                    {phoneDropdownOpen && (
+                      <div className="absolute z-50 mt-1 w-80 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {countriesArray.map((country) => (
+                          <button
+                            key={country.code}
+                            type="button"
+                            onClick={() => handlePhoneCodeSelect(country.code)}
+                            className={`w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 transition-colors duration-150 ${
+                              selectedPhoneCode === country.code ? 'bg-gray-50 dark:bg-gray-700' : ''
+                            }`}
+                          >
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-gray-900 dark:text-white truncate mr-2">{country.name}</span>
+                              <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">{country.phoneCode}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="pl-10 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-[#0CCE68] focus:border-[#0CCE68]"
-                  />
+                  
+                  {/* Phone Input */}
+                  <div className="flex-1 relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      placeholder="712 345 678"
+                      className="pl-10 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-[#0CCE68] focus:border-[#0CCE68]"
+                    />
+                  </div>
                 </div>
+                {formData.phone && (
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Full number: {currentPhoneData.code} {formData.phone}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -381,6 +495,9 @@ export default function BasicInfoSection({ profile }) {
                     className="pl-10 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-[#0CCE68] focus:border-[#0CCE68]"
                   />
                 </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  💡 This field updates automatically when you select a phone country code
+                </p>
               </div>
 
               <div>
@@ -428,6 +545,14 @@ export default function BasicInfoSection({ profile }) {
             </div>
           </div>
         </div>
+
+        {/* Click outside to close dropdown */}
+        {phoneDropdownOpen && (
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setPhoneDropdownOpen(false)}
+          ></div>
+        )}
       </div>
     );
   }

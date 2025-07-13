@@ -9,8 +9,14 @@ import AuthLayout from '@/components/layout/AuthLayout';
 const RegisterPage = () => {
   return (
     <AuthLayout>
+       <img
+          src="/images/homepage/whitelogo.svg"
+          className="w-16 absolute top-[8px] z-50 left-[50%] translate-x-[-50%] mx-auto lg:w-20 cursor-pointer"
+          alt="TechHub Logo"
+        />
       <main className='min-h-screen bg-white dark:bg-gray-900 flex flex-col lg:flex-row'>
         {/* Job Seeker Section */}
+       
         <section className='flex-1 bg-[#364187] dark:bg-[#2a3875] relative overflow-hidden'>
           {/* Background Pattern */}
           <div className='absolute inset-0 opacity-10'>

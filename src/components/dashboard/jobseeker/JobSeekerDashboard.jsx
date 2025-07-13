@@ -57,7 +57,79 @@ export default function JobSeekerDashboard() {
     sortRecommendations
   } = useJobRecommendations();
 
-  
+  // In JobSeekerDashboard.jsx
+  useEffect(() => {
+    const initializeDashboard = async () => {
+      if (!isAuthenticated || !token) {
+        router.push('/auth/login');
+        return;
+      }
+      
+      try {
+        setIsInitializing(true);
+        
+        // Get profile ID if we don't have it
+        let currentProfileId = profileId;
+        if (!currentProfileId) {
+          currentProfileId = await fetchProfileId();
+        }
+        
+        if (!currentProfileId) {
+          router.push('/profile/setup');
+          return;
+        }
+        
+        const freshProfile = await fetchProfile();
+        
+        if (freshProfile) {
+          const profileStrength = freshProfile.profile_strength || 0;
+          console.log("Current profile strength:", profileStrength);
+          
+          if (profileStrength < 20) {
+            console.log("Profile strength insufficient (", profileStrength, "%), redirecting to setup...");
+            
+            // Update cookie to reflect actual status
+            Cookies.set("has_completed_profile", "false", {
+              expires: 7,
+              sameSite: "strict",
+              path: "/",
+            });
+            
+            router.push('/profile/setup');
+            return;
+          } else {
+            
+            // Update cookie to reflect successful validation
+            Cookies.set("has_completed_profile", "true", {
+              expires: 7,
+              sameSite: "strict",
+              path: "/",
+            });
+          }
+        } else {
+          // No profile found, redirect to setup
+          router.push('/profile/setup');
+          return;
+        }
+        
+        // Continue with dashboard initialization if validation passed
+        await Promise.all([
+          fetchDashboardAnalytics(),
+          fetchRecommendations()
+        ]);
+        
+      } catch (err) {
+        console.error("Error initializing dashboard:", err);
+        // On error, redirect to setup to be safe
+        router.push('/profile/setup');
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    
+    initializeDashboard();
+  }, [isAuthenticated, token, profileId, fetchProfile, fetchProfileId, router]);
+
   // Initialize profile and dashboard data
   useEffect(() => {
     const initializeDashboard = async () => {
