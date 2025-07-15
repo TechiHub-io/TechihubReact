@@ -312,13 +312,7 @@ export default function ApplicationCard({ application, onWithdraw, onRefresh }) 
         )}
 
         {/* View Details */}
-        <Link 
-          href={`/dashboard/jobseeker/applications/${application.id}`}
-          className="flex items-center text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium transition-colors"
-        >
-          <FileText className="w-4 h-4 mr-1" />
-          View Details
-        </Link>
+     
 
         {/* Enhanced Withdraw Button */}
         {application.status !== 'withdrawn' && application.status !== 'hired' && application.status !== 'rejected' && (

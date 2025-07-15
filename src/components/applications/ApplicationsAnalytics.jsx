@@ -85,7 +85,7 @@ export default function ApplicationsAnalytics({ jobId = null, className = "" }) 
     total_applications = 0,
     status_breakdown = [],
     conversion_rate = 0,
-    average_time_to_hire = 0,
+    average_fill_time_days = 0,
     daily_applications = [],
     top_sources = []
   } = analytics;
@@ -161,7 +161,7 @@ export default function ApplicationsAnalytics({ jobId = null, className = "" }) 
             <span className="text-sm font-medium text-orange-800 dark:text-orange-300">Avg. Time to Hire</span>
           </div>
           <div className="text-2xl font-bold text-orange-900 dark:text-orange-100 mt-1">
-            {average_time_to_hire} days
+            {average_fill_time_days} days
           </div>
         </div>
       </div>

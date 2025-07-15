@@ -211,6 +211,7 @@ export default function EmployerDashboard() {
   const hasViewData = dailyViewChartData.length > 0 && dailyViewChartData.some(item => item.count > 0);
   const hasApplicationData = dailyApplicationChartData.length > 0 && dailyApplicationChartData.some(item => item.count > 0);
 
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -400,7 +401,7 @@ export default function EmployerDashboard() {
         </div>
         
         {/* Recent Activity */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+        {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
           {dashboardData.recentActivities && dashboardData.recentActivities.length > 0 ? (
             <RecentActivities activities={dashboardData.recentActivities} />
@@ -409,7 +410,7 @@ export default function EmployerDashboard() {
               <p className="text-gray-500">No recent activity</p>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );
