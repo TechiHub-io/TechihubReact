@@ -81,13 +81,23 @@ export default function DocumentsSection() {
     if (!confirm('Are you sure you want to delete this document?')) return;
     
     setLoading(true);
+    setError(null); // Clear any previous errors
+    
     try {
       const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "https://api.techihub.io/api/v1";
-      await axios.delete(`${API_URL}/profiles/${profileId}/documents/${id}/`);
+      const response = await axios.delete(`${API_URL}/profiles/${profileId}/documents/${id}/`);
+      
+     
+      
       await fetchDocuments();
       await fetchProfile();
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || 'Failed to delete document');
+      console.error('Delete error:', err);
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          err.message || 
+                          'Failed to delete document';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -277,6 +277,7 @@
 }
 
 
+
 /* Quill Editor Dark Theme Support */
 .dark .ql-snow .ql-toolbar {
   border-color: rgb(75 85 99);
@@ -462,6 +463,10 @@
   color: rgb(255 255 255);
  }
  
+ .dark .job-content > p > span {
+  color: #d1d5dc !important;
+ }
+
  /* List Markers in Dark Mode */
  .dark .job-content ul {
   color: rgb(229 231 235);

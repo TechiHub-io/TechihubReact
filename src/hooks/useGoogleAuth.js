@@ -49,12 +49,10 @@ export const useGoogleAuth = () => {
   };
 
   const handleGoogleLogin = async (response) => {
-    console.log('Google login response:', response);
     try {
       // Call social login - this will set all the necessary cookies
       await socialLogin('google-oauth2', response.credential);
       
-      console.log('Social login completed - letting middleware handle redirect');
       
       // ✅ Let middleware handle the redirect by navigating to home
       // The middleware will see the auth cookies and redirect appropriately

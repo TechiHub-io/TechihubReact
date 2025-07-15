@@ -5,7 +5,7 @@ import Image from 'next/image';
 export default function AuthLayout({ children}) {
   return (
     <main className="">
-    <div className="w-full h-16 bg-[#364187] top-0 sticky" />
+    <div className="w-full z-50 h-16 bg-[#364187] top-0 sticky" />
       
     {children}
     </main>

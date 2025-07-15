@@ -412,8 +412,8 @@ export default function DashboardLayout({ children }) {
         </main>
         
         {/* Footer */}
-        <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-3 px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-xs text-gray-500 dark:text-gray-400">
+        <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
             <p>© {new Date().getFullYear()} TechHub. All rights reserved.</p>
           </div>
         </footer>

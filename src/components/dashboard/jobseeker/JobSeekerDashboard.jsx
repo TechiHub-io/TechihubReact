@@ -83,10 +83,8 @@ export default function JobSeekerDashboard() {
         
         if (freshProfile) {
           const profileStrength = freshProfile.profile_strength || 0;
-          console.log("Current profile strength:", profileStrength);
           
           if (profileStrength < 20) {
-            console.log("Profile strength insufficient (", profileStrength, "%), redirecting to setup...");
             
             // Update cookie to reflect actual status
             Cookies.set("has_completed_profile", "false", {

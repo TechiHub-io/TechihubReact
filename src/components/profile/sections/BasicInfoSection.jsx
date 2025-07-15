@@ -5,6 +5,7 @@ import { useStore } from '@/hooks/useZustandStore';
 import { User, Mail, Phone, MapPin, Globe, Briefcase, Edit, Save, X, AlertCircle, Camera, Upload, ChevronDown } from 'lucide-react';
 import useAuthAxios from '@/hooks/useAuthAxios';
 import countriesData from '@/data/countries.json';
+import currenciesData from '@/data/currencies.json';
 
 export default function BasicInfoSection({ profile }) {
   const axios = useAuthAxios();
@@ -528,6 +529,25 @@ export default function BasicInfoSection({ profile }) {
                 />
               </div>
 
+              {/* Currency Selector - NEW ADDITION */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Currency
+                </label>
+                <select
+                  name="salary_currency"
+                  value={formData.salary_currency}
+                  onChange={handleChange}
+                  className="block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-[#0CCE68] focus:border-[#0CCE68]"
+                >
+                  {Object.entries(currenciesData).map(([code, currency]) => (
+                    <option key={code} value={code}>
+                      {currency.code} - {currency.name} ({currency.symbol})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Professional Summary <span className="text-red-500">*</span>
@@ -660,10 +680,10 @@ export default function BasicInfoSection({ profile }) {
                 </label>
                 <p className="text-gray-900 dark:text-white">
                   {profile?.salary_min && profile?.salary_max
-                    ? `$${profile.salary_min} - $${profile.salary_max} ${profile.salary_currency || 'USD'}`
+                    ? `${profile.salary_min} - ${profile.salary_max} ${profile.salary_currency || 'USD'}`
                     : profile?.salary_min
-                    ? `From $${profile.salary_min} ${profile.salary_currency || 'USD'}`
-                    : `Up to $${profile.salary_max} ${profile.salary_currency || 'USD'}`
+                    ? `From ${profile.salary_min} ${profile.salary_currency || 'USD'}`
+                    : `Up to ${profile.salary_max} ${profile.salary_currency || 'USD'}`
                   }
                 </p>
               </div>

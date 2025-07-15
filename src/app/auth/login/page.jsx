@@ -126,7 +126,6 @@ const LoginPage = () => {
 
   const handleSocialSuccess = () => {
     // Social login success is handled in the hook
-    console.log('Social login successful');
   };
 
   const handleSocialError = (error) => {

@@ -174,6 +174,98 @@ export function useApplications() {
     }
   }, [axios]);
 
+  const withdrawApplication = useCallback(async (applicationId) => {
+    if (!applicationId) {
+      throw new Error('Application ID is required');
+    }
+  
+    setLoading(true);
+    setError(null);
+    setFieldErrors({});
+  
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
+      
+      const response = await axios.post(`${API_URL}/applications/${applicationId}/withdraw/`);
+      
+      // Update application in the list immediately
+      setApplications(prev => 
+        prev.map(app => 
+          app.id === applicationId ? { ...app, status: 'withdrawn' } : app
+        )
+      );
+      
+      // Update current application if it's the one being withdrawn
+      if (currentApplication?.id === applicationId) {
+        setCurrentApplication(prev => ({ ...prev, status: 'withdrawn' }));
+      }
+      
+      setLoading(false);
+      return { success: true, message: 'Application withdrawn successfully' };
+    } catch (err) {
+      console.error('Error withdrawing application:', err);
+      
+      // Check if the error is about already being withdrawn
+      const errorMessage = err.response?.data?.detail || 
+                          err.response?.data?.message || 
+                          err.message || 
+                          'Failed to withdraw application';
+      
+      // If it says already withdrawn, treat it as success
+      if (errorMessage.toLowerCase().includes('already') && 
+          errorMessage.toLowerCase().includes('withdrawn')) {
+        
+        // Update the UI to show withdrawn status
+        setApplications(prev => 
+          prev.map(app => 
+            app.id === applicationId ? { ...app, status: 'withdrawn' } : app
+          )
+        );
+        
+        if (currentApplication?.id === applicationId) {
+          setCurrentApplication(prev => ({ ...prev, status: 'withdrawn' }));
+        }
+        
+        setLoading(false);
+        return { success: true, message: 'Application was already withdrawn' };
+      }
+      
+      // For 500 errors, check if withdrawal might have succeeded
+      if (err.response?.status === 500) {
+        // Wait a moment then check the current status
+        setTimeout(async () => {
+          try {
+            const checkResponse = await axios.get(`${API_URL}/applications/${applicationId}/`);
+            if (checkResponse.data.status === 'withdrawn') {
+              // It actually succeeded, update the UI
+              setApplications(prev => 
+                prev.map(app => 
+                  app.id === applicationId ? { ...app, status: 'withdrawn' } : app
+                )
+              );
+              
+              if (currentApplication?.id === applicationId) {
+                setCurrentApplication(prev => ({ ...prev, status: 'withdrawn' }));
+              }
+            }
+          } catch (checkErr) {
+            console.error('Error checking application status:', checkErr);
+          }
+        }, 1000);
+        
+        setLoading(false);
+        return { 
+          success: false, 
+          message: 'There was a server error, but your application may have been withdrawn. Please refresh to check the status.' 
+        };
+      }
+      
+      setError(errorMessage);
+      setLoading(false);
+      return { success: false, message: errorMessage };
+    }
+  }, [axios, currentApplication, setCurrentApplication, setApplications]);
+
   // Fetch applications for a specific job
   const fetchJobApplications = useCallback(async (jobId, filters = {}) => {
     if (!jobId) {
@@ -333,6 +425,7 @@ export function useApplications() {
     fetchApplicationById,
     fetchJobQuestions,
     updateApplicationStatus,
+    withdrawApplication,
     setPage,
     setPageSize,
     clearError

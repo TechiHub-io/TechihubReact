@@ -133,7 +133,6 @@ const EmployerRegisterPage = () => {
       // Check if there were accepted invitations
       if (result?.accepted_invitations && result.accepted_invitations.length > 0) {
         // Show success message about invitations
-        console.log('Invitations accepted:', result.accepted_invitations);
         router.push("/dashboard");
       } else {
         router.push("/auth/verification");
@@ -166,7 +165,6 @@ const EmployerRegisterPage = () => {
   );
 
   const handleSocialSuccess = () => {
-    console.log('Social login successful');
   };
 
   const handleSocialError = (error) => {

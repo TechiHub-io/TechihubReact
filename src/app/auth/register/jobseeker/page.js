@@ -154,7 +154,6 @@ const JobseekerRegisterPage = () => {
   );
 
   const handleSocialSuccess = () => {
-    console.log("Social login successful");
   };
 
   const handleSocialError = (error) => {

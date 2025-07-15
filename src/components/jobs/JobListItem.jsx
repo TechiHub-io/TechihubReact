@@ -1,5 +1,6 @@
 // src/components/jobs/JobListItem.jsx - Role-based actions
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/date';
 import { 
@@ -64,6 +65,7 @@ export default function JobListItem({
   };
 
   const salaryDisplay = formatSalary();
+  const router = useRouter();
 
   // Handle delete with confirmation
   const handleDelete = () => {
@@ -75,8 +77,8 @@ export default function JobListItem({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start">
+    <div  className="  bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
+      <div onClick={() => router.push(`/jobs/${job.id}`)} className=" cursor-pointer flex justify-between items-start">
         <div className="flex-grow min-w-0 pr-4">
           {/* Job Title and Company */}
           <div className="flex items-start justify-between mb-2">
@@ -280,7 +282,7 @@ export default function JobListItem({
             {!isEmployer && (
               <Link 
                 href={`/jobs/${job.id}/apply`}
-                className="flex items-center text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium transition-colors"
+                className="flex items-center z-50 text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium transition-colors"
               >
                 <FileText className="h-4 w-4 mr-1" />
                 Apply Now

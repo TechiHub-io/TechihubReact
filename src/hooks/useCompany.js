@@ -191,16 +191,12 @@ export function useCompany() {
         throw new Error('Company ID is required');
       }
   
-      console.log('Before adding image - current company images:', company?.images?.length);
-      
       let response;
       
       // Use store method if available
       if (typeof storeAddCompanyImage === 'function') {
-        console.log('Using store method for adding image');
         response = await storeAddCompanyImage(imageData);
       } else {
-        console.log('Using direct API call for adding image');
         const formData = new FormData();
         if (imageData.image) {
           formData.append('image', imageData.image);
@@ -223,7 +219,6 @@ export function useCompany() {
         response = apiResponse.data;
       }
       
-      console.log('API response for image:', response);
       
       // Extract the actual image data from the response
       const actualImageData = response.data || response; // Changed variable name to avoid conflict
@@ -235,7 +230,6 @@ export function useCompany() {
           images: company.images ? [...company.images, actualImageData] : [actualImageData]
         };
         
-        console.log('Updating company state - before:', company.images?.length, 'after:', updatedCompany.images?.length);
         setCompany(updatedCompany);
       }
       

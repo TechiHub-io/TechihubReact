@@ -3,13 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Users, Building2 } from 'lucide-react';
 import AuthLayout from '@/components/layout/AuthLayout';
 
 const RegisterPage = () => {
+  const router = useRouter();
   return (
     <AuthLayout>
-       <img
+      <img
+          onClick={() => router.push('/')}
           src="/images/homepage/whitelogo.svg"
           className="w-16 absolute top-[8px] z-50 left-[50%] translate-x-[-50%] mx-auto lg:w-20 cursor-pointer"
           alt="TechHub Logo"

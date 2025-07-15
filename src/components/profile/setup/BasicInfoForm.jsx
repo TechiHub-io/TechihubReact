@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Globe, Briefcase, AlertCircle, Sparkles, ChevronDown } from 'lucide-react';
 import countriesData from '@/data/countries.json';
+import currenciesData from '@/data/currencies.json';
+
 
 export default function BasicInfoForm({ initialData, onSubmit, loading, error, clearError }) {
   const [formData, setFormData] = useState({
@@ -215,7 +217,7 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
                 <button
                   type="button"
                   onClick={() => setPhoneDropdownOpen(!phoneDropdownOpen)}
-                  className="flex items-center justify-between px-3 py-3 w-16 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
+                  className="flex items-center justify-between px-3 h-full py-3 w-16 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
                 >
                   <span className="text-sm font-medium">{currentPhoneData.code}</span>
                   <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -393,11 +395,11 @@ export default function BasicInfoForm({ initialData, onSubmit, loading, error, c
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-[#0CCE68] transition-all duration-200"
             >
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="CAD">CAD</option>
-              <option value="AUD">AUD</option>
+              {Object.entries(currenciesData).map(([code, currency]) => (
+                <option key={code} value={code}>
+                  {currency.code} - {currency.name} ({currency.symbol})
+                </option>
+              ))}
             </select>
           </div>
         </div>

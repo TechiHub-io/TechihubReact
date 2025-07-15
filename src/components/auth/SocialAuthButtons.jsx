@@ -28,12 +28,6 @@ const SocialAuthButtons = ({ onSuccess, onError, className = "" }) => {
     }
   };
 
-  // Debug: Check if client ID is loaded
-  useEffect(() => {
-    console.log('Google Client ID:', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-    console.log('Current origin:', window.location.origin);
-  }, []);
-
   return (
     <div className={`space-y-3 ${className}`}>
       {/* Google Sign In Button */}

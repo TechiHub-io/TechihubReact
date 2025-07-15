@@ -1,4 +1,4 @@
-// src/components/applications/JobApplicationForm.jsx - Enhanced version
+// src/components/applications/JobApplicationForm.jsx - Enhanced version with optional cover letter
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -7,6 +7,7 @@ import { useApplications } from '@/hooks/useApplications';
 import { useDocuments } from '@/hooks/useDocuments';
 import { useStore } from '@/hooks/useZustandStore';
 import { formatDate } from '@/lib/utils/date';
+import currenciesData from '@/data/currencies.json';
 import {
   ArrowLeft,
   FileText,
@@ -22,20 +23,6 @@ import {
   Plus,
   ExternalLink
 } from 'lucide-react';
-
-// Currency options
-const CURRENCIES = [
-  { code: 'USD', name: 'US Dollar', symbol: '$' },
-  { code: 'EUR', name: 'Euro', symbol: '€' },
-  { code: 'GBP', name: 'British Pound', symbol: '£' },
-  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
-  { code: 'AUD', name: 'Australian Dollar', symbol: 'A$' },
-  { code: 'KES', name: 'Kenyan Shilling', symbol: 'KSh' },
-  { code: 'NGN', name: 'Nigerian Naira', symbol: '₦' },
-  { code: 'ZAR', name: 'South African Rand', symbol: 'R' },
-  { code: 'JPY', name: 'Japanese Yen', symbol: '¥' },
-  { code: 'INR', name: 'Indian Rupee', symbol: '₹' }
-];
 
 export default function JobApplicationForm({ jobId }) {
   const router = useRouter();
@@ -58,6 +45,14 @@ export default function JobApplicationForm({ jobId }) {
     getDefaultPortfolio,
   } = useDocuments();
 
+  // Convert currencies object to array for easier use
+  const currenciesArray = Object.entries(currenciesData).map(([code, currency]) => ({
+    code,
+    name: currency.name,
+    symbol: currency.symbol,
+    country: currency.country
+  }));
+
   // Form state
   const [formData, setFormData] = useState({
     coverLetter: '',
@@ -76,20 +71,10 @@ export default function JobApplicationForm({ jobId }) {
     answers: {}
   });
 
-
   const validateForm = () => {
     const errors = [];
 
-    // Cover letter validation
-    if (formData.coverLetterType === 'text' && !formData.coverLetter.trim()) {
-      errors.push('Please provide a cover letter.');
-    }
-
-    if (formData.coverLetterType === 'file' && !formData.coverLetterFile) {
-      errors.push('Please upload a cover letter file.');
-    }
-
-    // Resume validation
+    // Resume validation (required)
     if (formData.resumeType === 'new' && !formData.resume) {
       errors.push('Please upload your resume.');
     }
@@ -98,12 +83,24 @@ export default function JobApplicationForm({ jobId }) {
       errors.push('Please select a resume or upload a new one.');
     }
 
+    // Cover letter validation (optional - only validate if user provides one)
+    if (formData.coverLetterType === 'text' && formData.coverLetter.trim() && formData.coverLetter.length < 10) {
+      errors.push('Cover letter must be at least 10 characters long.');
+    }
+
+    if (formData.coverLetterType === 'file' && formData.coverLetterFile) {
+      // If user uploads a file, validate it's the right type
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(formData.coverLetterFile.type)) {
+        errors.push('Cover letter file must be PDF, DOC, or DOCX format.');
+      }
+    }
+
     // Portfolio validation - if existing is selected but no portfolio available
     if (formData.portfolioType === 'existing') {
       if (portfolioUrls.length === 0) {
-        errors.push('No saved portfolios available. Please enter a new portfolio URL or skip this field.');
-      } else if (!formData.existingPortfolioId) {
-        // It's optional, so don't require it
+        // Not an error, just switch to new type
+        setFormData(prev => ({ ...prev, portfolioType: 'new' }));
       }
     }
 
@@ -131,7 +128,6 @@ export default function JobApplicationForm({ jobId }) {
       return false;
     }
   };
-
 
   // Application questions
   const [questions, setQuestions] = useState([]);
@@ -293,13 +289,13 @@ export default function JobApplicationForm({ jobId }) {
 
       // Prepare application data
       const applicationData = {
-        // Resume handling
+        // Resume handling (required)
         resume: formData.resumeType === 'new' ? formData.resume : null,
-        existing_resume_id: formData.resumeType === 'existing' ? formData.existingResumeId : null,
+        // existing_resume_id: formData.resumeType === 'existing' ? formData.existingResumeId : null,
         
-        // Cover letter handling
-        cover_letter: formData.coverLetterType === 'text' ? formData.coverLetter : null,
-        cover_letter_file: formData.coverLetterType === 'file' ? formData.coverLetterFile : null,
+        // Cover letter handling (optional - only include if provided)
+        cover_letter: (formData.coverLetterType === 'text' && formData.coverLetter.trim()) ? formData.coverLetter : null,
+        cover_letter_file: (formData.coverLetterType === 'file' && formData.coverLetterFile) ? formData.coverLetterFile : null,
         
         // Portfolio URL
         portfolio_url: portfolioUrl || null,
@@ -313,6 +309,12 @@ export default function JobApplicationForm({ jobId }) {
         additional_info: formData.additionalInfo || null,
         answers: Object.keys(formData.answers).length > 0 ? formData.answers : null
       };
+      if (formData.resumeType === 'existing' && formData.existingResumeId) {
+        const selectedResume = resumes.find(r => r.id === formData.existingResumeId);
+        if (selectedResume) {
+          applicationData.resume = selectedResume.file; // Use the file URL from the existing resume
+        }
+      }
 
       await submitApplication(jobId, applicationData);
       setStep(3); // Move to success step
@@ -322,26 +324,27 @@ export default function JobApplicationForm({ jobId }) {
     }
   };
 
-  // Format salary display
+  // Format salary display with proper currency symbol and formatting
   const formatSalary = () => {
     if (!currentJob?.is_salary_visible || (!currentJob?.min_salary && !currentJob?.max_salary)) {
       return null;
     }
 
-    const currency = currentJob.salary_currency || 'USD';
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+    const currencyCode = currentJob.salary_currency || 'USD';
+    const currency = currenciesData[currencyCode] || currenciesData['USD'];
+    const symbol = currency.symbol;
+
+    // Format numbers with commas
+    const formatNumber = (num) => {
+      return new Intl.NumberFormat('en-US').format(num);
+    };
 
     if (currentJob.min_salary && currentJob.max_salary) {
-      return `${formatter.format(currentJob.min_salary)} - ${formatter.format(currentJob.max_salary)}`;
+      return `${symbol}${formatNumber(currentJob.min_salary)} - ${symbol}${formatNumber(currentJob.max_salary)} ${currencyCode}`;
     } else if (currentJob.min_salary) {
-      return `From ${formatter.format(currentJob.min_salary)}`;
+      return `From ${symbol}${formatNumber(currentJob.min_salary)} ${currencyCode}`;
     } else if (currentJob.max_salary) {
-      return `Up to ${formatter.format(currentJob.max_salary)}`;
+      return `Up to ${symbol}${formatNumber(currentJob.max_salary)} ${currencyCode}`;
     }
   };
 
@@ -587,445 +590,447 @@ export default function JobApplicationForm({ jobId }) {
                             </p>
                           </div>
                           <a
-                          href={resume.file}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[#0CCE68] hover:text-[#0BBE58] text-sm"
-                          onClick={(e) => e.stopPropagation()}
+                            href={resume.file}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#0CCE68] hover:text-[#0BBE58] text-sm"
+                            onClick={(e) => e.stopPropagation()}
                           >
-                          View
-                        </a>
+                            View
+                          </a>
+                        </div>
                       </div>
-                    </div>
                     </label>
-              ))}
-            </div>
-          ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            No saved resumes found. Upload a new resume below.
-          </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  No saved resumes found. Upload a new resume below.
+                </p>
               )}
-        </div>
+            </div>
           )}
 
-        {/* New Resume Upload */}
-        {formData.resumeType === 'new' && (
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
-                ? 'border-[#0CCE68] bg-green-50 dark:bg-green-900/10'
-                : 'border-gray-300 dark:border-gray-600 hover:border-[#0CCE68]'
-              }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            {resumePreview ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-center">
-                  <FileText className="w-12 h-12 text-[#0CCE68]" />
+          {/* New Resume Upload */}
+          {formData.resumeType === 'new' && (
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
+                  ? 'border-[#0CCE68] bg-green-50 dark:bg-green-900/10'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-[#0CCE68]'
+                }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              {resumePreview ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-center">
+                    <FileText className="w-12 h-12 text-[#0CCE68]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {resumePreview.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {resumePreview.size}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({ ...prev, resume: null }));
+                      setResumePreview(null);
+                    }}
+                    className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                  >
+                    Remove
+                  </button>
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {resumePreview.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {resumePreview.size}
-                  </p>
+              ) : (
+                <div className="space-y-4">
+                  <Upload className="w-12 h-12 text-gray-400 mx-auto" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Drop your resume here, or{' '}
+                      <label className="text-[#0CCE68] hover:text-[#0BBE58] cursor-pointer">
+                        browse
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleFileUpload(e.target.files, 'resume')}
+                        />
+                      </label>
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      PDF, DOC, or DOCX (Max 1MB)
+                    </p>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData(prev => ({ ...prev, resume: null }));
-                    setResumePreview(null);
-                  }}
-                  className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  Remove
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    Drop your resume here, or{' '}
-                    <label className="text-[#0CCE68] hover:text-[#0BBE58] cursor-pointer">
-                      browse
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept=".pdf,.doc,.docx"
-                        onChange={(e) => handleFileUpload(e.target.files, 'resume')}
-                      />
-                    </label>
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    PDF, DOC, or DOCX (Max 1MB)
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Cover Letter Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Cover Letter *
-        </h3>
-        
-        {/* Cover Letter Type Selection */}
-        <div className="mb-4">
-          <div className="flex space-x-4">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="coverLetterType"
-                value="text"
-                checked={formData.coverLetterType === 'text'}
-                onChange={handleInputChange}
-                className="text-[#0CCE68] focus:ring-[#0CCE68]"
-              />
-              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                Write cover letter
-              </span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="coverLetterType"
-                value="file"
-                checked={formData.coverLetterType === 'file'}
-                onChange={handleInputChange}
-                className="text-[#0CCE68] focus:ring-[#0CCE68]"
-              />
-              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                Upload cover letter file
-              </span>
-            </label>
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Text Cover Letter */}
-        {formData.coverLetterType === 'text' && (
-          <div>
-            <textarea
-              name="coverLetter"
-              value={formData.coverLetter}
-              onChange={handleInputChange}
-              rows={8}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-              placeholder="Tell us why you're interested in this position and how your experience makes you a great fit..."
-              required
-            />
-            
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              {formData.coverLetter.length}/2000 characters
-            </p>
-          </div>
-        )}
-
-        {/* File Cover Letter */}
-        {formData.coverLetterType === 'file' && (
-          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-[#0CCE68] transition-colors">
-            {formData.coverLetterFile ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-[#0CCE68]" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {formData.coverLetterFile.name}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {(formData.coverLetterFile.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, coverLetterFile: null }))}
-                  className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  Remove
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Upload className="w-8 h-8 text-gray-400 mx-auto" />
-                <div>
-                  <label className="text-[#0CCE68] hover:text-[#0BBE58] cursor-pointer">
-                    Upload cover letter
-                    <input
-                      type="file"
-                      className="hidden"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleFileUpload(e.target.files, 'cover_letter')}
-                    />
-                  </label>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    PDF, DOC, or DOCX (Max 1MB)
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Additional Information */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Additional Information
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Portfolio URL */}
-          <div className="md:col-span-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Portfolio URL
-        </label>
-        
-        {/* Portfolio Type Selection */}
-        <div className="mb-3">
-          <div className="flex space-x-4">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="portfolioType"
-                value="existing"
-                checked={formData.portfolioType === 'existing'}
-                onChange={handleInputChange}
-                disabled={portfolioUrls.length === 0}
-                className="text-[#0CCE68] focus:ring-[#0CCE68] disabled:opacity-50"
-              />
-              <span className={`ml-2 text-sm ${portfolioUrls.length === 0 ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
-                Use saved portfolio {portfolioUrls.length === 0 && '(None available)'}
-              </span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="portfolioType"
-                value="new"
-                checked={formData.portfolioType === 'new'}
-                onChange={handleInputChange}
-                className="text-[#0CCE68] focus:ring-[#0CCE68]"
-              />
-              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                Enter new URL
-              </span>
-            </label>
-          </div>
-        </div>
-
-        {/* Existing Portfolio Selection */}
-        {formData.portfolioType === 'existing' && portfolioUrls.length > 0 && (
-          <select
-            name="existingPortfolioId"
-            value={formData.existingPortfolioId}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-          >
-            <option value="">Select a portfolio (Optional)</option>
-            {portfolioUrls.map((portfolio) => (
-              <option key={portfolio.id} value={portfolio.id}>
-                {portfolio.label} - {portfolio.url}
-              </option>
-            ))}
-          </select>
-        )}
-
-        {/* New Portfolio URL */}
-        {(formData.portfolioType === 'new' || portfolioUrls.length === 0) && (
-          <input
-            type="url"
-            name="portfolioUrl"
-            value={formData.portfolioUrl}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-            placeholder="https://your-portfolio.com (Optional)"
-          />
-        )}
-        
-        {portfolioUrls.length === 0 && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            You can also leave this empty if you don't have a portfolio to share.
+        {/* Cover Letter Section - Made Optional */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Cover Letter
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Optional - Providing a cover letter can help strengthen your application
           </p>
-        )}
-      </div>
           
-          {/* Expected Salary */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Expected Salary (Optional)
-            </label>
-            <div className="flex">
-              <select
-                name="expectedSalaryCurrency"
-                value={formData.expectedSalaryCurrency}
-                onChange={handleInputChange}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent border-r-0"
-              >
-                {CURRENCIES.map((currency) => (
-                  <option key={currency.code} value={currency.code}>
-                    {currency.code} ({currency.symbol})
-                  </option>
-                ))}
-              </select>
-              <input
-                type="number"
-                name="expectedSalary"
-                value={formData.expectedSalary}
-                onChange={handleInputChange}
-                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-                placeholder="50000"
-              />
+          {/* Cover Letter Type Selection */}
+          <div className="mb-4">
+            <div className="flex space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="coverLetterType"
+                  value="text"
+                  checked={formData.coverLetterType === 'text'}
+                  onChange={handleInputChange}
+                  className="text-[#0CCE68] focus:ring-[#0CCE68]"
+                />
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                  Write cover letter
+                </span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="coverLetterType"
+                  value="file"
+                  checked={formData.coverLetterType === 'file'}
+                  onChange={handleInputChange}
+                  className="text-[#0CCE68] focus:ring-[#0CCE68]"
+                />
+                <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                  Upload cover letter file
+                </span>
+              </label>
             </div>
           </div>
-          
-          {/* Available Start Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Available Start Date
-            </label>
-            <input
-              type="date"
-              name="availableStartDate"
-              value={formData.availableStartDate}
-              onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-            />
-          </div>
-        </div>
-        
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Additional Notes
-          </label>
-          <textarea
-            name="additionalInfo"
-            value={formData.additionalInfo}
-            onChange={handleInputChange}
-            rows={4}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-            placeholder="Any additional information you'd like to share..."
-          />
-        </div>
-      </div>
 
-      {/* Custom Questions */}
-      {questions.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Additional Questions
-          </h3>
-          
-          <div className="space-y-6">
-            {questions.map((question) => (
-              <div key={question.id}>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {question.question}
-                  {question.is_required && <span className="text-red-500 ml-1">*</span>}
-                </label>
-                
-                {question.description && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    {question.description}
-                  </p>
-                )}
-                
-                {question.question_type === 'text' && (
-                  <input
-                    type="text"
-                    value={formData.answers[question.id] || ''}
-                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                    required={question.is_required}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-                  />
-                )}
-                
-                {question.question_type === 'textarea' && (
-                  <textarea
-                    value={formData.answers[question.id] || ''}
-                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                    required={question.is_required}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-                  />
-                )}
-                
-                {question.question_type === 'boolean' && (
-                  <div className="flex items-center space-x-4">
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name={`question_${question.id}`}
-                        value="true"
-                        checked={formData.answers[question.id] === 'true'}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                        required={question.is_required}
-                        className="text-[#0CCE68] focus:ring-[#0CCE68]"
-                      />
-                      <span className="ml-2 text-sm text-gray-900 dark:text-white">Yes</span>
-                    </label>
-                    <label className="flex items-center">
-                      <input
-                        type="radio"
-                        name={`question_${question.id}`}
-                        value="false"
-                        checked={formData.answers[question.id] === 'false'}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                        required={question.is_required}
-                        className="text-[#0CCE68] focus:ring-[#0CCE68]"
-                      />
-                      <span className="ml-2 text-sm text-gray-900 dark:text-white">No</span>
-                    </label>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
-          <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 mr-2" />
-            <span>{error}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Submit Button */}
-      <div className="flex justify-end space-x-4">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-        >
-          Cancel
-        </button>
-        
-        <button
-          type="submit"
-          disabled={submitting}
-          className="px-6 py-3 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
-        >
-          {submitting ? (
-            <>
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Submitting...
-            </>
-          ) : (
-            'Submit Application'
+          {/* Text Cover Letter */}
+          {formData.coverLetterType === 'text' && (
+            <div>
+              <textarea
+                name="coverLetter"
+                value={formData.coverLetter}
+                onChange={handleInputChange}
+                rows={8}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+                placeholder="Tell us why you're interested in this position and how your experience makes you a great fit... (Optional)"
+              />
+              
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                {formData.coverLetter.length}/2000 characters
+              </p>
+            </div>
           )}
-        </button>
-      </div>
-    </form>
-  </div>
-);
+
+          {/* File Cover Letter */}
+          {formData.coverLetterType === 'file' && (
+            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-[#0CCE68] transition-colors">
+              {formData.coverLetterFile ? (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-center">
+                    <FileText className="w-8 h-8 text-[#0CCE68]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {formData.coverLetterFile.name}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {(formData.coverLetterFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, coverLetterFile: null }))}
+                    className="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                 >
+                   Remove
+                 </button>
+               </div>
+             ) : (
+               <div className="space-y-4">
+                 <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                 <div>
+                   <label className="text-[#0CCE68] hover:text-[#0BBE58] cursor-pointer">
+                     Upload cover letter (Optional)
+                     <input
+                       type="file"
+                       className="hidden"
+                       accept=".pdf,.doc,.docx"
+                       onChange={(e) => handleFileUpload(e.target.files, 'cover_letter')}
+                     />
+                   </label>
+                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                     PDF, DOC, or DOCX (Max 1MB)
+                   </p>
+                 </div>
+               </div>
+             )}
+           </div>
+         )}
+       </div>
+
+       {/* Additional Information */}
+       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+           Additional Information
+         </h3>
+         
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+           {/* Portfolio URL */}
+           <div className="md:col-span-2">
+             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+               Portfolio URL
+             </label>
+             
+             {/* Portfolio Type Selection */}
+             <div className="mb-3">
+               <div className="flex space-x-4">
+                 <label className="flex items-center">
+                   <input
+                     type="radio"
+                     name="portfolioType"
+                     value="existing"
+                     checked={formData.portfolioType === 'existing'}
+                     onChange={handleInputChange}
+                     disabled={portfolioUrls.length === 0}
+                     className="text-[#0CCE68] focus:ring-[#0CCE68] disabled:opacity-50"
+                   />
+                   <span className={`ml-2 text-sm ${portfolioUrls.length === 0 ? 'text-gray-400' : 'text-gray-700 dark:text-gray-300'}`}>
+                     Use saved portfolio {portfolioUrls.length === 0 && '(None available)'}
+                   </span>
+                 </label>
+                 <label className="flex items-center">
+                   <input
+                     type="radio"
+                     name="portfolioType"
+                     value="new"
+                     checked={formData.portfolioType === 'new'}
+                     onChange={handleInputChange}
+                     className="text-[#0CCE68] focus:ring-[#0CCE68]"
+                   />
+                   <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                     Enter new URL
+                   </span>
+                 </label>
+               </div>
+             </div>
+
+             {/* Existing Portfolio Selection */}
+             {formData.portfolioType === 'existing' && portfolioUrls.length > 0 && (
+               <select
+                 name="existingPortfolioId"
+                 value={formData.existingPortfolioId}
+                 onChange={handleInputChange}
+                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+               >
+                 <option value="">Select a portfolio (Optional)</option>
+                 {portfolioUrls.map((portfolio) => (
+                   <option key={portfolio.id} value={portfolio.id}>
+                     {portfolio.label} - {portfolio.url}
+                   </option>
+                 ))}
+               </select>
+             )}
+
+             {/* New Portfolio URL */}
+             {(formData.portfolioType === 'new' || portfolioUrls.length === 0) && (
+               <input
+                 type="url"
+                 name="portfolioUrl"
+                 value={formData.portfolioUrl}
+                 onChange={handleInputChange}
+                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+                 placeholder="https://your-portfolio.com (Optional)"
+               />
+             )}
+             
+             {portfolioUrls.length === 0 && (
+               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                 You can also leave this empty if you don't have a portfolio to share.
+               </p>
+             )}
+           </div>
+           
+           {/* Expected Salary with Enhanced Currency Selection */}
+           <div>
+             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+               Expected Salary (Optional)
+             </label>
+             <div className="flex">
+               <select
+                 name="expectedSalaryCurrency"
+                 value={formData.expectedSalaryCurrency}
+                 onChange={handleInputChange}
+                 className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent border-r-0 w-32"
+               >
+                 {currenciesArray.map((currency) => (
+                   <option key={currency.code} value={currency.code}>
+                     {currency.code} ({currency.symbol})
+                   </option>
+                 ))}
+               </select>
+               <input
+                 type="number"
+                 name="expectedSalary"
+                 value={formData.expectedSalary}
+                 onChange={handleInputChange}
+                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+                 placeholder="50000"
+               />
+             </div>
+             {formData.expectedSalary && formData.expectedSalaryCurrency && (
+               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                 {(() => {
+                   const currency = currenciesData[formData.expectedSalaryCurrency];
+                   const symbol = currency?.symbol || '$';
+                   const formatted = new Intl.NumberFormat('en-US').format(formData.expectedSalary);
+                   return `${symbol}${formatted} ${formData.expectedSalaryCurrency}`;
+                 })()}
+               </p>
+             )}
+           </div>
+           
+           {/* Available Start Date */}
+           <div>
+             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+               Available Start Date
+             </label>
+             <input
+               type="date"
+               name="availableStartDate"
+               value={formData.availableStartDate}
+               onChange={handleInputChange}
+               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+             />
+           </div>
+         </div>
+         
+         <div className="mt-6">
+           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+             Additional Notes
+           </label>
+           <textarea
+             name="additionalInfo"
+             value={formData.additionalInfo}
+             onChange={handleInputChange}
+             rows={4}
+             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+             placeholder="Any additional information you'd like to share..."
+           />
+         </div>
+       </div>
+
+       {/* Custom Questions */}
+       {questions.length > 0 && (
+         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+             Additional Questions
+           </h3>
+           
+           <div className="space-y-6">
+             {questions.map((question) => (
+               <div key={question.id}>
+                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                   {question.question}
+                   {question.is_required && <span className="text-red-500 ml-1">*</span>}
+                 </label>
+                 
+                 {question.description && (
+                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                     {question.description}
+                   </p>
+                 )}
+                 
+                 {question.question_type === 'text' && (
+                   <input
+                     type="text"
+                     value={formData.answers[question.id] || ''}
+                     onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                     required={question.is_required}
+                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+                   />
+                 )}
+                 
+                 {question.question_type === 'textarea' && (
+                   <textarea
+                     value={formData.answers[question.id] || ''}
+                     onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                     required={question.is_required}
+                     rows={4}
+                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+                   />
+                 )}
+                 
+                 {question.question_type === 'boolean' && (
+                   <div className="flex items-center space-x-4">
+                     <label className="flex items-center">
+                       <input
+                         type="radio"
+                         name={`question_${question.id}`}
+                         value="true"
+                         checked={formData.answers[question.id] === 'true'}
+                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                         required={question.is_required}
+                         className="text-[#0CCE68] focus:ring-[#0CCE68]"
+                       />
+                       <span className="ml-2 text-sm text-gray-900 dark:text-white">Yes</span>
+                     </label>
+                     <label className="flex items-center">
+                       <input
+                         type="radio"
+                         name={`question_${question.id}`}
+                         value="false"
+                         checked={formData.answers[question.id] === 'false'}
+                         onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                         required={question.is_required}
+                         className="text-[#0CCE68] focus:ring-[#0CCE68]"
+                       />
+                       <span className="ml-2 text-sm text-gray-900 dark:text-white">No</span>
+                     </label>
+                   </div>
+                 )}
+               </div>
+             ))}
+           </div>
+         </div>
+       )}
+
+       {/* Submit Button */}
+       <div className="flex justify-end space-x-4">
+         <button
+           type="button"
+           onClick={() => router.back()}
+           className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+         >
+           Cancel
+         </button>
+         
+         <button
+           type="submit"
+           disabled={submitting}
+           className="px-6 py-3 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+         >
+           {submitting ? (
+             <>
+               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+               Submitting...
+             </>
+           ) : (
+             'Submit Application'
+           )}
+         </button>
+       </div>
+     </form>
+   </div>
+ );
 }
