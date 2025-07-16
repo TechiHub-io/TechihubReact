@@ -71,13 +71,13 @@ export default function JobsOverview({ jobs = [] }) {
                 Edit
               </Link>
               
-              <Link 
+              {/* <Link 
                 href={`/applications/${job.id}`}
                 className="text-sm text-[#0CCE68] hover:text-[#0BBE58]"
                 onClick={(e) => e.stopPropagation()}
               >
                 View Applicants
-              </Link>
+              </Link> */}
             </div>
           </Link>
         </div>

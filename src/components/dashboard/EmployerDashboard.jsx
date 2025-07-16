@@ -162,7 +162,7 @@ export default function EmployerDashboard() {
         const combinedData = {
           activeJobsCount: dashboardResults?.active_jobs_count || jobs.length || 0,
           totalApplications: dashboardResults?.total_applications || 0,
-          profileViewsCount: dashboardResults?.profile_views_initiated || 0,
+          profileViewsCount: dashboardResults?.profile_views_received || 0,
           jobViewsCount: dashboardResults?.job_views_received || 0,
           statusBreakdown: applicationsResults?.status_breakdown || [],
           recentApplications: dashboardResults?.recent_applications || [],

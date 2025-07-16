@@ -35,13 +35,14 @@ export default function EmployerApplicationsPage() {
     pagination
   } = useApplications();
   
-  const [view, setView] = useState('table'); // 'table' | 'analytics'
+  const [view, setView] = useState('table');
   const [showAnalytics, setShowAnalytics] = useState(true);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
     inProgress: 0,
-    hired: 0
+    hired: 0,
+    rejected: 0
   });
 
   // Authentication and role check
@@ -65,7 +66,7 @@ export default function EmployerApplicationsPage() {
           await fetchApplications({
             company: company.id,
             page: 1,
-            page_size: 10
+            page_size: 20 // Increased to get more data
           });
         } catch (error) {
           console.error('Failed to load applications:', error);
@@ -76,34 +77,44 @@ export default function EmployerApplicationsPage() {
     loadApplications();
   }, [company?.id, fetchApplications]);
 
-  // Calculate stats from applications - FIXED
+  // Calculate stats from applications - IMPROVED STATUS MAPPING
   useEffect(() => {
     if (Array.isArray(applications) && applications.length > 0) {
       const newStats = applications.reduce((acc, app) => {
         acc.total++;
+        
+        // Map statuses according to your backend STATUS_CHOICES
         switch (app.status) {
           case 'applied':
-          case 'pending':
             acc.pending++;
             break;
           case 'screening':
           case 'interview':
-          case 'offer':
+          case 'assessment':
             acc.inProgress++;
+            break;
+          case 'offer':
+            acc.inProgress++; // Offer is still in progress
             break;
           case 'hired':
             acc.hired++;
             break;
+          case 'rejected':
+          case 'withdrawn':
+            acc.rejected++;
+            break;
           default:
+            // Handle any unexpected statuses
+            console.log('Unknown status:', app.status);
             break;
         }
         return acc;
-      }, { total: 0, pending: 0, inProgress: 0, hired: 0 });
+      }, { total: 0, pending: 0, inProgress: 0, hired: 0, rejected: 0 });
       
       setStats(newStats);
     } else {
       // Reset stats if no applications
-      setStats({ total: 0, pending: 0, inProgress: 0, hired: 0 });
+      setStats({ total: 0, pending: 0, inProgress: 0, hired: 0, rejected: 0 });
     }
   }, [applications]);
 
@@ -113,7 +124,32 @@ export default function EmployerApplicationsPage() {
 
   // Get recent applications (last 5) - FIXED
   const recentApplications = Array.isArray(applications) ? applications.slice(0, 5) : [];
+  
+  // Get status color helper function
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'applied':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300';
+      case 'screening':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
+      case 'interview':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300';
+      case 'assessment':
+        return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-300';
+      case 'offer':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
+      case 'hired':
+        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300';
+      case 'rejected':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
+      case 'withdrawn':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+    }
+  };
 
+ 
   return (
     <DashboardLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -164,15 +200,15 @@ export default function EmployerApplicationsPage() {
           </div>
         </div>
 
-        {/* Quick Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Quick Stats Cards - IMPROVED */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center">
               <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Applications</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {loading ? '...' : (pagination?.totalCount || stats.total)}
+                  {loading ? '...' : (pagination?.count || stats.total)}
                 </p>
               </div>
             </div>
@@ -206,9 +242,21 @@ export default function EmployerApplicationsPage() {
             <div className="flex items-center">
               <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Hired This Month</p>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Hired</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {loading ? '...' : stats.hired}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center">
+              <XCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Rejected</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {loading ? '...' : stats.rejected}
                 </p>
               </div>
             </div>
@@ -233,6 +281,7 @@ export default function EmployerApplicationsPage() {
           )}
         </div>
 
+        {/* Recent Applications - FIXED DATA ACCESS */}
         {recentApplications.length > 0 && (
           <div className="mt-8">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -245,7 +294,6 @@ export default function EmployerApplicationsPage() {
                   <div key={application.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0">
-                        {/* Since there's no profile_picture in your data, always show the default avatar */}
                         <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
                           <Users className="w-5 h-5 text-gray-500" />
                         </div>
@@ -255,23 +303,13 @@ export default function EmployerApplicationsPage() {
                           {application.applicant_name || 'Unknown Applicant'}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Applied for {application.job?.title || 'Unknown Position'} • {new Date(application.applied_date).toLocaleDateString()}
+                          Applied for {application.job_title || application.job?.title || 'Unknown Position'} • {new Date(application.applied_date).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
                     
                     <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        application.status === 'applied' || application.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300'
-                          : application.status === 'hired'
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
-                          : application.status === 'withdrawn'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300'
-                          : application.status === 'interview'
-                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300'
-                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
                         {application.status_display || application.status}
                       </span>
                       
@@ -292,7 +330,7 @@ export default function EmployerApplicationsPage() {
                     onClick={() => setView('table')}
                     className="text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium"
                   >
-                    View All Applications →
+                    View All Applications ({applications.length}) →
                   </button>
                 </div>
               )}
