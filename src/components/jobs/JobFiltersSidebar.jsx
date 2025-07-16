@@ -61,7 +61,7 @@ export default function JobFiltersSidebar({
                     localFilters.skills.length > 0 ||
                     localFilters.posted_within ||
                     localFilters.education_level ||
-                    localFilters.company ||
+                    localFilters.company_name ||
                     localFilters.category;
     
     setHasActiveFilters(!!isActive);
@@ -94,11 +94,11 @@ export default function JobFiltersSidebar({
       experience_level: '',
       min_salary: '',
       max_salary: '',
-      salary_currency: 'USD',
+      currency: 'USD', 
       skills: [],
       posted_within: '',
       education_level: '',
-      company: '',
+      company_name: '', 
       category: ''
     };
     
@@ -273,8 +273,8 @@ export default function JobFiltersSidebar({
           </div>
           
           <select
-            value={localFilters.salary_currency}
-            onChange={(e) => handleFilterChange('salary_currency', e.target.value)}
+            value={localFilters.currency}
+            onChange={(e) => handleFilterChange('currency', e.target.value)}
             className="block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-[#0CCE68] focus:border-[#0CCE68] text-gray-700 dark:text-white text-sm"
           >
             <option value="USD">USD - US Dollar</option>
@@ -321,8 +321,8 @@ export default function JobFiltersSidebar({
               </label>
               <input
                 type="text"
-                value={localFilters.company}
-                onChange={(e) => handleFilterChange('company', e.target.value)}
+                value={localFilters.company_name}
+                onChange={(e) => handleFilterChange('company_name', e.target.value)}
                 placeholder="Company name"
                 className="block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-[#0CCE68] focus:border-[#0CCE68] text-gray-700 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm"
               />

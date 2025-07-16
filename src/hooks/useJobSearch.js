@@ -17,7 +17,9 @@ export function useJobSearch() {
     max_salary: '',
     skills: [], // Array of strings: ['React', 'JavaScript']
     posted_within: '',
-    education_level: ''
+    education_level: '',
+    company_name: '', 
+    currency: ''
   });
   
   // Results state
@@ -64,12 +66,14 @@ export function useJobSearch() {
       // Add filters
       if (currentFilters.location) queryParams.set('location', currentFilters.location);
       if (currentFilters.remote) queryParams.set('remote', 'true');
-      if (currentFilters.job_type) queryParams.set('job_type', currentFilters.job_type);
-      if (currentFilters.experience_level) queryParams.set('experience_level', currentFilters.experience_level);
+      if (currentFilters.job_type) queryParams.set('type', currentFilters.job_type);
+      if (currentFilters.experience_level) queryParams.set('experience', currentFilters.experience_level);
+      if (currentFilters.education_level) queryParams.set('education', currentFilters.education_level);
       if (currentFilters.min_salary) queryParams.set('min_salary', currentFilters.min_salary);
       if (currentFilters.max_salary) queryParams.set('max_salary', currentFilters.max_salary);
-      if (currentFilters.education_level) queryParams.set('education_level', currentFilters.education_level);
-      if (currentFilters.posted_within) queryParams.set('posted_within', currentFilters.posted_within);
+      if (currentFilters.posted_within) queryParams.set('days', currentFilters.posted_within);
+      if (currentFilters.company_name) queryParams.set('company_name', currentFilters.company_name);
+      if (currentFilters.currency) queryParams.set('currency', currentFilters.currency);
       
       // Add skills as comma-separated string
       if (currentFilters.skills && currentFilters.skills.length > 0) {
@@ -160,7 +164,9 @@ export function useJobSearch() {
       max_salary: '',
       skills: [],
       posted_within: '',
-      education_level: ''
+      education_level: '',
+      company_name: '', 
+      currency: ''  
     });
     setSearchQuery('');
   }, []);

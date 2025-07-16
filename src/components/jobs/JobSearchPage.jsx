@@ -65,6 +65,8 @@ export default function JobSearchPage() {
       skills: searchParams.get('skills')?.split(',').filter(Boolean) || [],
       posted_within: searchParams.get('posted_within') || '',
       education_level: searchParams.get('education_level') || '',
+      company_name: searchParams.get('company_name') || '',
+      currency: searchParams.get('currency') || '',
       page: parseInt(searchParams.get('page') || '1', 10)
     };
     
@@ -98,6 +100,8 @@ export default function JobSearchPage() {
     if (filters.skills?.length > 0) params.set('skills', filters.skills.join(','));
     if (filters.posted_within) params.set('posted_within', filters.posted_within);
     if (filters.education_level) params.set('education_level', filters.education_level);
+    if (filters.company_name) params.set('company_name', filters.company_name);
+    if (filters.currency) params.set('currency', filters.currency);
     if (page > 1) params.set('page', page.toString());
     
     const newUrl = params.toString() ? `/dashboard/jobseeker/jobs/search?${params.toString()}` : '/dashboard/jobseeker/jobs/search';

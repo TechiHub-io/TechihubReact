@@ -308,7 +308,7 @@ export default function Header() {
                         {!user?.is_employer && (
                           <>
                             <Link 
-                              href="/saved-jobs" 
+                              href="/dashboard/jobseeker/saved-jobs" 
                               className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-[#0CCE68] dark:hover:text-[#88FF99] transition-colors"
                               onClick={() => setProfileMenuOpen(false)}
                             >
