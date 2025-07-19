@@ -48,9 +48,9 @@ export default function CompanyProfile({ company, isOwner, companyId }) {
           {/* Company logo */}
           <div className="flex-shrink-0">
             <div className="w-24 h-24 rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center">
-              {company.logo ? (
+              {company.logo_url ? (
                 <Image
-                  src={company.logo}
+                  src={company.logo_url}
                   alt={`${company.name} logo`}
                   width={96}
                   height={96}

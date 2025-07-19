@@ -157,7 +157,7 @@ export default function DashboardLayout({ children }) {
   ];
   
   const links = isEmployer ? employerLinks : jobseekerLinks;
-  
+ 
   const handleLogout = () => {
     logout();
     router.push('/');

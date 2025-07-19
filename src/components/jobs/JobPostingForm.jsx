@@ -550,17 +550,12 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
     'Data Science & Analytics',
     'Design & UX',
     'Product Management',
-    'Marketing & Communications',
-    'Sales & Business Development',
     'Customer Support',
     'Operations',
-    'Human Resources',
-    'Finance & Accounting',
     'Engineering',
     'Research & Development',
     'Quality Assurance',
     'DevOps & Infrastructure',
-    'Other'
   ];
 
   return (
