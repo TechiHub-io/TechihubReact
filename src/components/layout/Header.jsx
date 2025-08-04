@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStore } from '@/hooks/useZustandStore';
+import QuickSearchHeader from '@/components/ui/QuickSearchHeader';
 import { 
   Menu, 
   X, 
@@ -15,6 +16,7 @@ import {
   Moon, 
   Settings, 
   User,
+  Users,
   Building2,
   LogOut,
   Briefcase,
@@ -140,31 +142,35 @@ export default function Header() {
 
           {/* Desktop Search Bar */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
-              <div className={`relative transition-all duration-300 ${
-                searchFocused ? 'transform scale-105' : ''
-              }`}>
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-                <input
-                  type="text"
-                  placeholder="Search jobs, companies, or skills..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] dark:focus:ring-[#88FF99] focus:border-transparent transition-all duration-300"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-            </form>
+            {isAuthenticated && user?.is_employer ? (
+              <QuickSearchHeader />
+            ) : (
+              <form onSubmit={handleSearch} className="relative w-full">
+                <div className={`relative transition-all duration-300 ${
+                  searchFocused ? 'transform scale-105' : ''
+                }`}>
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="text"
+                    placeholder="Search jobs, companies, or skills..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setSearchFocused(false)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] dark:focus:ring-[#88FF99] focus:border-transparent transition-all duration-300"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </form>
+            )}
           </div>
 
           {/* Desktop Navigation */}
@@ -179,7 +185,15 @@ export default function Header() {
                 <span>Find Jobs</span>
               </Link>
               
-            
+              {isAuthenticated && user?.is_employer && (
+                <Link 
+                  href="/dashboard/employer/talent-search" 
+                  className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-[#0CCE68] dark:hover:text-[#88FF99] transition-colors font-medium"
+                >
+                  <Users className="h-4 w-4" />
+                  <span>Find Talent</span>
+                </Link>
+              )}
             </div>
 
             {/* Theme Toggle */}

@@ -314,19 +314,19 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
         {showFilters && (
           <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Search
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search applicants..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="pl-10 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
-                />
-              </div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Search Applicants
+            </label>
+            <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+            type="text"
+            placeholder="Search by name, email, or profile..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange('search', e.target.value)}
+            className="pl-10 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
+            />
+            </div>
             </div>
             
             <div>
