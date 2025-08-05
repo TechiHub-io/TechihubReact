@@ -86,6 +86,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   const [sortDirection, setSortDirection] = useState('desc');
   const [selectedApplications, setSelectedApplications] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Ensure applications is always an array
   const applicationsArray = Array.isArray(applications) ? applications : [];
@@ -96,7 +97,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
       const searchParams = {
         ...filters,
         ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-        page: 1
+        page: currentPage
       };
 
       // Remove empty filters
@@ -118,7 +119,12 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
     };
 
     loadApplications();
-  }, [filters, sortBy, sortDirection, jobId, fetchApplications, fetchJobApplications]);
+  }, [filters, sortBy, sortDirection, currentPage, jobId, fetchApplications, fetchJobApplications]);
+
+  // Reset to page 1 when filters or sorting change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sortBy, sortDirection]);
 
   useEffect(() => {
     if (messagingError) {
@@ -133,12 +139,14 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   // Handle filter changes
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));
+    // Page will be reset to 1 by the useEffect above
   };
 
   // Handle sort change
   const handleSortChange = (field, direction) => {
     setSortBy(field);
     setSortDirection(direction);
+    // Page will be reset to 1 by the useEffect above
   };
 
   // Handle status update
@@ -146,11 +154,11 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
     try {
       await updateApplicationStatus(applicationId, { status: newStatus });
       
-      // Reload applications
+      // Reload applications (keep current page)
       const searchParams = {
         ...filters,
         ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-        page: 1
+        page: currentPage
       };
       
       // Remove empty filters
@@ -171,31 +179,9 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   };
 
   // handle pagination
-  const handlePageChange = async (newPage) => {
+  const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > pagination.totalPages) return;
-    
-    const searchParams = {
-      ...filters,
-      ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-      page: newPage // Use the new page number
-    };
-  
-    // Remove empty filters
-    Object.keys(searchParams).forEach(key => {
-      if (!searchParams[key] || searchParams[key] === '') {
-        delete searchParams[key];
-      }
-    });
-  
-    try {
-      if (jobId) {
-        await fetchJobApplications(jobId, searchParams);
-      } else {
-        await fetchApplications(searchParams);
-      }
-    } catch (error) {
-      console.error('Failed to load applications for page:', newPage, error);
-    }
+    setCurrentPage(newPage);
   };
 
   // Handle bulk actions
@@ -207,12 +193,12 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
         selectedApplications.map(id => updateApplicationStatus(id, { status: newStatus }))
       );
       
-      // Clear selection and reload
+      // Clear selection and reload (keep current page)
       setSelectedApplications([]);
       const searchParams = {
         ...filters,
         ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-        page: 1
+        page: currentPage
       };
       
       // Remove empty filters

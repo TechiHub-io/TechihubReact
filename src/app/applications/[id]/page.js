@@ -13,6 +13,9 @@ import {
   Share2, 
   Eye, 
   ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
   User,
   Briefcase,
   Calendar,
@@ -41,8 +44,10 @@ export default function ApplicationDetailPage({ params }) {
   }));
   
   const { 
+    applications,
     currentApplication,
-    fetchApplicationById, 
+    fetchApplicationById,
+    fetchApplications, 
     loading, 
     error 
   } = useApplications();
@@ -72,6 +77,57 @@ export default function ApplicationDetailPage({ params }) {
       fetchApplicationById(applicationId);
     }
   }, [applicationId, fetchApplicationById, refreshKey]);
+  
+  // Load applications list for navigation (only once)
+  useEffect(() => {
+    if (applications.length === 0) {
+      fetchApplications();
+    }
+  }, [applications.length, fetchApplications]);
+  
+  // Get navigation info
+  const getNavigationInfo = () => {
+    if (!applications || applications.length === 0 || !currentApplication) {
+      return { canGoNext: false, canGoPrevious: false, currentIndex: -1, total: 0 };
+    }
+
+    const currentIndex = applications.findIndex(app => app.id === currentApplication.id);
+    return {
+      canGoNext: currentIndex > 0, // Next means earlier in the list (newer applications)
+      canGoPrevious: currentIndex < applications.length - 1, // Previous means later in the list (older applications)
+      currentIndex,
+      total: applications.length,
+      nextId: currentIndex > 0 ? applications[currentIndex - 1].id : null,
+      previousId: currentIndex < applications.length - 1 ? applications[currentIndex + 1].id : null
+    };
+  };
+
+  const navigationInfo = getNavigationInfo();
+
+  // Handle navigation
+  const handleNavigation = (direction) => {
+    const { nextId, previousId } = navigationInfo;
+    
+    if (direction === 'next' && nextId) {
+      router.push(`/applications/${nextId}`);
+    } else if (direction === 'previous' && previousId) {
+      router.push(`/applications/${previousId}`);
+    }
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'ArrowLeft' && navigationInfo.canGoPrevious) {
+        handleNavigation('previous');
+      } else if (event.key === 'ArrowRight' && navigationInfo.canGoNext) {
+        handleNavigation('next');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigationInfo]);
   
   // Handle status update completion
   const handleStatusUpdated = () => {
@@ -556,6 +612,45 @@ export default function ApplicationDetailPage({ params }) {
               </div>
             </div>
             
+            {/* Application Navigation Card */}
+            {navigationInfo.total > 1 && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Navigation
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Application {navigationInfo.currentIndex + 1} of {navigationInfo.total}
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleNavigation('previous')}
+                      disabled={!navigationInfo.canGoPrevious}
+                      className="flex-1 flex items-center justify-center px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300"
+                    >
+                      <ChevronLeft className="w-4 h-4 mr-1" />
+                      Previous
+                    </button>
+                    
+                    <button
+                      onClick={() => handleNavigation('next')}
+                      disabled={!navigationInfo.canGoNext}
+                      className="flex-1 flex items-center justify-center px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </button>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Use arrow keys to navigate
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Application Progress */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
