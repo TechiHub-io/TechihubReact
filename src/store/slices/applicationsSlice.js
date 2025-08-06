@@ -34,7 +34,7 @@ export const createApplicationsSlice = (set, get) => ({
 
   // Basic Actions
   setApplications: (applications) => set((state) => {
-    state.applications = applications;
+    state.applications = Array.isArray(applications) ? applications : [];
   }),
   
   setCurrentApplication: (application) => set((state) => {
@@ -98,11 +98,12 @@ export const createApplicationsSlice = (set, get) => ({
 
       const data = await response.json();
       const results = data.results || data;
-      const totalCount = data.count || results.length;
+      const resultsArray = Array.isArray(results) ? results : [];
+      const totalCount = data.count || resultsArray.length;
       const totalPages = data.total_pages || Math.ceil(totalCount / get().pagination.pageSize);
 
       set((state) => {
-        state.applications = results;
+        state.applications = resultsArray;
         state.pagination = {
           ...state.pagination,
           totalPages,
@@ -111,7 +112,7 @@ export const createApplicationsSlice = (set, get) => ({
         state.loading = false;
       });
 
-      return results;
+      return resultsArray;
     } catch (error) {
       set((state) => {
         state.error = error.message;
@@ -184,7 +185,8 @@ export const createApplicationsSlice = (set, get) => ({
 
       set((state) => {
         // Update in applications list
-        const index = state.applications.findIndex(app => app.id === id);
+        const applicationsArray = Array.isArray(state.applications) ? state.applications : [];
+        const index = applicationsArray.findIndex(app => app.id === id);
         if (index !== -1) {
           state.applications[index] = { ...state.applications[index], ...data };
         }
@@ -258,11 +260,12 @@ export const createApplicationsSlice = (set, get) => ({
 
       const data = await response.json();
       const results = data.results || data;
-      const totalCount = data.count || results.length;
+      const resultsArray = Array.isArray(results) ? results : [];
+      const totalCount = data.count || resultsArray.length;
       const totalPages = data.total_pages || Math.ceil(totalCount / get().pagination.pageSize);
 
       set((state) => {
-        state.applications = results;
+        state.applications = resultsArray;
         state.pagination = {
           ...state.pagination,
           totalPages,
@@ -271,7 +274,7 @@ export const createApplicationsSlice = (set, get) => ({
         state.loading = false;
       });
 
-      return results;
+      return resultsArray;
     } catch (error) {
       set((state) => {
         state.error = error.message;
@@ -598,7 +601,7 @@ export const createApplicationsSlice = (set, get) => ({
 
       set((state) => {
         // Update application in list
-        const index = state.applications.findIndex(app => app.id === id);
+        const index = state.applications?.findIndex(app => app.id === id);
         if (index !== -1) {
           state.applications[index] = { ...state.applications[index], status: 'withdrawn', status_display: 'Withdrawn' };
         }

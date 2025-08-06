@@ -80,25 +80,35 @@ export default function ApplicationDetailPage({ params }) {
   
   // Load applications list for navigation (only once)
   useEffect(() => {
-    if (applications.length === 0) {
+    const applicationsArray = Array.isArray(applications) ? applications : [];
+    if (applicationsArray.length === 0) {
       fetchApplications();
     }
-  }, [applications.length, fetchApplications]);
+  }, [applications, fetchApplications]);
   
   // Get navigation info
   const getNavigationInfo = () => {
-    if (!applications || applications.length === 0 || !currentApplication) {
+    // Ensure applications is an array and not null/undefined
+    const applicationsArray = Array.isArray(applications) ? applications : [];
+    
+    if (applicationsArray.length === 0 || !currentApplication) {
       return { canGoNext: false, canGoPrevious: false, currentIndex: -1, total: 0 };
     }
 
-    const currentIndex = applications.findIndex(app => app.id === currentApplication.id);
+    const currentIndex = applicationsArray.findIndex(app => app.id === currentApplication.id);
+    
+    // If current application is not found in the list, return safe defaults
+    if (currentIndex === -1) {
+      return { canGoNext: false, canGoPrevious: false, currentIndex: -1, total: applicationsArray.length };
+    }
+
     return {
       canGoNext: currentIndex > 0, // Next means earlier in the list (newer applications)
-      canGoPrevious: currentIndex < applications.length - 1, // Previous means later in the list (older applications)
+      canGoPrevious: currentIndex < applicationsArray.length - 1, // Previous means later in the list (older applications)
       currentIndex,
-      total: applications.length,
-      nextId: currentIndex > 0 ? applications[currentIndex - 1].id : null,
-      previousId: currentIndex < applications.length - 1 ? applications[currentIndex + 1].id : null
+      total: applicationsArray.length,
+      nextId: currentIndex > 0 ? applicationsArray[currentIndex - 1].id : null,
+      previousId: currentIndex < applicationsArray.length - 1 ? applicationsArray[currentIndex + 1].id : null
     };
   };
 

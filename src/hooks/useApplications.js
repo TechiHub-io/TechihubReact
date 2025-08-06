@@ -26,7 +26,7 @@ export function useApplications() {
     setApplications,
     setCurrentApplication,
   } = useStore(state => ({
-    applications: state.applications || [],
+    applications: Array.isArray(state.applications) ? state.applications : [],
     currentApplication: state.currentApplication,
     setApplications: state.setApplications,
     setCurrentApplication: state.setCurrentApplication,
@@ -76,7 +76,10 @@ export function useApplications() {
       const newApplication = response.data;
       
       // Update applications list
-      setApplications(prev => [newApplication, ...prev]);
+      setApplications(prev => {
+        const prevArray = Array.isArray(prev) ? prev : [];
+        return [newApplication, ...prevArray];
+      });
       setCurrentApplication(newApplication);
       
       setLoading(false);
@@ -134,10 +137,11 @@ export function useApplications() {
 
       const response = await axios.get(`${API_URL}/applications/?${queryParams}`);
       const results = response.data.results || response.data || [];
-      const totalCount = response.data.count || results.length;
+      const resultsArray = Array.isArray(results) ? results : [];
+      const totalCount = response.data.count || resultsArray.length;
       const totalPages = response.data.total_pages || Math.ceil(totalCount / pagination.pageSize);
 
-      setApplications(results);
+      setApplications(resultsArray);
       setPagination({
         page: response.data.current_page || 1,
         pageSize: response.data.page_size || pagination.pageSize,
@@ -148,7 +152,7 @@ export function useApplications() {
       });
 
       setLoading(false);
-      return results;
+      return resultsArray;
     } catch (err) {
       console.error('Error fetching applications:', err);
       setError(err.response?.data?.message || err.message || 'Failed to fetch applications');
@@ -189,11 +193,12 @@ export function useApplications() {
       const response = await axios.post(`${API_URL}/applications/${applicationId}/withdraw/`);
       
       // Update application in the list immediately
-      setApplications(prev => 
-        prev.map(app => 
+      setApplications(prev => {
+        const prevArray = Array.isArray(prev) ? prev : [];
+        return prevArray.map(app => 
           app.id === applicationId ? { ...app, status: 'withdrawn' } : app
-        )
-      );
+        );
+      });
       
       // Update current application if it's the one being withdrawn
       if (currentApplication?.id === applicationId) {
@@ -216,11 +221,12 @@ export function useApplications() {
           errorMessage.toLowerCase().includes('withdrawn')) {
         
         // Update the UI to show withdrawn status
-        setApplications(prev => 
-          prev.map(app => 
+        setApplications(prev => {
+          const prevArray = Array.isArray(prev) ? prev : [];
+          return prevArray.map(app => 
             app.id === applicationId ? { ...app, status: 'withdrawn' } : app
-          )
-        );
+          );
+        });
         
         if (currentApplication?.id === applicationId) {
           setCurrentApplication(prev => ({ ...prev, status: 'withdrawn' }));
@@ -238,11 +244,12 @@ export function useApplications() {
             const checkResponse = await axios.get(`${API_URL}/applications/${applicationId}/`);
             if (checkResponse.data.status === 'withdrawn') {
               // It actually succeeded, update the UI
-              setApplications(prev => 
-                prev.map(app => 
+              setApplications(prev => {
+                const prevArray = Array.isArray(prev) ? prev : [];
+                return prevArray.map(app => 
                   app.id === applicationId ? { ...app, status: 'withdrawn' } : app
-                )
-              );
+                );
+              });
               
               if (currentApplication?.id === applicationId) {
                 setCurrentApplication(prev => ({ ...prev, status: 'withdrawn' }));
@@ -289,10 +296,11 @@ export function useApplications() {
 
       const response = await axios.get(`${API_URL}/applications/job/${jobId}/?${queryParams}`);
       const results = response.data.results || response.data || [];
-      const totalCount = response.data.count || results.length;
+      const resultsArray = Array.isArray(results) ? results : [];
+      const totalCount = response.data.count || resultsArray.length;
       const totalPages = response.data.total_pages || Math.ceil(totalCount / pagination.pageSize);
 
-      setApplications(results);
+      setApplications(resultsArray);
       setPagination({
         page: response.data.current_page || 1,
         pageSize: response.data.page_size || pagination.pageSize,
@@ -303,7 +311,7 @@ export function useApplications() {
       });
 
       setLoading(false);
-      return results;
+      return resultsArray;
     } catch (err) {
       console.error('Error fetching job applications:', err);
       setError(err.response?.data?.message || err.message || 'Failed to fetch job applications');
@@ -373,11 +381,12 @@ export function useApplications() {
       }
       
       // Update application in the list
-      setApplications(prev => 
-        prev.map(app => 
+      setApplications(prev => {
+        const prevArray = Array.isArray(prev) ? prev : [];
+        return prevArray.map(app => 
           app.id === applicationId ? updatedApplication : app
-        )
-      );
+        );
+      });
       
       setLoading(false);
       return updatedApplication;

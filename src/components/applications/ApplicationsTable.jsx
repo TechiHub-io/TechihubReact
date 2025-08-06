@@ -24,14 +24,11 @@ import {
 
 const STATUS_COLORS = {
   applied: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300',
   screening: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
-  reviewing: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300',
   interview: 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300',
   offer: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300',
   hired: 'bg-green-200 text-green-900 dark:bg-green-800/20 dark:text-green-200',
   rejected: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300',
-  withdrawn: 'bg-gray-100 text-gray-800 dark:bg-gray-700/20 dark:text-gray-300'
 };
 
 const SORT_OPTIONS = [
@@ -45,14 +42,11 @@ const SORT_OPTIONS = [
 const STATUS_OPTIONS = [
   { value: '', label: 'All Statuses' },
   { value: 'applied', label: 'Applied' },
-  { value: 'pending', label: 'Pending' },
   { value: 'screening', label: 'Screening' },
-  { value: 'reviewing', label: 'Reviewing' },
   { value: 'interview', label: 'Interview' },
   { value: 'offer', label: 'Offer' },
   { value: 'hired', label: 'Hired' },
   { value: 'rejected', label: 'Rejected' },
-  { value: 'withdrawn', label: 'Withdrawn' }
 ];
 
 export default function ApplicationsTable({ jobId = null, showJobColumn = true }) {

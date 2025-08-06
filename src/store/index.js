@@ -52,6 +52,15 @@ const useStore = create(
           // Merge the states but protect against stale data
           const mergedState = { ...currentState, ...persistedState };
           
+          // Ensure arrays are properly initialized
+          mergedState.applications = Array.isArray(mergedState.applications) ? mergedState.applications : [];
+          mergedState.jobs = Array.isArray(mergedState.jobs) ? mergedState.jobs : [];
+          mergedState.companies = Array.isArray(mergedState.companies) ? mergedState.companies : [];
+          mergedState.teamMembers = Array.isArray(mergedState.teamMembers) ? mergedState.teamMembers : [];
+          mergedState.teamInvitations = Array.isArray(mergedState.teamInvitations) ? mergedState.teamInvitations : [];
+          mergedState.conversations = Array.isArray(mergedState.conversations) ? mergedState.conversations : [];
+          mergedState.messages = Array.isArray(mergedState.messages) ? mergedState.messages : [];
+          
           // If user has changed or logged out, reset sensitive state
           if (!mergedState.user || 
               (currentState.user && persistedState.user && 
