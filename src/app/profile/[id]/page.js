@@ -31,6 +31,7 @@ export default function ProfileViewPage() {
   const { isAuthenticated, isEmployer } = useStore();
   
   const [profile, setProfile] = useState(null);
+ 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -179,7 +180,6 @@ export default function ProfileViewPage() {
       </div>
     );
   }
-
   if (error || !profile) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -212,7 +212,7 @@ export default function ProfileViewPage() {
     { id: 'skills', label: 'Skills', icon: Award },
     { id: 'portfolio', label: 'Portfolio', icon: Globe }
   ];
-
+   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
@@ -274,7 +274,7 @@ export default function ProfileViewPage() {
                 </div>
                 
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  {profile.user_name || 'Anonymous User'}
+                  {profile.user.first_name || 'Anonymous User'}
                 </h1>
                 
                 <p className="text-lg text-gray-600 dark:text-gray-400 mb-4">
