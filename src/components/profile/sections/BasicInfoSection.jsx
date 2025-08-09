@@ -63,6 +63,25 @@ export default function BasicInfoSection({ profile }) {
     return fullPhone; // Return as-is if no country code found
   };
 
+  // Clean phone input to remove duplicate country codes
+  const cleanPhoneInput = (input) => {
+    if (!input) return '';
+    
+    // Remove any leading + signs
+    let cleaned = input.replace(/^\+/, '');
+    
+    // Check if input starts with any country code and remove it
+    for (const [code, data] of Object.entries(countriesData)) {
+      const countryCode = data.code.replace('+', '');
+      if (cleaned.startsWith(countryCode)) {
+        cleaned = cleaned.substring(countryCode.length).trim();
+        break;
+      }
+    }
+    
+    return cleaned;
+  };
+
   // Detect country code from existing phone number
   const detectCountryFromPhone = (phone) => {
     if (!phone) return 'KE'; // Default to Kenya
@@ -177,8 +196,9 @@ export default function BasicInfoSection({ profile }) {
     setError(null);
 
     try {
-      // Format phone with country code if phone number exists
-      const formattedPhone = formData.phone ? `${currentPhoneData.code} ${formData.phone}` : formData.phone;
+      // Clean phone number and format with country code if phone number exists
+      const cleanedPhone = cleanPhoneInput(formData.phone);
+      const formattedPhone = cleanedPhone ? `${currentPhoneData.code} ${cleanedPhone}` : '';
       
       const dataToSave = {
         ...formData,
@@ -198,10 +218,20 @@ export default function BasicInfoSection({ profile }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Special handling for phone input to prevent duplicates
+    if (name === 'phone') {
+      const cleanedValue = cleanPhoneInput(value);
+      setFormData(prev => ({
+        ...prev,
+        [name]: cleanedValue
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   // Handle phone country code selection - also updates country field
@@ -436,13 +466,14 @@ export default function BasicInfoSection({ profile }) {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="712 345 678"
+                      maxLength="15"
                       className="pl-10 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-[#0CCE68] focus:border-[#0CCE68]"
                     />
                   </div>
                 </div>
                 {formData.phone && (
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Full number: {currentPhoneData.code} {formData.phone}
+                    Full number: {currentPhoneData.code} {cleanPhoneInput(formData.phone)}
                   </p>
                 )}
               </div>
