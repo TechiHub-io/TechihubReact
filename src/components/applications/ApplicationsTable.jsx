@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApplications } from '@/hooks/useApplications';
 import { useApplicationMessaging } from '@/hooks/useApplicationMessaging';
-import { useStore } from '@/hooks/useZustandStore';
+import { useStore, useApplicationsStore } from '@/hooks/useZustandStore';
 import { formatDate } from '@/lib/utils/date';
 import Link from 'next/link';
 import { 
@@ -69,12 +69,15 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   
   const router = useRouter();
   const { company } = useStore(state => ({ company: state.company }));
-  const [filters, setFilters] = useState({
-    status: '',
-    search: '',
-    date_from: '',
-    date_to: ''
-  });
+  const { filters, setFilters: setStoreFilters } = useApplicationsStore();
+  
+  // Convert store filters to component format
+  const componentFilters = {
+    status: filters.status || '',
+    search: filters.search || '',
+    date_from: filters.dateFrom || '',
+    date_to: filters.dateTo || ''
+  };
   
   const [sortBy, setSortBy] = useState('applied_date');
   const [sortDirection, setSortDirection] = useState('desc');
@@ -84,12 +87,22 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
 
   // Ensure applications is always an array
   const applicationsArray = Array.isArray(applications) ? applications : [];
+  
+  // Check if any filters are active
+  const hasActiveFilters = componentFilters.status || componentFilters.search || componentFilters.date_from || componentFilters.date_to;
+  
+  // Sync showFilters with whether filters are active on mount
+  useEffect(() => {
+    if (hasActiveFilters && !showFilters) {
+      setShowFilters(true);
+    }
+  }, [hasActiveFilters, showFilters]);
 
   // Load applications
   useEffect(() => {
     const loadApplications = async () => {
       const searchParams = {
-        ...filters,
+        ...componentFilters,
         ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
         page: currentPage
       };
@@ -101,11 +114,28 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
         }
       });
 
+      // Convert to API format for backend
+      const apiParams = {
+        status: searchParams.status,
+        search: searchParams.search,
+        date_from: searchParams.date_from,
+        date_to: searchParams.date_to,
+        ordering: searchParams.ordering,
+        page: searchParams.page
+      };
+      
+      // Remove empty filters
+      Object.keys(apiParams).forEach(key => {
+        if (!apiParams[key] || apiParams[key] === '') {
+          delete apiParams[key];
+        }
+      });
+      
       try {
         if (jobId) {
-          await fetchJobApplications(jobId, searchParams);
+          await fetchJobApplications(jobId, apiParams);
         } else {
-          await fetchApplications(searchParams);
+          await fetchApplications(apiParams);
         }
       } catch (error) {
         console.error('Failed to load applications:', error);
@@ -113,12 +143,12 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
     };
 
     loadApplications();
-  }, [filters, sortBy, sortDirection, currentPage, jobId, fetchApplications, fetchJobApplications]);
+  }, [componentFilters.status, componentFilters.search, componentFilters.date_from, componentFilters.date_to, sortBy, sortDirection, currentPage, jobId, fetchApplications, fetchJobApplications]);
 
   // Reset to page 1 when filters or sorting change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters, sortBy, sortDirection]);
+  }, [componentFilters.status, componentFilters.search, componentFilters.date_from, componentFilters.date_to, sortBy, sortDirection]);
 
   useEffect(() => {
     if (messagingError) {
@@ -132,8 +162,28 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
 
   // Handle filter changes
   const handleFilterChange = (field, value) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    const updatedFilters = { ...componentFilters, [field]: value };
+    
+    // Convert component filters to store format
+    const storeFilters = {
+      status: updatedFilters.status,
+      search: updatedFilters.search,
+      dateFrom: updatedFilters.date_from,
+      dateTo: updatedFilters.date_to
+    };
+    
+    setStoreFilters(storeFilters);
     // Page will be reset to 1 by the useEffect above
+  };
+  
+  // Handle filter reset
+  const handleResetFilters = () => {
+    setStoreFilters({
+      status: '',
+      search: '',
+      dateFrom: '',
+      dateTo: ''
+    });
   };
 
   // Handle sort change
@@ -150,22 +200,31 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
       
       // Reload applications (keep current page)
       const searchParams = {
-        ...filters,
+        ...componentFilters,
         ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
         page: currentPage
       };
       
-      // Remove empty filters
-      Object.keys(searchParams).forEach(key => {
-        if (!searchParams[key] || searchParams[key] === '') {
-          delete searchParams[key];
+      // Convert to API format and remove empty filters
+      const apiParams = {
+        status: searchParams.status,
+        search: searchParams.search,
+        date_from: searchParams.date_from,
+        date_to: searchParams.date_to,
+        ordering: searchParams.ordering,
+        page: searchParams.page
+      };
+      
+      Object.keys(apiParams).forEach(key => {
+        if (!apiParams[key] || apiParams[key] === '') {
+          delete apiParams[key];
         }
       });
       
       if (jobId) {
-        await fetchJobApplications(jobId, searchParams);
+        await fetchJobApplications(jobId, apiParams);
       } else {
-        await fetchApplications(searchParams);
+        await fetchApplications(apiParams);
       }
     } catch (error) {
       console.error('Failed to update status:', error);
@@ -190,22 +249,31 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
       // Clear selection and reload (keep current page)
       setSelectedApplications([]);
       const searchParams = {
-        ...filters,
+        ...componentFilters,
         ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
         page: currentPage
       };
       
-      // Remove empty filters
-      Object.keys(searchParams).forEach(key => {
-        if (!searchParams[key] || searchParams[key] === '') {
-          delete searchParams[key];
+      // Convert to API format and remove empty filters
+      const apiParams = {
+        status: searchParams.status,
+        search: searchParams.search,
+        date_from: searchParams.date_from,
+        date_to: searchParams.date_to,
+        ordering: searchParams.ordering,
+        page: searchParams.page
+      };
+      
+      Object.keys(apiParams).forEach(key => {
+        if (!apiParams[key] || apiParams[key] === '') {
+          delete apiParams[key];
         }
       });
       
       if (jobId) {
-        await fetchJobApplications(jobId, searchParams);
+        await fetchJobApplications(jobId, apiParams);
       } else {
-        await fetchApplications(searchParams);
+        await fetchApplications(apiParams);
       }
     } catch (error) {
       console.error('Failed to update statuses:', error);
@@ -266,12 +334,25 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+              className={`inline-flex items-center px-3 py-2 border rounded-md text-sm font-medium transition-colors ${
+                hasActiveFilters 
+                  ? 'border-[#0CCE68] bg-[#0CCE68]/10 text-[#0CCE68] hover:bg-[#0CCE68]/20' 
+                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'
+              }`}
             >
               <Filter className="w-4 h-4 mr-2" />
-              Filters
+              Filters {hasActiveFilters && '(Active)'}
               {showFilters ? <ChevronUp className="w-4 h-4 ml-2" /> : <ChevronDown className="w-4 h-4 ml-2" />}
             </button>
+            
+            {hasActiveFilters && (
+              <button
+                onClick={handleResetFilters}
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 underline"
+              >
+                Clear Filters
+              </button>
+            )}
             
             <select
               value={`${sortBy}-${sortDirection}`}
@@ -302,7 +383,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
             <input
             type="text"
             placeholder="Search by name, email, or profile..."
-            value={filters.search}
+            value={componentFilters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
             className="pl-10 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
             />
@@ -314,7 +395,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
                 Status
               </label>
               <select
-                value={filters.status}
+                value={componentFilters.status}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
                 className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
               >
@@ -332,7 +413,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
               </label>
               <input
                 type="date"
-                value={filters.date_from}
+                value={componentFilters.date_from}
                 onChange={(e) => handleFilterChange('date_from', e.target.value)}
                 className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
               />
@@ -344,7 +425,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
               </label>
               <input
                 type="date"
-                value={filters.date_to}
+                value={componentFilters.date_to}
                 onChange={(e) => handleFilterChange('date_to', e.target.value)}
                 className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
               />
@@ -430,7 +511,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
                      No applications found
                    </h3>
                    <p className="text-gray-600 dark:text-gray-400">
-                     {filters.search || filters.status 
+                     {componentFilters.search || componentFilters.status 
                        ? 'Try adjusting your filters to see more applications.' 
                        : 'Applications will appear here when candidates apply to your jobs.'}
                    </p>

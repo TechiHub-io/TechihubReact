@@ -46,6 +46,8 @@ const useStore = create(
           unreadCount: state.unreadCount, 
           profile: state.profile,
           hasCompletedProfile: state.hasCompletedProfile,
+          // Persist application filters so they remain when navigating
+          filters: state.filters,
           // Potentially add other states that need to be persisted
         }),
         merge: (persistedState, currentState) => {
@@ -74,6 +76,14 @@ const useStore = create(
             mergedState.conversations = []; // Reset conversations
             mergedState.messages = []; // Reset messages
             mergedState.unreadCount = 0; // Reset unread count
+            // Reset filters when user changes
+            mergedState.filters = {
+              status: '',
+              job: '',
+              search: '',
+              dateFrom: '',
+              dateTo: '',
+            };
           }
           
           return mergedState;
