@@ -29,7 +29,13 @@ export default function Sidebar({ userRole = 'jobseeker' }) {
     <aside className="w-64 bg-white shadow-md h-screen">
       <div className="p-4">
         <Link href="/" className="text-2xl font-bold text-[#0CCE68]">
-          TechHub
+           <Image 
+                src="/images/blogs/logoa.webp"
+                alt="TechHub"
+                width={40}
+                height={40}
+                className="transition-transform group-hover:scale-110"
+              />
         </Link>
       </div>
       

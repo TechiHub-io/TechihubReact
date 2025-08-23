@@ -188,10 +188,13 @@ export default function DashboardLayout({ children }) {
           {/* Sidebar header */}
           <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-[#0CCE68] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">T</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">TechHub</span>
+               <Image 
+                src="/images/blogs/logoa.webp"
+                alt="TechHub"
+                width={40}
+                height={40}
+                className="transition-transform group-hover:scale-110"
+              />
             </Link>
             <button
               onClick={toggleSidebar}
@@ -266,7 +269,7 @@ export default function DashboardLayout({ children }) {
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top navbar */}
         <header className="bg-white dark:bg-gray-800 shadow-sm z-10 border-b border-gray-200 dark:border-gray-700">
-          <div className="px-4 sm:px-6 lg:px-8 py-3">
+          <div className="px-4 sm:px-6 lg:px-8 py-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <button

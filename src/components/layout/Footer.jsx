@@ -18,7 +18,7 @@ export default function Footer() {
             <div className="flex items-center mb-6">
               <div className="relative mr-3">
                 <Image 
-                  src="/images/blogs/logoa.webp"
+                  src="/images/homepage/whitelogo.svg"
                   alt="TechHub"
                   width={50}
                   height={50}

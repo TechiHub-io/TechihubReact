@@ -10,18 +10,54 @@ const EMPLOYMENT_STATUS_OPTIONS = [
   { value: 'interview', label: 'Interview Candidate' }
 ];
 
+const REVIEW_TITLE_OPTIONS = [
+  // Positive titles
+  { value: 'great-place-to-work', label: 'Great place to work' },
+  { value: 'excellent-work-life-balance', label: 'Excellent work-life balance' },
+  { value: 'amazing-team-culture', label: 'Amazing team and culture' },
+  { value: 'good-career-growth', label: 'Good career growth opportunities' },
+  { value: 'competitive-compensation', label: 'Competitive compensation and benefits' },
+  { value: 'supportive-management', label: 'Supportive management' },
+  { value: 'innovative-projects', label: 'Innovative and exciting projects' },
+  { value: 'flexible-remote-work', label: 'Flexible remote work options' },
+  { value: 'learning-opportunities', label: 'Great learning opportunities' },
+  
+  // Neutral/Mixed titles
+  { value: 'mixed-experience', label: 'Mixed experience' },
+  { value: 'good-with-improvements', label: 'Good company with room for improvement' },
+  { value: 'decent-workplace', label: 'Decent workplace overall' },
+  { value: 'average-experience', label: 'Average work experience' },
+  
+  // Negative titles
+  { value: 'poor-management', label: 'Poor management' },
+  { value: 'limited-growth', label: 'Limited growth opportunities' },
+  { value: 'work-life-issues', label: 'Work-life balance issues' },
+  { value: 'below-average-pay', label: 'Below average compensation' },
+  { value: 'toxic-environment', label: 'Toxic work environment' },
+  { value: 'high-turnover', label: 'High turnover and stress' },
+  { value: 'lack-of-support', label: 'Lack of employee support' },
+  { value: 'outdated-processes', label: 'Outdated processes and technology' },
+  
+  // Custom option
+  { value: 'custom', label: 'Write custom title' }
+];
+
 export default function CompanyReviewModal({ company, isOpen, onClose, onReviewSubmitted }) {
   const { submitReview, loading, error, clearError } = useCompanyReviews();
   
   const [formData, setFormData] = useState({
     rating: 0,
     title: '',
+    titleOption: '',
+    customTitle: '',
     content: '',
     pros: '',
     cons: '',
     employment_status: 'former',
     is_anonymous: true
   });
+
+  const [showCustomTitle, setShowCustomTitle] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +90,24 @@ export default function CompanyReviewModal({ company, isOpen, onClose, onReviewS
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Handle title option changes
+    if (field === 'titleOption') {
+      if (value === 'custom') {
+        setShowCustomTitle(true);
+        setFormData(prev => ({ ...prev, title: prev.customTitle }));
+      } else {
+        setShowCustomTitle(false);
+        const selectedOption = REVIEW_TITLE_OPTIONS.find(opt => opt.value === value);
+        setFormData(prev => ({ ...prev, title: selectedOption ? selectedOption.label : '' }));
+      }
+    }
+    
+    // Handle custom title changes
+    if (field === 'customTitle') {
+      setFormData(prev => ({ ...prev, title: value, customTitle: value }));
+    }
+    
     clearError();
   };
 
@@ -124,18 +178,62 @@ export default function CompanyReviewModal({ company, isOpen, onClose, onReviewS
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Review Title *
               </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleChange('title', e.target.value)}
-                placeholder="Summarize your experience"
-                maxLength={100}
+              <select
+                value={formData.titleOption}
+                onChange={(e) => handleChange('titleOption', e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-[#0CCE68] focus:border-[#0CCE68]"
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                {formData.title.length}/100 characters
-              </p>
+              >
+                <option value="">Select a review title...</option>
+                <optgroup label="Positive Experience">
+                  <option value="great-place-to-work">Great place to work</option>
+                  <option value="excellent-work-life-balance">Excellent work-life balance</option>
+                  <option value="amazing-team-culture">Amazing team and culture</option>
+                  <option value="good-career-growth">Good career growth opportunities</option>
+                  <option value="competitive-compensation">Competitive compensation and benefits</option>
+                  <option value="supportive-management">Supportive management</option>
+                  <option value="innovative-projects">Innovative and exciting projects</option>
+                  <option value="flexible-remote-work">Flexible remote work options</option>
+                  <option value="learning-opportunities">Great learning opportunities</option>
+                </optgroup>
+                <optgroup label="Mixed Experience">
+                  <option value="mixed-experience">Mixed experience</option>
+                  <option value="good-with-improvements">Good company with room for improvement</option>
+                  <option value="decent-workplace">Decent workplace overall</option>
+                  <option value="average-experience">Average work experience</option>
+                </optgroup>
+                <optgroup label="Areas for Improvement">
+                  <option value="poor-management">Poor management</option>
+                  <option value="limited-growth">Limited growth opportunities</option>
+                  <option value="work-life-issues">Work-life balance issues</option>
+                  <option value="below-average-pay">Below average compensation</option>
+                  <option value="toxic-environment">Toxic work environment</option>
+                  <option value="high-turnover">High turnover and stress</option>
+                  <option value="lack-of-support">Lack of employee support</option>
+                  <option value="outdated-processes">Outdated processes and technology</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option value="custom">Write custom title</option>
+                </optgroup>
+              </select>
+              
+              {/* Custom title input (shown when 'custom' is selected) */}
+              {showCustomTitle && (
+                <div className="mt-3">
+                  <input
+                    type="text"
+                    value={formData.customTitle}
+                    onChange={(e) => handleChange('customTitle', e.target.value)}
+                    placeholder="Enter your custom review title"
+                    maxLength={100}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-[#0CCE68] focus:border-[#0CCE68]"
+                  />
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {formData.customTitle.length}/100 characters
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Content */}

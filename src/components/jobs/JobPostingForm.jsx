@@ -16,6 +16,8 @@ import {
   AlertCircle,
   X
 } from 'lucide-react';
+import SearchableSelect from '@/components/ui/SearchableSelect';
+import { getAllCurrencies, getSalaryRange, getCurrencySymbol } from '@/lib/utils/currencyUtils';
 
 // Load Quill dynamically
 const loadQuill = () => {
@@ -103,18 +105,12 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
 
   const MAX_SKILLS = 15;
 
-  // Currency salary ranges (annual in local currency)
-  const SALARY_RANGES = {
-    USD: { min: 200, max: 1000000 },
-    EUR: { min: 180, max: 900000 },
-    GBP: { min: 150, max: 800000 },
-    CAD: { min: 250, max: 1200000 },
-    AUD: { min: 300, max: 1200000 },
-    JPY: { min: 200, max: 100000000 },
-    INR: { min: 300, max: 50000000 },
-    KES: { min: 500, max: 30000000 },
-    NGN: { min: 100, max: 100000000 },
-    ZAR: { min: 200, max: 5000000 }
+  // Load currencies data
+  const [currencies] = useState(() => getAllCurrencies());
+  
+  // Get salary range function (now uses utility)
+  const getSalaryRangeForValidation = (currencyCode) => {
+    return getSalaryRange(currencyCode);
   };
 
   // Initialize Quill editors
@@ -277,7 +273,7 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
       case 'min_salary':
         if (value) {
           const numValue = Number(value);
-          const range = SALARY_RANGES[formData.salary_currency];
+          const range = getSalaryRangeForValidation(formData.salary_currency);
           if (isNaN(numValue) || numValue < 0) {
             errors[name] = 'Minimum salary must be a positive number';
           } else if (numValue < range.min || numValue > range.max) {
@@ -290,7 +286,7 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
         if (value) {
           const numValue = Number(value);
           const minSalary = Number(formData.min_salary);
-          const range = SALARY_RANGES[formData.salary_currency];
+          const range = getSalaryRangeForValidation(formData.salary_currency);
           if (isNaN(numValue) || numValue < 0) {
             errors[name] = 'Maximum salary must be a positive number';
           } else if (numValue < range.min || numValue > range.max) {
@@ -538,10 +534,10 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
 
   // Experience levels options
   const experienceLevels = [
-    { value: 'entry', label: 'Entry Level' },
-    { value: 'mid', label: 'Mid Level' },
-    { value: 'senior', label: 'Senior Level' },
-    { value: 'executive', label: 'Executive Level' }
+    { value: 'entry', label: 'Entry Level: 0-2 years' },
+    { value: 'mid', label: 'Mid Level: 3-5 years' },
+    { value: 'senior', label: 'Senior Level: 6-9 years' },
+    { value: 'executive', label: 'Executive Level: 10+ yrs' }
   ];
 
   // Job categories
@@ -948,19 +944,24 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
               <label htmlFor="min_salary" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Minimum Salary
               </label>
-              <input
-                id="min_salary"
-                name="min_salary"
-                type="number"
-                min="0"
-                value={formData.min_salary}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={`w-full bg-white dark:bg-gray-800 border rounded-md py-2 px-3 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent ${
-                  validationErrors.min_salary ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                }`}
-                placeholder="e.g. 50000"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">
+                  {getCurrencySymbol(formData.salary_currency)}
+                </span>
+                <input
+                  id="min_salary"
+                  name="min_salary"
+                  type="number"
+                  min="0"
+                  value={formData.min_salary}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`w-full bg-white dark:bg-gray-800 border rounded-md py-2 pl-10 pr-3 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent ${
+                    validationErrors.min_salary ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                  }`}
+                  placeholder="e.g. 50000"
+                />
+              </div>
               {validationErrors.min_salary && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
@@ -973,19 +974,24 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
               <label htmlFor="max_salary" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Maximum Salary
               </label>
-              <input
-                id="max_salary"
-                name="max_salary"
-                type="number"
-                min="0"
-                value={formData.max_salary}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className={`w-full bg-white dark:bg-gray-800 border rounded-md py-2 px-3 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent ${
-                  validationErrors.max_salary ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                }`}
-                placeholder="e.g. 80000"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 text-sm">
+                  {getCurrencySymbol(formData.salary_currency)}
+                </span>
+                <input
+                  id="max_salary"
+                  name="max_salary"
+                  type="number"
+                  min="0"
+                  value={formData.max_salary}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={`w-full bg-white dark:bg-gray-800 border rounded-md py-2 pl-10 pr-3 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent ${
+                    validationErrors.max_salary ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                  }`}
+                  placeholder="e.g. 80000"
+                />
+              </div>
               {validationErrors.max_salary && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
@@ -998,24 +1004,17 @@ export default function JobPostingForm({ initialData = null, isEdit = false }) {
               <label htmlFor="salary_currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Currency
               </label>
-              <select
+              <SearchableSelect
                 id="salary_currency"
                 name="salary_currency"
+                options={currencies}
                 value={formData.salary_currency}
                 onChange={handleChange}
-                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
-              >
-                <option value="USD">USD - US Dollar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - British Pound</option>
-                <option value="CAD">CAD - Canadian Dollar</option>
-                <option value="AUD">AUD - Australian Dollar</option>
-                <option value="JPY">JPY - Japanese Yen</option>
-                <option value="INR">INR - Indian Rupee</option>
-                <option value="KES">KES - Kenyan Shilling</option>
-                <option value="NGN">NGN - Nigerian Naira</option>
-                <option value="ZAR">ZAR - South African Rand</option>
-              </select>
+                onBlur={handleBlur}
+                placeholder="Select currency..."
+                searchPlaceholder="Search currencies..."
+                className="w-full"
+              />
             </div>
           </div>
           

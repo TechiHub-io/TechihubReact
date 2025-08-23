@@ -884,7 +884,7 @@ export default function JobApplicationForm({ jobId }) {
                  name="expectedSalary"
                  value={formData.expectedSalary}
                  onChange={handleInputChange}
-                 className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
+                 className="flex-1 !max-w-[200px] px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent"
                  placeholder="50000"
                />
              </div>

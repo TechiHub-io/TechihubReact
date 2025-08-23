@@ -365,9 +365,9 @@ export default function JobDetailsView({ jobId }) {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               {currentJob.title}
             </h2>
-            
+            {console.log("currentjob", currentJob.company)}
             <p className="text-gray-600 dark:text-gray-400 mt-1">
-              {currentJob.company_name || 'Company Name'}
+              {currentJob.company.name || 'Company Name'}
             </p>
             
             <div className="mt-4 flex flex-wrap gap-4">
@@ -416,7 +416,9 @@ export default function JobDetailsView({ jobId }) {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 About {currentJob.company.name}
               </h3>
-              
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                {currentJob.company.name }
+              </p>
               <div className="space-y-4">
                 {/* Company Rating */}
                 {currentJob.company.average_rating && (
@@ -441,7 +443,7 @@ export default function JobDetailsView({ jobId }) {
                 </div>
                 
                 {/* Actions */}
-                <div className="flex space-x-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                <div className="flex items-center space-x-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                   <Link
                     href={`${isEmployer ? `/company/${currentJob.company.id}` : `/dashboard/jobseeker/companies/${currentJob.company.id}`}`}
                     className="text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium"
