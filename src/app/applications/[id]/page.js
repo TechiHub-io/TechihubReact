@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import ApplicationStatusUpdate from '@/components/applications/ApplicationStatusUpdate';
 import TeamComments from '@/components/applications/TeamComments';
+import QuickMessageComposer from '@/components/applications/QuickMessageComposer';
 import { useStore } from '@/hooks/useZustandStore';
 import { useApplications } from '@/hooks/useApplications';
 
@@ -583,6 +584,17 @@ export default function ApplicationDetailPage({ params }) {
               />
             )}
             
+            {/* Communication Section */}
+            {isEmployer && (
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <MessageCircle className="w-5 h-5 mr-2 text-[#0CCE68]" />
+                  Communication
+                </h3>
+                <QuickMessageComposer application={currentApplication} />
+              </div>
+            )}
+            
             {/* Quick Actions */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -636,22 +648,25 @@ export default function ApplicationDetailPage({ params }) {
                   
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => handleNavigation('previous')}
-                      disabled={!navigationInfo.canGoPrevious}
+                      onClick={() => handleNavigation('next')}
+                      disabled={!navigationInfo.canGoNext}
                       className="flex-1 flex items-center justify-center px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300"
                     >
                       <ChevronLeft className="w-4 h-4 mr-1" />
                       Previous
+                      
                     </button>
-                    
+
                     <button
-                      onClick={() => handleNavigation('next')}
-                      disabled={!navigationInfo.canGoNext}
+                      onClick={() => handleNavigation('previous')}
+                      disabled={!navigationInfo.canGoPrevious}
                       className="flex-1 flex items-center justify-center px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300"
                     >
                       Next
                       <ChevronRight className="w-4 h-4 ml-1" />
                     </button>
+                    
+                    
                   </div>
                   
                   <div className="text-xs text-gray-500 dark:text-gray-400 text-center">

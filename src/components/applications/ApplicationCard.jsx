@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/date';
+import QuickMessageComposer from './QuickMessageComposer';
 import { 
   Building2,
   Calendar,
@@ -14,7 +15,8 @@ import {
   AlertTriangle,
   FileText,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  MessageCircle
 } from 'lucide-react';
 
 export default function ApplicationCard({ application, onWithdraw, onRefresh }) {
@@ -334,6 +336,11 @@ export default function ApplicationCard({ application, onWithdraw, onRefresh }) 
             )}
           </button>
         )}
+      </div>
+
+      {/* Quick Message Composer */}
+      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <QuickMessageComposer application={application} />
       </div>
     </div>
   );

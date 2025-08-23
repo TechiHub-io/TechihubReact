@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApplications } from '@/hooks/useApplications';
 import { formatDate } from '@/lib/utils/date';
+import QuickMessageComposer from './QuickMessageComposer';
 
 import { 
   ArrowLeft, 
@@ -571,6 +572,15 @@ export default function ApplicationDetailView({ applicationId }) {
                 Update Status
               </button>
             </form>
+          </div>
+          
+          {/* Quick Messaging Section */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+              <MessageCircle className="w-5 h-5 mr-2 text-[#0CCE68]" />
+              Communication
+            </h2>
+            <QuickMessageComposer application={application} />
           </div>
           
           {/* Status history */}
