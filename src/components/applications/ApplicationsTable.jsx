@@ -93,7 +93,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   }, [hasActiveFilters, showFilters]);
 
   // Memoized fetch function to avoid unnecessary re-renders
-  const fetchWithCurrentSettings = useCallback(async (page = currentPage) => {
+  const fetchWithCurrentSettings = useCallback(async (page = 1) => {
     const searchParams = {
       status: filters.status || undefined,
       search: filters.search || undefined,
@@ -119,30 +119,38 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
     } catch (error) {
       console.error('Failed to load applications:', error);
     }
-  }, [filters.status, filters.search, filters.dateFrom, filters.dateTo, sortBy, sortDirection, currentPage, jobId, fetchApplications, fetchJobApplications]);
+  }, [filters.status, filters.search, filters.dateFrom, filters.dateTo, sortBy, sortDirection, jobId, fetchApplications, fetchJobApplications]);
 
   // Initial load - Load applications with current filters immediately when component mounts
   useEffect(() => {
     if (!isInitialized) {
       setIsInitialized(true);
-      fetchWithCurrentSettings(1);
     }
-  }, [isInitialized, fetchWithCurrentSettings]);
+  }, []); // Simple initialization flag
 
-  // Re-fetch when dependencies change (but only after initialization)
+  // Initial load
   useEffect(() => {
     if (isInitialized) {
       fetchWithCurrentSettings(1);
-      setCurrentPage(1); // Reset to page 1 when filters change
     }
-  }, [filters.status, filters.search, filters.dateFrom, filters.dateTo, sortBy, sortDirection, fetchWithCurrentSettings, isInitialized]);
+  }, [isInitialized]);
 
-  // Re-fetch when page changes (but only after initialization)
+  // Filter and sort changes
   useEffect(() => {
-    if (isInitialized && currentPage !== 1) {
+    if (isInitialized) {
+      fetchWithCurrentSettings(1);
+      if (currentPage !== 1) {
+        setCurrentPage(1); // Reset to page 1 when filters/sort change
+      }
+    }
+  }, [filters.status, filters.search, filters.dateFrom, filters.dateTo, sortBy, sortDirection, isInitialized]);
+
+  // Handle page changes (separate from filter changes)
+  useEffect(() => {
+    if (isInitialized && currentPage > 1) {
       fetchWithCurrentSettings(currentPage);
     }
-  }, [currentPage, fetchWithCurrentSettings, isInitialized]);
+  }, [currentPage, isInitialized]);
 
   useEffect(() => {
     if (messagingError) {
@@ -189,7 +197,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
     try {
       await updateApplicationStatus(applicationId, { status: newStatus });
       // Re-fetch applications to get updated data
-      await fetchWithCurrentSettings(currentPage);
+      fetchWithCurrentSettings(currentPage); // Use current page, not await
     } catch (error) {
       console.error('Failed to update status:', error);
     }
@@ -211,7 +219,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
       );
       
       setSelectedApplications([]);
-      await fetchWithCurrentSettings(currentPage);
+      fetchWithCurrentSettings(currentPage); // Use current page, not await
     } catch (error) {
       console.error('Failed to update statuses:', error);
     }
