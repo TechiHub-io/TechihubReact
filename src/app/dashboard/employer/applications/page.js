@@ -58,24 +58,9 @@ export default function EmployerApplicationsPage() {
     }
   }, [isAuthenticated, isEmployer, router]);
 
-  // Fetch applications
-  useEffect(() => {
-    const loadApplications = async () => {
-      if (company?.id) {
-        try {
-          await fetchApplications({
-            company: company.id,
-            page: 1,
-            page_size: 20 // Increased to get more data
-          });
-        } catch (error) {
-          console.error('Failed to load applications:', error);
-        }
-      }
-    };
-
-    loadApplications();
-  }, [company?.id, fetchApplications]);
+  // Don't fetch applications here - let ApplicationsTable handle all filtering and fetching
+  // This was causing conflicts where parent would load unfiltered data
+  // and override the filtered data from ApplicationsTable component
 
   // Calculate stats from applications - IMPROVED STATUS MAPPING
   useEffect(() => {

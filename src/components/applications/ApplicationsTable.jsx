@@ -1,7 +1,7 @@
 // src/components/applications/ApplicationsTable.jsx
 
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApplications } from '@/hooks/useApplications';
 import { useApplicationMessaging } from '@/hooks/useApplicationMessaging';
@@ -71,89 +71,82 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   const { company } = useStore(state => ({ company: state.company }));
   const { filters, setFilters: setStoreFilters } = useApplicationsStore();
   
-  // Convert store filters to component format
-  const componentFilters = {
-    status: filters.status || '',
-    search: filters.search || '',
-    date_from: filters.dateFrom || '',
-    date_to: filters.dateTo || ''
-  };
-  
+  // Local state for UI
   const [sortBy, setSortBy] = useState('applied_date');
   const [sortDirection, setSortDirection] = useState('desc');
   const [selectedApplications, setSelectedApplications] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Ensure applications is always an array
   const applicationsArray = Array.isArray(applications) ? applications : [];
   
   // Check if any filters are active
-  const hasActiveFilters = componentFilters.status || componentFilters.search || componentFilters.date_from || componentFilters.date_to;
+  const hasActiveFilters = filters.status || filters.search || filters.dateFrom || filters.dateTo;
   
-  // Sync showFilters with whether filters are active on mount
+  // Auto-show filters if any are active
   useEffect(() => {
     if (hasActiveFilters && !showFilters) {
       setShowFilters(true);
     }
   }, [hasActiveFilters, showFilters]);
 
-  // Load applications
-  useEffect(() => {
-    const loadApplications = async () => {
-      const searchParams = {
-        ...componentFilters,
-        ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-        page: currentPage
-      };
-
-      // Remove empty filters
-      Object.keys(searchParams).forEach(key => {
-        if (!searchParams[key] || searchParams[key] === '') {
-          delete searchParams[key];
-        }
-      });
-
-      // Convert to API format for backend
-      const apiParams = {
-        status: searchParams.status,
-        search: searchParams.search,
-        date_from: searchParams.date_from,
-        date_to: searchParams.date_to,
-        ordering: searchParams.ordering,
-        page: searchParams.page
-      };
-      
-      // Remove empty filters
-      Object.keys(apiParams).forEach(key => {
-        if (!apiParams[key] || apiParams[key] === '') {
-          delete apiParams[key];
-        }
-      });
-      
-      try {
-        if (jobId) {
-          await fetchJobApplications(jobId, apiParams);
-        } else {
-          await fetchApplications(apiParams);
-        }
-      } catch (error) {
-        console.error('Failed to load applications:', error);
-      }
+  // Memoized fetch function to avoid unnecessary re-renders
+  const fetchWithCurrentSettings = useCallback(async (page = currentPage) => {
+    const searchParams = {
+      status: filters.status || undefined,
+      search: filters.search || undefined,
+      date_from: filters.dateFrom || undefined,
+      date_to: filters.dateTo || undefined,
+      ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
+      page: page
     };
 
-    loadApplications();
-  }, [componentFilters.status, componentFilters.search, componentFilters.date_from, componentFilters.date_to, sortBy, sortDirection, currentPage, jobId, fetchApplications, fetchJobApplications]);
+    // Remove undefined values
+    Object.keys(searchParams).forEach(key => {
+      if (searchParams[key] === undefined || searchParams[key] === '') {
+        delete searchParams[key];
+      }
+    });
 
-  // Reset to page 1 when filters or sorting change
+    try {
+      if (jobId) {
+        await fetchJobApplications(jobId, searchParams);
+      } else {
+        await fetchApplications(searchParams);
+      }
+    } catch (error) {
+      console.error('Failed to load applications:', error);
+    }
+  }, [filters.status, filters.search, filters.dateFrom, filters.dateTo, sortBy, sortDirection, currentPage, jobId, fetchApplications, fetchJobApplications]);
+
+  // Initial load - Load applications with current filters immediately when component mounts
   useEffect(() => {
-    setCurrentPage(1);
-  }, [componentFilters.status, componentFilters.search, componentFilters.date_from, componentFilters.date_to, sortBy, sortDirection]);
+    if (!isInitialized) {
+      setIsInitialized(true);
+      fetchWithCurrentSettings(1);
+    }
+  }, [isInitialized, fetchWithCurrentSettings]);
+
+  // Re-fetch when dependencies change (but only after initialization)
+  useEffect(() => {
+    if (isInitialized) {
+      fetchWithCurrentSettings(1);
+      setCurrentPage(1); // Reset to page 1 when filters change
+    }
+  }, [filters.status, filters.search, filters.dateFrom, filters.dateTo, sortBy, sortDirection, fetchWithCurrentSettings, isInitialized]);
+
+  // Re-fetch when page changes (but only after initialization)
+  useEffect(() => {
+    if (isInitialized && currentPage !== 1) {
+      fetchWithCurrentSettings(currentPage);
+    }
+  }, [currentPage, fetchWithCurrentSettings, isInitialized]);
 
   useEffect(() => {
     if (messagingError) {
       console.error('Messaging error:', messagingError);
-      // You could show a toast notification here
       setTimeout(() => {
         clearMessagingError();
       }, 5000);
@@ -162,18 +155,15 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
 
   // Handle filter changes
   const handleFilterChange = (field, value) => {
-    const updatedFilters = { ...componentFilters, [field]: value };
-    
-    // Convert component filters to store format
-    const storeFilters = {
-      status: updatedFilters.status,
-      search: updatedFilters.search,
-      dateFrom: updatedFilters.date_from,
-      dateTo: updatedFilters.date_to
+    const updatedFilters = {
+      status: field === 'status' ? value : filters.status,
+      search: field === 'search' ? value : filters.search,
+      dateFrom: field === 'dateFrom' || field === 'date_from' ? value : filters.dateFrom,
+      dateTo: field === 'dateTo' || field === 'date_to' ? value : filters.dateTo,
     };
     
-    setStoreFilters(storeFilters);
-    // Page will be reset to 1 by the useEffect above
+    setStoreFilters(updatedFilters);
+    setCurrentPage(1); // Reset to page 1 when filters change
   };
   
   // Handle filter reset
@@ -184,54 +174,28 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
       dateFrom: '',
       dateTo: ''
     });
+    setCurrentPage(1);
   };
 
   // Handle sort change
   const handleSortChange = (field, direction) => {
     setSortBy(field);
     setSortDirection(direction);
-    // Page will be reset to 1 by the useEffect above
+    setCurrentPage(1);
   };
 
   // Handle status update
   const handleStatusUpdate = async (applicationId, newStatus) => {
     try {
       await updateApplicationStatus(applicationId, { status: newStatus });
-      
-      // Reload applications (keep current page)
-      const searchParams = {
-        ...componentFilters,
-        ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-        page: currentPage
-      };
-      
-      // Convert to API format and remove empty filters
-      const apiParams = {
-        status: searchParams.status,
-        search: searchParams.search,
-        date_from: searchParams.date_from,
-        date_to: searchParams.date_to,
-        ordering: searchParams.ordering,
-        page: searchParams.page
-      };
-      
-      Object.keys(apiParams).forEach(key => {
-        if (!apiParams[key] || apiParams[key] === '') {
-          delete apiParams[key];
-        }
-      });
-      
-      if (jobId) {
-        await fetchJobApplications(jobId, apiParams);
-      } else {
-        await fetchApplications(apiParams);
-      }
+      // Re-fetch applications to get updated data
+      await fetchWithCurrentSettings(currentPage);
     } catch (error) {
       console.error('Failed to update status:', error);
     }
   };
 
-  // handle pagination
+  // Handle pagination
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > pagination.totalPages) return;
     setCurrentPage(newPage);
@@ -246,35 +210,8 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
         selectedApplications.map(id => updateApplicationStatus(id, { status: newStatus }))
       );
       
-      // Clear selection and reload (keep current page)
       setSelectedApplications([]);
-      const searchParams = {
-        ...componentFilters,
-        ordering: sortDirection === 'desc' ? `-${sortBy}` : sortBy,
-        page: currentPage
-      };
-      
-      // Convert to API format and remove empty filters
-      const apiParams = {
-        status: searchParams.status,
-        search: searchParams.search,
-        date_from: searchParams.date_from,
-        date_to: searchParams.date_to,
-        ordering: searchParams.ordering,
-        page: searchParams.page
-      };
-      
-      Object.keys(apiParams).forEach(key => {
-        if (!apiParams[key] || apiParams[key] === '') {
-          delete apiParams[key];
-        }
-      });
-      
-      if (jobId) {
-        await fetchJobApplications(jobId, apiParams);
-      } else {
-        await fetchApplications(apiParams);
-      }
+      await fetchWithCurrentSettings(currentPage);
     } catch (error) {
       console.error('Failed to update statuses:', error);
     }
@@ -300,11 +237,6 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
   // Get display name for applicant
   const getApplicantDisplayName = (application) => {
     return application.applicant_name || 'Unknown Applicant';
-  };
-
-  // Get status display text
-  const getStatusDisplay = (application) => {
-    return application.status_display || application.status || 'Unknown';
   };
 
   if (loading && applicationsArray.length === 0) {
@@ -375,19 +307,19 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
         {showFilters && (
           <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Search Applicants
-            </label>
-            <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-            type="text"
-            placeholder="Search by name, email, or profile..."
-            value={componentFilters.search}
-            onChange={(e) => handleFilterChange('search', e.target.value)}
-            className="pl-10 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
-            />
-            </div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Search Applicants
+              </label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search by name, email, or profile..."
+                  value={filters.search || ''}
+                  onChange={(e) => handleFilterChange('search', e.target.value)}
+                  className="pl-10 w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
+                />
+              </div>
             </div>
             
             <div>
@@ -395,7 +327,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
                 Status
               </label>
               <select
-                value={componentFilters.status}
+                value={filters.status || ''}
                 onChange={(e) => handleFilterChange('status', e.target.value)}
                 className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
               >
@@ -413,8 +345,8 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
               </label>
               <input
                 type="date"
-                value={componentFilters.date_from}
-                onChange={(e) => handleFilterChange('date_from', e.target.value)}
+                value={filters.dateFrom || ''}
+                onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
                 className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
               />
             </div>
@@ -425,8 +357,8 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
               </label>
               <input
                 type="date"
-                value={componentFilters.date_to}
-                onChange={(e) => handleFilterChange('date_to', e.target.value)}
+                value={filters.dateTo || ''}
+                onChange={(e) => handleFilterChange('dateTo', e.target.value)}
                 className="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#0CCE68] focus:border-[#0CCE68] px-3 py-2"
               />
             </div>
@@ -511,7 +443,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
                      No applications found
                    </h3>
                    <p className="text-gray-600 dark:text-gray-400">
-                     {componentFilters.search || componentFilters.status 
+                     {hasActiveFilters 
                        ? 'Try adjusting your filters to see more applications.' 
                        : 'Applications will appear here when candidates apply to your jobs.'}
                    </p>
@@ -521,7 +453,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
            ) : (
              applicationsArray.map((application) => (
                <tr key={application.id} onClick={() => router.push(`/applications/${application.id}`)} className="hover:bg-gray-50 cursor-pointer dark:hover:bg-gray-700/50">
-                 <td className="px-6 py-4">
+                 <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                    <input
                      type="checkbox"
                      checked={selectedApplications.includes(application.id)}
@@ -559,13 +491,13 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
                    </td>
                  )}
                  
-                 <td className="px-6 py-4">
+                 <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                    <select
                      value={application.status}
                      onChange={(e) => handleStatusUpdate(application.id, e.target.value)}
                      disabled={loading}
                      className={`text-xs font-medium px-2 py-1 rounded-full border-0 focus:ring-2 focus:ring-[#0CCE68] disabled:opacity-50 disabled:cursor-not-allowed ${
-                       STATUS_COLORS[application.status] || STATUS_COLORS.pending
+                       STATUS_COLORS[application.status] || STATUS_COLORS.applied
                      }`}
                    >
                      {STATUS_OPTIONS.slice(1).map(option => (
@@ -588,7 +520,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
                    )}
                  </td>
                  
-                 <td className="px-6 py-4 text-sm font-medium">
+                 <td className="px-6 py-4 text-sm font-medium" onClick={(e) => e.stopPropagation()}>
                    <div className="flex items-center space-x-2">
                      <Link
                        href={`/applications/${application.id}`}
@@ -634,7 +566,7 @@ export default function ApplicationsTable({ jobId = null, showJobColumn = true }
        </table>
      </div>
 
-     {/* Pagination */}
+    {/* Pagination */}
      {pagination && pagination.totalPages > 1 && (
       <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
