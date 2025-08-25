@@ -38,10 +38,11 @@ export default function ApplicationDetailPage({ params }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [showSharing, setShowSharing] = useState(false);
   
-  const { isAuthenticated, isEmployer, user } = useStore(state => ({
+  const { isAuthenticated, isEmployer, user, setCurrentApplication } = useStore(state => ({
     isAuthenticated: state.isAuthenticated,
     isEmployer: state.isEmployer,
-    user: state.user
+    user: state.user,
+    setCurrentApplication: state.setCurrentApplication
   }));
   
   const { 
@@ -148,7 +149,11 @@ export default function ApplicationDetailPage({ params }) {
   // Handle notes update
   const handleNotesUpdated = (updatedNotes) => {
     if (currentApplication) {
-      currentApplication.employer_notes = updatedNotes;
+      // Use the store's setCurrentApplication to properly update the immutable state
+      setCurrentApplication({
+        ...currentApplication,
+        employer_notes: updatedNotes
+      });
     }
   };
 

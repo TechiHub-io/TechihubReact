@@ -365,7 +365,6 @@ export default function JobDetailsView({ jobId }) {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               {currentJob.title}
             </h2>
-            {console.log("currentjob", currentJob.company)}
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               {currentJob.company.name || 'Company Name'}
             </p>

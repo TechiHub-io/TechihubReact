@@ -105,7 +105,6 @@ export default function EmployerApplicationsPage() {
             break;
           default:
             // Handle any unexpected statuses
-            console.log('Unknown status:', app.status);
             break;
         }
         return acc;

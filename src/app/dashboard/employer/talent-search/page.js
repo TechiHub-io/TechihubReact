@@ -155,7 +155,6 @@ export default function TalentSearchPage() {
         }
       });
       
-      console.log('Saving search with params:', { name: saveSearchName, search_params: searchParams });
       
       const response = await authAxios.post('saved-searches/', {
         name: saveSearchName,
@@ -163,7 +162,6 @@ export default function TalentSearchPage() {
         email_alerts: false
       });
       
-      console.log('Save search response:', response.data);
       
       setSaveSearchName('');
       setShowSaveModal(false);

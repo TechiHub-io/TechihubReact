@@ -69,7 +69,6 @@ export default function AnalyticsDashboard() {
           const applicationStatsResponse = await axios.get(`${API_URL}/analytics/application-stats/`);
           const data = applicationStatsResponse.data;
           
-          console.log("Application stats response:", data);
           
           allData.applicationStats = {
             statusBreakdown: data.status_breakdown || [],
@@ -88,7 +87,6 @@ export default function AnalyticsDashboard() {
           const dashboardResponse = await axios.get(`${API_URL}/analytics/dashboard/`);
           const dashData = dashboardResponse.data;
           
-          console.log("Dashboard response:", dashData);
           
           // Create mock daily job views if not available
           if (dashData.daily_job_views && dashData.daily_job_views.length > 0) {
@@ -124,7 +122,6 @@ export default function AnalyticsDashboard() {
           { source: 'Social Media', count: 0 }
         ];
         
-        console.log("Final analytics data:", allData);
         setAnalyticsData(allData);
         setDataFetched(true);
         

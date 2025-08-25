@@ -74,8 +74,6 @@ export default function ApplicationsAnalytics({ jobId = null, className = "" }) 
       }));
   }, [analytics?.daily_applications]);
 
-  console.log("Analytics data:", analytics);
-  console.log("Sorted daily applications:", sortedDailyApplications);
 
   if (loading && !analytics) {
     return (
