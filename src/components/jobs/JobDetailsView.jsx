@@ -8,6 +8,7 @@ import { useJobs } from '@/hooks/useJobs';
 import { useSavedJobs } from '@/hooks/useSavedJobs'; 
 import { formatDate } from '@/lib/utils/date';
 import SaveJobButton from './SaveJobButton'; 
+import ApplyButton from './ApplyButton';
 import ContactEmployerButton from './ContactEmployerButton';
 import WriteReviewButton from '@/components/reviews/WriteReviewButton';
 import StarRating from '@/components/reviews/StarRating';
@@ -247,12 +248,7 @@ export default function JobDetailsView({ jobId }) {
                 size="lg"
                 showText={true}
               />
-              <Link
-                href={`/jobs/${jobId}/apply`}
-                className="inline-flex items-center px-6 py-3 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] transition-colors"
-              >
-                Apply Now
-              </Link>
+              <ApplyButton job={currentJob} size="lg" />
             </>
           )}
           
@@ -631,12 +627,7 @@ export default function JobDetailsView({ jobId }) {
               {/* Job Seeker Actions */}
               {!isEmployer && (
                 <>
-                  <Link
-                    href={`/jobs/${jobId}/apply`}
-                    className="block w-full px-4 py-2 bg-[#0CCE68] text-white text-center rounded-md hover:bg-[#0BBE58]"
-                  >
-                    Apply for Job
-                  </Link>
+                  <ApplyButton job={currentJob} className="block w-full text-center" />
                   
                   <SaveJobButton
                     jobId={jobId}

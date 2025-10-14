@@ -418,6 +418,43 @@ export function useApplications() {
     setFieldErrors({}); // Also clear field errors
   }, []);
 
+  // Submit external application
+  const submitExternalApplication = useCallback(async (jobId, options = {}) => {
+    if (!jobId) {
+      throw new Error('Job ID is required');
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
+      
+      const requestData = {
+        application_method: options.application_method || 'external_url'
+      };
+      
+      const response = await axios.post(`${API_URL}/applications/external/${jobId}/`, requestData);
+      
+      if (response.data?.success) {
+        setLoading(false);
+        return response.data.data;
+      } else {
+        setLoading(false);
+        return response.data;
+      }
+    } catch (err) {
+      console.error('Error submitting external application:', err);
+      const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.detail || 
+                          err.message || 
+                          'Failed to track external application';
+      setError(errorMessage);
+      setLoading(false);
+      throw err;
+    }
+  }, [axios]);
+
   return {
     // State
     applications,
@@ -429,6 +466,7 @@ export function useApplications() {
     
     // Actions
     submitApplication,
+    submitExternalApplication,
     fetchApplications,
     fetchJobApplications,
     fetchApplicationById,

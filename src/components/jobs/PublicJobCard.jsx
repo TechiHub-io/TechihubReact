@@ -196,15 +196,66 @@ export default function PublicJobCard({
                 </button>
               )}
               
-              {showApplyButton && (
-                <Link
-                  href={`${jobUrl}/apply`}
-                  className="flex items-center justify-center px-4 py-2 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] transition-colors text-sm font-medium"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  Apply
-                </Link>
-              )}
+              {showApplyButton && (() => {
+                // Priority: External URL → Email → Internal
+                const applicationMethods = job.application_methods || [];
+                let primaryMethod = null;
+                
+                if (applicationMethods.length > 0) {
+                  primaryMethod = applicationMethods.find(m => m.type === 'external_url') ||
+                                 applicationMethods.find(m => m.type === 'email') ||
+                                 applicationMethods.find(m => m.type === 'internal');
+                } else {
+                  // Legacy fallback
+                  if (job.application_url) {
+                    primaryMethod = { type: 'external_url', url: job.application_url };
+                  } else if (job.application_email) {
+                    primaryMethod = { type: 'email', email: job.application_email };
+                  } else {
+                    primaryMethod = { type: 'internal' };
+                  }
+                }
+
+                if (primaryMethod?.type === 'external_url') {
+                  return (
+                    <button
+                      onClick={() => window.open(primaryMethod.url || job.application_url, '_blank')}
+                      className="flex items-center justify-center px-4 py-2 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] transition-colors text-sm font-medium"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Apply
+                    </button>
+                  );
+                } else if (primaryMethod?.type === 'email') {
+                  return (
+                    <button
+                      onClick={() => {
+                        const subject = encodeURIComponent(`Application for ${job.title}`);
+                        const body = encodeURIComponent(`Dear Hiring Manager,
+
+I am interested in applying for the ${job.title} position at ${job.company_name || 'your company'}.
+
+Best regards`);
+                        window.location.href = `mailto:${primaryMethod.email || job.application_email}?subject=${subject}&body=${body}`;
+                      }}
+                      className="flex items-center justify-center px-4 py-2 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] transition-colors text-sm font-medium"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Apply
+                    </button>
+                  );
+                } else {
+                  return (
+                    <Link
+                      href={`${jobUrl}/apply`}
+                      className="flex items-center justify-center px-4 py-2 bg-[#0CCE68] text-white rounded-md hover:bg-[#0BBE58] transition-colors text-sm font-medium"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Apply
+                    </Link>
+                  );
+                }
+              })()}
             </div>
           ) : (
             /* Non-authenticated user actions */

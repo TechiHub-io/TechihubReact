@@ -281,7 +281,7 @@ export default function JobListItem({
             {/* Job Seeker Actions */}
             {!isEmployer && (
               <Link 
-                href={`/jobs/${job.id}/apply`}
+                href={`/jobs/${job.id}`}
                 className="flex items-center z-50 text-[#0CCE68] hover:text-[#0BBE58] text-sm font-medium transition-colors"
               >
                 <FileText className="h-4 w-4 mr-1" />

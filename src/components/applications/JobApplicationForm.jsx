@@ -160,6 +160,13 @@ export default function JobApplicationForm({ jobId }) {
     loadJobData();
   }, [jobId, fetchJobById, fetchJobQuestions]);
 
+  // Redirect if job uses external application
+  useEffect(() => {
+    if (currentJob && currentJob.application_method !== 'internal') {
+      router.push(`/jobs/${jobId}`);
+    }
+  }, [currentJob, jobId, router]);
+
   // Set default values when documents load
   useEffect(() => {
     if (!documentsLoading && resumes.length > 0) {
