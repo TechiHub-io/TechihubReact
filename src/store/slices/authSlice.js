@@ -15,8 +15,14 @@ export const createAuthSlice = (set, get) => ({
   sessionValid: true,
   pendingInvitations: [],
   hasPendingInvitations: false,
+  _hasHydrated: false,
 
   // Actions
+  setHasHydrated: (hasHydrated) =>
+    set((state) => {
+      state._hasHydrated = hasHydrated;
+    }),
+
   setUser: (user) =>
     set((state) => {
       state.user = user;
@@ -24,11 +30,36 @@ export const createAuthSlice = (set, get) => ({
 
       // Set user role in cookie for middleware
       if (user) {
-        Cookies.set("user_role", user?.is_employer ? "employer" : "jobseeker", {
+
+        
+        // Handle super admin users - check multiple fields since user_type might be undefined
+        let userRole = "jobseeker"; // default
+        if (user.user_type === "super_admin" || 
+            (user.is_staff && user.is_superuser)) {
+          userRole = "super_admin";
+        } else if (user.is_employer) {
+          userRole = "employer";
+        }
+        
+
+        
+        Cookies.set("user_role", userRole, {
           expires: 1, // 1 day
           sameSite: "strict",
           path: "/",
         });
+        
+        // For super admin, set profile as completed immediately
+        if (userRole === "super_admin") {
+
+          Cookies.set("has_completed_profile", "true", {
+            expires: 7,
+            sameSite: "strict",
+            path: "/",
+          });
+        }
+        
+
       } else {
         Cookies.remove("user_role", { path: "/" });
       }
@@ -59,11 +90,43 @@ export const createAuthSlice = (set, get) => ({
       }
     }),
 
+  // Initialize authentication state from cookies
+  initializeAuth: async () => {
+
+    const token = Cookies.get("auth_token");
+    const refreshToken = Cookies.get("refresh_token");
+    
+
+    
+    if (!token) {
+
+      return false;
+    }
+    
+
+    
+    // Set tokens first
+    set((state) => {
+      state.token = token;
+      state.refreshToken = refreshToken;
+      state.isAuthenticated = true;
+      state.loading = true;
+    });
+
+    // Validate session and get user data
+    const result = await get().validateSession();
+
+    return result;
+  },
+
   // Session validation
   validateSession: async () => {
     const token = get().token || Cookies.get("auth_token");
     
     if (!token) {
+      set((state) => {
+        state.loading = false;
+      });
       return get().logout();
     }
 
@@ -79,16 +142,38 @@ export const createAuthSlice = (set, get) => ({
       });
 
       if (!response.ok) {
+        set((state) => {
+          state.loading = false;
+        });
         return get().logout();
       }
 
-      set((state) => {
-        state.sessionValid = true;
-      });
+      const data = await response.json();
+
+      // Update user data from validation response
+      if (data.user) {
+        set((state) => {
+          state.user = data.user;
+          state.isEmployer = data.user.is_employer || false;
+          state.sessionValid = true;
+          state.loading = false;
+        });
+        
+        // Set user in cookies as well
+        get().setUser(data.user);
+      } else {
+        set((state) => {
+          state.sessionValid = true;
+          state.loading = false;
+        });
+      }
 
       return true;
     } catch (error) {
       console.error("Session validation error:", error);
+      set((state) => {
+        state.loading = false;
+      });
       return get().logout();
     }
   },
@@ -153,15 +238,71 @@ export const createAuthSlice = (set, get) => ({
         path: "/",
       });
 
-      Cookies.set("user_role", data?.user?.is_employer ? "employer" : "jobseeker", {
+
+      
+      // Additional check for super admin detection
+      const isSuperAdminByType = data?.user?.user_type === "super_admin";
+      const isSuperAdminByFlags = data?.user?.is_staff && data?.user?.is_superuser;
+      const isSuperAdminByEmail = data?.user?.email === "vitalis@gmail.com"; // Temporary check for your specific user
+      
+      console.log("🔍 Super admin detection checks:", {
+        isSuperAdminByType,
+        isSuperAdminByFlags,
+        isSuperAdminByEmail,
+        finalDecision: isSuperAdminByType || isSuperAdminByFlags || isSuperAdminByEmail
+      });
+      
+      // Handle super admin users - check multiple fields since user_type might be undefined
+      let userRole = "jobseeker"; // default
+      if (data?.user?.user_type === "super_admin" || 
+          (data?.user?.is_staff && data?.user?.is_superuser) ||
+          data?.user?.email === "vitalis@gmail.com") { // Temporary check for your specific user
+        userRole = "super_admin";
+      } else if (data?.user?.is_employer) {
+        userRole = "employer";
+      }
+      
+
+      
+      Cookies.set("user_role", userRole, {
         expires: 1,
         sameSite: "strict",
         path: "/",
       });
+      
+      // For super admin, set profile as completed immediately
+      if (userRole === "super_admin") {
 
-      // Handle employer flow (existing logic)
+        Cookies.set("has_completed_profile", "true", {
+          expires: 7,
+          sameSite: "strict",
+          path: "/",
+        });
+      }
+      
+      // Debug: Log all cookies being set
+      console.log("🍪 All cookies after enhanced login:", {
+        user_role: userRole,
+        has_completed_profile: userRole === "super_admin" ? "true" : "depends on profile",
+        auth_token: "set",
+        user_email: data?.user?.email
+      });
+
+      // Initialize userCompanies variable in proper scope
       let userCompanies = [];
-      if (data?.user?.is_employer) {
+      // Handle super admin users first (with fallback detection)
+      if (data?.user?.user_type === "super_admin" || 
+          (data?.user?.is_staff && data?.user?.is_superuser) ||
+          data?.user?.email === "vitalis@gmail.com") { // Temporary check for your specific user
+        console.log("🎯 Super admin detected - setting completed profile to true");
+        Cookies.set("has_completed_profile", "true", {
+          expires: 7,
+          sameSite: "strict",
+          path: "/",
+        });
+      }
+      // Handle employer flow (existing logic)
+      else if (data?.user?.is_employer) {
         try {
           const companiesResponse = await fetch(`${API_URL}/companies/me/`, {
             headers: {
@@ -736,11 +877,41 @@ export const createAuthSlice = (set, get) => ({
       });
 
       // 2. User role (critical for middleware)
-      Cookies.set("user_role", data.user?.is_employer ? "employer" : "jobseeker", {
+      // Console log for debugging super admin
+      console.log("🔍 User data from social login API:", {
+        user_type: data?.user?.user_type,
+        is_employer: data?.user?.is_employer,
+        is_staff: data?.user?.is_staff,
+        is_superuser: data?.user?.is_superuser,
+        full_user: data?.user
+      });
+      
+      // Handle super admin users - check multiple fields since user_type might be undefined
+      let userRole = "jobseeker"; // default
+      if (data?.user?.user_type === "super_admin" || 
+          (data?.user?.is_staff && data?.user?.is_superuser)) {
+        userRole = "super_admin";
+      } else if (data?.user?.is_employer) {
+        userRole = "employer";
+      }
+      
+      console.log("🎯 Setting user_role cookie to:", userRole);
+      
+      Cookies.set("user_role", userRole, {
         expires: 1,
         sameSite: "strict",
         path: "/",
       });
+      
+      // For super admin, set profile as completed immediately
+      if (userRole === "super_admin") {
+        console.log("🎯 Super admin detected in social login - setting completed profile to true");
+        Cookies.set("has_completed_profile", "true", {
+          expires: 7,
+          sameSite: "strict",
+          path: "/",
+        });
+      }
 
       // 3. Profile ID for easy access
       if (data.profile_id) {
@@ -751,9 +922,18 @@ export const createAuthSlice = (set, get) => ({
         });
       }
 
-      // 4. Handle employer-specific cookies
-      let userCompanies = [];
-      if (data?.user?.is_employer) {
+      // 4. Handle super admin users first (with fallback detection)
+      if (data?.user?.user_type === "super_admin" || 
+          (data?.user?.is_staff && data?.user?.is_superuser)) {
+        console.log("🎯 Super admin detected in social login - setting completed profile to true");
+        Cookies.set("has_completed_profile", "true", {
+          expires: 7,
+          sameSite: "strict",
+          path: "/",
+        });
+      }
+      // 5. Handle employer-specific cookies
+      else if (data?.user?.is_employer) {
         try {
           const API_URL = process.env.NEXT_PUBLIC_API_FRONT_URL || "http://localhost:8000/api/v1";
           const companiesResponse = await fetch(`${API_URL}/companies/me/`, {

@@ -88,39 +88,27 @@ export default function AnalyticsDashboard() {
           const dashData = dashboardResponse.data;
           
           
-          // Create mock daily job views if not available
+          // Use real daily job views data
           if (dashData.daily_job_views && dashData.daily_job_views.length > 0) {
             allData.jobViews = dashData.daily_job_views;
           } else {
-            // Create last 7 days with zero data
-            allData.jobViews = Array.from({ length: 7 }, (_, i) => {
-              const date = new Date();
-              date.setDate(date.getDate() - i);
-              return {
-                date: date.toISOString().split('T')[0],
-                count: 0
-              };
-            }).reverse();
+            // No data available
+            allData.jobViews = [];
           }
         } catch (error) {
           console.error("Failed to fetch dashboard data:", error);
-          // Create empty job views data
-          allData.jobViews = Array.from({ length: 7 }, (_, i) => {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            return {
-              date: date.toISOString().split('T')[0],
-              count: 0
-            };
-          }).reverse();
+          // No data available
+          allData.jobViews = [];
         }
         
-        // Mock top sources data since it's not available yet
-        allData.topSources = [
-          { source: 'Direct', count: 0 },
-          { source: 'Job Boards', count: 0 },
-          { source: 'Social Media', count: 0 }
-        ];
+        // Try to get top sources data from API
+        try {
+          const sourcesResponse = await axios.get(`${API_URL}/analytics/top-sources/`);
+          allData.topSources = sourcesResponse.data?.top_sources || [];
+        } catch (error) {
+          console.error("Failed to fetch top sources data:", error);
+          allData.topSources = [];
+        }
         
         setAnalyticsData(allData);
         setDataFetched(true);

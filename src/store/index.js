@@ -50,6 +50,11 @@ const useStore = create(
           filters: state.filters,
           // Potentially add other states that need to be persisted
         }),
+        onRehydrateStorage: () => (state) => {
+          if (state) {
+            state.setHasHydrated(true);
+          }
+        },
         merge: (persistedState, currentState) => {
           // Merge the states but protect against stale data
           const mergedState = { ...currentState, ...persistedState };

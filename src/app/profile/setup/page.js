@@ -33,6 +33,20 @@ export default function ProfileSetupPage() {
     clearError: state.clearError,
     isDarkMode: state.isDarkMode
   }));
+
+  // Check if user is super admin and redirect them
+  useEffect(() => {
+    const userRole = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('user_role='))
+      ?.split('=')[1];
+    
+    if (userRole === 'super_admin') {
+      console.log("🔄 Super admin detected in profile setup page - redirecting to admin dashboard");
+      router.push('/dashboard/admin');
+      return;
+    }
+  }, [router]);
   
   const [step, setStep] = useState(1);
   const [profileId, setProfileId] = useState(null);

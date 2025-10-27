@@ -8,10 +8,15 @@ export function middleware(request) {
   const userRole = request.cookies.get('user_role')?.value;
   const isEmployer = userRole === 'employer';
   const isJobSeeker = userRole === 'jobseeker';
+  const isSuperAdmin = userRole === 'super_admin';
+  
+
   
   // Profile setup status
   const hasCompletedProfile = request.cookies.get('has_completed_profile')?.value === 'true';
   const isInProfileSetup = request.nextUrl.pathname.startsWith('/profile/setup');
+  
+
   
   // Company-related cookies (for employers)
   const hasCompany = request.cookies.get('has_company')?.value === 'true';
@@ -104,8 +109,11 @@ export function middleware(request) {
   
   if (isAuthenticated && (pureAuthRoutes.includes(pathname) || isPasswordResetPath || isEmailVerificationPath)) {
     
-    
-    if (isEmployer) {
+    if (isSuperAdmin) {
+      // Super admin users go directly to admin dashboard
+
+      return NextResponse.redirect(new URL('/dashboard/admin', request.url));
+    } else if (isEmployer) {
       // Special handling for company setup in progress
       if (inSetupProcess && pathname !== '/company/setup') {
         return NextResponse.redirect(new URL('/company/setup', request.url));
@@ -158,9 +166,22 @@ export function middleware(request) {
     return NextResponse.redirect(new URL('/company/setup', request.url));
   }
 
-  // Enhanced job seeker profile setup check
-  if (isAuthenticated && isJobSeeker && !hasCompletedProfile && 
+  // Super admins should never be on profile setup - redirect them to admin dashboard
+  if (isAuthenticated && isSuperAdmin && isInProfileSetup) {
+
+    return NextResponse.redirect(new URL('/dashboard/admin', request.url));
+  }
+
+  // Super admins should go to admin dashboard from root dashboard
+  if (isAuthenticated && isSuperAdmin && pathname === '/dashboard') {
+
+    return NextResponse.redirect(new URL('/dashboard/admin', request.url));
+  }
+
+  // Enhanced job seeker profile setup check (skip for super admin)
+  if (isAuthenticated && isJobSeeker && !isSuperAdmin && !hasCompletedProfile && 
       !isInProfileSetup && !pathname.startsWith('/api/') && !isPublicJobRoute(pathname)) {
+
     return NextResponse.redirect(new URL('/profile/setup', request.url));
   }
 
@@ -187,6 +208,12 @@ export function middleware(request) {
   
   // Role-based access control
   if (isAuthenticated) {
+    // Super admin has access to all routes
+    if (isSuperAdmin) {
+
+      return NextResponse.next();
+    }
+    
     // Restrict employer routes to employers
     if (pathname.startsWith('/dashboard/employer') && !isEmployer) {
       return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
@@ -202,16 +229,48 @@ export function middleware(request) {
       return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
     }
     
-    // Job creation/management is only for employers
-    if ((pathname.startsWith('/jobs/create') || 
-         pathname.startsWith('/jobs/manage') ||
-         pathname.startsWith('/jobs/edit/')) && !isEmployer) {
-      return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
+    // Job creation/management routes
+    if (pathname.startsWith('/jobs/create') || pathname.startsWith('/jobs/edit/')) {
+      // These are for employers and super admins
+      if (!isEmployer && !isSuperAdmin) {
+        return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
+      }
+    }
+    
+    // /jobs/manage is specifically for employers only - redirect super admins to admin dashboard
+    if (pathname.startsWith('/jobs/manage')) {
+      if (isSuperAdmin) {
+
+        return NextResponse.redirect(new URL('/dashboard/admin?tab=jobs', request.url));
+      }
+      if (!isEmployer) {
+        return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
+      }
     }
     
     // Job application is only for job seekers
-    if (pathname.includes('/jobs/') && pathname.includes('/apply') && isEmployer) {
+    if (pathname.includes('/jobs/') && pathname.includes('/apply') && (isEmployer || isSuperAdmin)) {
       return NextResponse.redirect(new URL('/dashboard/employer', request.url));
+    }
+    
+    // Admin routes are only for super admins
+    if (pathname.startsWith('/admin/') && !isSuperAdmin) {
+
+      if (isEmployer) {
+        return NextResponse.redirect(new URL('/dashboard/employer', request.url));
+      } else {
+        return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
+      }
+    }
+    
+    // Admin dashboard is only for super admins
+    if (pathname.startsWith('/dashboard/admin') && !isSuperAdmin) {
+
+      if (isEmployer) {
+        return NextResponse.redirect(new URL('/dashboard/employer', request.url));
+      } else {
+        return NextResponse.redirect(new URL('/dashboard/jobseeker', request.url));
+      }
     }
   }
 

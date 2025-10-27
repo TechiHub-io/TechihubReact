@@ -16,6 +16,7 @@ export function useAuth() {
     updateUser,
     clearError,
     validateSession,
+    initializeAuth,
     profile,
     profileId
   } = useStore((state) => ({
@@ -31,17 +32,27 @@ export function useAuth() {
     updateUser: state.updateUser,
     clearError: state.clearError,
     validateSession: state.validateSession,
+    initializeAuth: state.initializeAuth,
     // Include profile data that's now loaded during login
     profile: state.profile,
     profileId: state.profileId
   }));
 
-  // Session validation on mount and periodically
+  // Initialize authentication on mount - only if we have cookies but no auth state
+  useEffect(() => {
+    const hasAuthCookie = typeof window !== 'undefined' && document.cookie.includes('auth_token=');
+    
+
+    
+    if (hasAuthCookie && !isAuthenticated && !loading) {
+
+      initializeAuth();
+    }
+  }, []); // Only run once on mount
+
+  // Session validation periodically for authenticated users
   useEffect(() => {
     if (isAuthenticated) {
-      // Validate session on mount
-      validateSession();
-      
       // Set up periodic session validation (every 15 minutes)
       const interval = setInterval(() => {
         validateSession();
@@ -54,6 +65,7 @@ export function useAuth() {
   // Auto-logout on session invalid
   useEffect(() => {
     if (isAuthenticated && !sessionValid) {
+
       logout();
     }
   }, [sessionValid, isAuthenticated, logout]);

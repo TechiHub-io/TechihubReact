@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/useZustandStore";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 import {
   Menu,
   X,
@@ -12,6 +13,9 @@ import {
   User,
   Bell,
   MessageSquare,
+  Shield,
+  Briefcase,
+  Settings,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -22,8 +26,11 @@ export default function Navbar() {
     logout: state.logout,
   }));
 
+  const { isAdmin, hasAccessibleCompanies } = useAdminAuth();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
 
   const router = useRouter();
 
@@ -75,6 +82,52 @@ export default function Navbar() {
             >
               Post a Job
             </Link>
+          )}
+
+          {isAdmin && (
+            <div className="relative">
+              <button
+                type="button"
+                className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-[#0CCE68]"
+                onClick={() => setAdminMenuOpen(!adminMenuOpen)}
+              >
+                <Shield className="h-4 w-4" />
+                <span>Admin</span>
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
+              </button>
+
+              {adminMenuOpen && (
+                <div className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                    Admin Actions
+                  </div>
+                  
+                  <Link
+                    href="/admin/post-job"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setAdminMenuOpen(false)}
+                  >
+                    <Briefcase className="mr-3 h-4 w-4" />
+                    Post Job for Company
+                  </Link>
+
+                  <Link
+                    href="/admin/manage-jobs"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setAdminMenuOpen(false)}
+                  >
+                    <Settings className="mr-3 h-4 w-4" />
+                    Manage Posted Jobs
+                  </Link>
+
+                  {!hasAccessibleCompanies && (
+                    <div className="px-4 py-2 text-xs text-amber-600 bg-amber-50 border-t border-amber-200">
+                      No company access granted
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           )}
 
           <Link
@@ -235,6 +288,38 @@ export default function Navbar() {
                     >
                       Post a Job
                     </Link>
+                  )}
+
+                  {isAdmin && (
+                    <>
+                      <div className="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Admin Actions
+                      </div>
+                      
+                      <Link
+                        href="/admin/post-job"
+                        className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Briefcase className="mr-3 h-5 w-5" />
+                        Post Job for Company
+                      </Link>
+
+                      <Link
+                        href="/admin/manage-jobs"
+                        className="-mx-3 flex items-center rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Settings className="mr-3 h-5 w-5" />
+                        Manage Posted Jobs
+                      </Link>
+
+                      {!hasAccessibleCompanies && (
+                        <div className="px-3 py-2 text-xs text-amber-600 bg-amber-50 rounded-lg mx-3">
+                          No company access granted
+                        </div>
+                      )}
+                    </>
                   )}
 
                   <Link

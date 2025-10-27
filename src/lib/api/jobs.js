@@ -2,6 +2,7 @@
 import api from './index';
 
 export const jobsApi = {
+  // Regular job operations
   getJobs: (params) => api.get('/jobs/', { params }),
   
   getJobById: (id) => api.get(`/jobs/${id}/`),
@@ -12,28 +13,34 @@ export const jobsApi = {
   
   deleteJob: (id) => api.delete(`/jobs/${id}/`),
   
+  // Job search
   searchJobs: (params) => api.get('/jobs/search/', { params }),
   
   getFeaturedJobs: () => api.get('/jobs/featured/'),
   
-  getSimilarJobs: (id) => api.get(`/jobs/${id}/similar/`),
+  getSimilarJobs: (jobId) => api.get(`/jobs/${jobId}/similar/`),
   
-  getCompanyJobs: (companyId) => api.get(`/jobs/company/${companyId}/`),
+  // Company jobs
+  getCompanyJobs: (companyId, params) => api.get(`/jobs/company/${companyId}/`, { params }),
   
-  // Job actions
-  activateJob: (id) => api.post(`/jobs/${id}/activate/`),
+  // Admin-specific job operations
+  createAdminJob: (data) => api.post('/jobs/admin-create/', data),
   
-  deactivateJob: (id) => api.post(`/jobs/${id}/deactivate/`),
+  getAdminPostedJobs: (params) => api.get('/jobs/admin-posted/', { params }),
   
-  featureJob: (id) => api.post(`/jobs/${id}/feature/`),
+  bulkUpdateJobs: (data) => api.post('/jobs/bulk-update/', data),
   
-  // Job skills
-  addJobSkill: (jobId, data) => api.post(`/jobs/${jobId}/add_skill/`, data),
+  activateJob: (jobId) => api.post(`/jobs/${jobId}/activate/`),
   
-  // Saved jobs
-  getSavedJobs: () => api.get('/favorites/jobs/'),
+  deactivateJob: (jobId) => api.post(`/jobs/${jobId}/deactivate/`),
   
-  saveJob: (jobId) => api.post('/favorites/jobs/', { job: jobId }),
+  // Job favorites
+  getFavoriteJobs: () => api.get('/favorites/jobs/'),
   
-  unsaveJob: (jobId) => api.delete(`/favorites/jobs/${jobId}/`),
+  addToFavorites: (jobId) => api.post(`/favorites/jobs/${jobId}/`),
+  
+  removeFromFavorites: (jobId) => api.delete(`/favorites/jobs/${jobId}/`),
+  
+  // Job analytics
+  getJobViews: (jobId) => api.get(`/analytics/job-views/${jobId}/`),
 };

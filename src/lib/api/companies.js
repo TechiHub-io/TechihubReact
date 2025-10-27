@@ -66,4 +66,7 @@ export const companiesApi = {
   
   acceptInvitation: (token) => 
     api.post(`/companies/invitations/${token}/accept/`),
+  
+  // Admin-specific endpoints
+  getAdminAccessibleCompanies: () => api.get('/companies/admin-accessible/'),
 };
