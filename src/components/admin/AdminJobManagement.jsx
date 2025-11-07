@@ -334,16 +334,29 @@ export default function AdminJobManagement() {
     }
   };
 
-  // Get company name by ID
-  const getCompanyName = (companyId) => {
-    const company = accessibleCompanies.find(c => c.id === companyId);
-    return company?.name || 'Unknown Company';
+  // Get company name - use direct company_name from job or lookup by ID
+  const getCompanyName = (job) => {
+    // First try to use the company_name field from the job serializer
+    if (job.company_name) {
+      return job.company_name;
+    }
+    
+    // Fallback to lookup by company_id if company_name is not available
+    if (job.company_id) {
+      const company = accessibleCompanies.find(c => c.id === job.company_id);
+      return company?.name || 'Company Name Not Available';
+    }
+    
+    return 'Company Name Not Available';
   };
 
-  // Get company logo by ID
-  const getCompanyLogo = (companyId) => {
-    const company = accessibleCompanies.find(c => c.id === companyId);
-    return company?.logo || null;
+  // Get company logo - lookup by company_id
+  const getCompanyLogo = (job) => {
+    if (job.company_id) {
+      const company = accessibleCompanies.find(c => c.id === job.company_id);
+      return company?.logo_url || company?.logo || null;
+    }
+    return null;
   };
 
   // Refresh data
@@ -562,15 +575,15 @@ export default function AdminJobManagement() {
                         
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            {getCompanyLogo(job.company_id) && (
+                            {getCompanyLogo(job) && (
                               <img 
-                                src={getCompanyLogo(job.company_id)} 
-                                alt={getCompanyName(job.company_id)}
+                                src={getCompanyLogo(job)} 
+                                alt={getCompanyName(job)}
                                 className="w-6 h-6 rounded object-cover"
                               />
                             )}
                             <span className="text-sm">
-                              {getCompanyName(job.company_id)}
+                              {getCompanyName(job)}
                             </span>
                           </div>
                         </td>
@@ -737,15 +750,15 @@ export default function AdminJobManagement() {
                     <div className="flex items-center gap-2 mb-3">
                       <Building2 className="w-4 h-4 text-gray-400" />
                       <div className="flex items-center gap-2">
-                        {getCompanyLogo(job.company_id) && (
+                        {getCompanyLogo(job) && (
                           <img 
-                            src={getCompanyLogo(job.company_id)} 
-                            alt={getCompanyName(job.company_id)}
+                            src={getCompanyLogo(job)} 
+                            alt={getCompanyName(job)}
                             className="w-5 h-5 rounded object-cover"
                           />
                         )}
                         <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {getCompanyName(job.company_id)}
+                          {getCompanyName(job)}
                         </span>
                       </div>
                     </div>
@@ -759,7 +772,7 @@ export default function AdminJobManagement() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Users className="w-4 h-4" />
-                          <span>{job.applications_count || 0} applications</span>
+                          <span>{job.application_count || 0} applications</span>
                         </div>
                       </div>
                     </div>
@@ -824,18 +837,69 @@ export default function AdminJobManagement() {
         </>
       )}
       
-      {/* Delete confirmation dialog */}
-      <ConfirmationDialog
-        isOpen={deleteConfirm.show}
-        onClose={cancelDelete}
-        onConfirm={confirmDeleteJob}
-        title="Delete Job Posting"
-        message={`Are you sure you want to delete the job "${deleteConfirm.jobTitle || 'this job'}"? This action cannot be undone and will remove all associated applications.`}
-        confirmText="Delete Job"
-        cancelText="Cancel"
-        variant="danger"
-        loading={isJobDeleting(deleteConfirm.jobId)}
-      />
+      {/* Delete confirmation modal */}
+      {deleteConfirm.show && (
+        <div className="fixed inset-0 z-[9999] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+            {/* Background overlay */}
+            <div 
+              className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" 
+              aria-hidden="true"
+              onClick={cancelDelete}
+            ></div>
+
+            {/* Modal panel */}
+            <div className="relative inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 z-10">
+              <div className="sm:flex sm:items-start">
+                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
+                  <svg className="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
+                    Delete Job Posting
+                  </h3>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Are you sure you want to delete <span className="font-semibold text-gray-900 dark:text-white">"{deleteConfirm.jobTitle}"</span>? 
+                      This action cannot be undone and will permanently remove the job posting and all associated applications.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={confirmDeleteJob}
+                  disabled={isJobDeleting(deleteConfirm.jobId)}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isJobDeleting(deleteConfirm.jobId) ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Deleting...
+                    </>
+                  ) : (
+                    'Delete Job'
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={cancelDelete}
+                  disabled={isJobDeleting(deleteConfirm.jobId)}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0CCE68] sm:mt-0 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

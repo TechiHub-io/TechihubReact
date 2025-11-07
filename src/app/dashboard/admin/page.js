@@ -23,6 +23,15 @@ function AdminDashboardContent() {
   const { isAdmin, accessibleCompanies, companiesLoading } = useAdminAuth();
   const { stats, loading: statsLoading } = useAdminStats();
   const router = useRouter();
+
+  // Debug logging for stats
+  useEffect(() => {
+    console.log('📈 Admin Dashboard Stats Update:', {
+      stats,
+      statsLoading,
+      accessibleCompanies: accessibleCompanies?.length || 0
+    });
+  }, [stats, statsLoading, accessibleCompanies]);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [showJobForm, setShowJobForm] = useState(false);
@@ -156,7 +165,7 @@ function AdminDashboardContent() {
               </div>
             </div>
             
-            {activeTab === 'jobs' && (
+            {/* {activeTab === 'jobs' && (
               <button
                 onClick={() => setShowJobForm(true)}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0CCE68] hover:bg-[#0BBE58] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0CCE68]"
@@ -164,7 +173,7 @@ function AdminDashboardContent() {
                 <PlusIcon className="h-4 w-4 mr-2" />
                 Create Job
               </button>
-            )}
+            )} */}
           </div>
         </div>
 

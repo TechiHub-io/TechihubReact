@@ -315,16 +315,49 @@ export default function AdminJobPostingForm({
   // Load initial data
   useEffect(() => {
     if (isEdit && initialData) {
+      console.log('🔄 Loading initial job data for editing:', initialData);
+      
+      // Transform skills from API format to form format
+      const transformedSkills = (initialData.required_skills || initialData.skills || []).map((skill, index) => {
+        if (typeof skill === 'string') {
+          return { 
+            id: `skill-${index}-${Date.now()}`, 
+            name: skill, 
+            is_required: true 
+          };
+        } else if (skill && typeof skill === 'object') {
+          return {
+            id: skill.id || `skill-${index}-${Date.now()}`,
+            name: skill.skill || skill.name || skill,
+            is_required: skill.is_required !== undefined ? skill.is_required : true
+          };
+        }
+        return { 
+          id: `skill-${index}-${Date.now()}`, 
+          name: String(skill), 
+          is_required: true 
+        };
+      });
+
       const data = {
         ...initialData,
-        companyId: initialData.company_id || initialData.companyId || '',
-        skills: initialData.skills || [],
+        // Company ID - use company_id from API or company.id if company object is provided
+        companyId: initialData.company_id || initialData.company?.id || initialData.companyId || '',
+        // Transform skills to form format
+        skills: transformedSkills,
         // Map existing application method data
         applicationMethods: getApplicationMethodsFromData(initialData),
         applicationUrl: initialData.application_url || '',
         applicationEmail: initialData.application_email || '',
         postedByAdmin: initialData.posted_by_admin || true
       };
+      
+      console.log('🔄 Transformed form data:', {
+        companyId: data.companyId,
+        skills: data.skills,
+        title: data.title
+      });
+      
       setFormData(data);
       setInitialFormData(data);
       
@@ -855,7 +888,7 @@ export default function AdminJobPostingForm({
                 applicationEmail: validationErrors.applicationEmail,
                 general: validationErrors.applicationMethods
               }}
-              allowMultiple={true}
+              allowMultiple={false}
             />
           </div>
 

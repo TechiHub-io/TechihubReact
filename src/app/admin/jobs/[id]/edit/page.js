@@ -16,10 +16,20 @@ export default function AdminJobEditPage({ params }) {
   const [jobData, setJobData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [jobId, setJobId] = useState(null);
 
-  const jobId = params.id;
+  // Handle async params in Next.js 15
+  useEffect(() => {
+    const getJobId = async () => {
+      const resolvedParams = await params;
+      setJobId(resolvedParams.id);
+    };
+    getJobId();
+  }, [params]);
 
   useEffect(() => {
+    if (!jobId) return; // Wait for jobId to be set
+    
     if (!isAuthenticated) {
       router.push('/auth/login');
       return;
@@ -41,9 +51,7 @@ export default function AdminJobEditPage({ params }) {
       return;
     }
 
-    if (jobId) {
-      loadJobData();
-    }
+    loadJobData();
   }, [isAuthenticated, isAdmin, jobId, router]);
 
   const loadJobData = async () => {

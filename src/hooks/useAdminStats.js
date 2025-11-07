@@ -35,6 +35,12 @@ export function useAdminStats() {
         api.get('/jobs/admin-posted/')
       ]);
 
+      // Debug logging (can be removed in production)
+      console.log('🔍 Admin Stats API Responses:');
+      console.log('Dashboard Response:', dashboardResponse.status === 'fulfilled' ? dashboardResponse.value.data : dashboardResponse.reason);
+      console.log('Application Stats Response:', applicationStatsResponse.status === 'fulfilled' ? applicationStatsResponse.value.data : applicationStatsResponse.reason);
+      console.log('Jobs Response:', jobsResponse.status === 'fulfilled' ? jobsResponse.value.data : jobsResponse.reason);
+
       let combinedStats = {
         totalJobs: 0,
         activeJobs: 0,
@@ -47,15 +53,18 @@ export function useAdminStats() {
       // Process dashboard analytics
       if (dashboardResponse.status === 'fulfilled') {
         const dashboardData = dashboardResponse.value.data;
-        combinedStats.activeJobs = dashboardData.active_jobs_count || 0;
-        combinedStats.totalApplications = dashboardData.total_applications || 0;
+        // Only use dashboard data if it has meaningful values, otherwise rely on other endpoints
+        if (dashboardData.active_jobs_count > 0 || dashboardData.total_applications > 0) {
+          combinedStats.activeJobs = dashboardData.active_jobs_count || 0;
+          combinedStats.totalApplications = dashboardData.total_applications || 0;
+        }
         combinedStats.recentJobs = dashboardData.recent_jobs || [];
       }
 
-      // Process application stats
+      // Process application stats - this should be the primary source for application data
       if (applicationStatsResponse.status === 'fulfilled') {
         const appStatsData = applicationStatsResponse.value.data;
-        combinedStats.totalApplications = appStatsData.total_applications || combinedStats.totalApplications;
+        combinedStats.totalApplications = appStatsData.total_applications || 0;
         combinedStats.dailyApplications = appStatsData.daily_applications || [];
       }
 
@@ -74,11 +83,11 @@ export function useAdminStats() {
               .slice(0, 5)
               .map(job => ({
                 id: job.id,
-                title: job.title,
-                company_name: job.company?.name || 'Unknown Company',
+                title: job.title || 'Untitled Job',
+                company_name: job.company_name || job.company?.name || 'Company Name Not Available',
                 created_at: job.created_at,
                 is_active: job.is_active,
-                application_count: job.applications?.length || 0
+                application_count: job.application_count || job.applications?.length || 0
               }));
           }
         } else if (jobsData && typeof jobsData === 'object' && jobsData.results) {
@@ -92,11 +101,11 @@ export function useAdminStats() {
               .slice(0, 5)
               .map(job => ({
                 id: job.id,
-                title: job.title,
-                company_name: job.company?.name || 'Unknown Company',
+                title: job.title || 'Untitled Job',
+                company_name: job.company_name || job.company?.name || 'Company Name Not Available',
                 created_at: job.created_at,
                 is_active: job.is_active,
-                application_count: job.applications?.length || 0
+                application_count: job.application_count || job.applications?.length || 0
               }));
           }
         }
@@ -112,10 +121,12 @@ export function useAdminStats() {
         combinedStats.totalUsers = 0;
       }
 
+      console.log('📊 Final Combined Stats:', combinedStats);
+      console.log('📊 Recent Jobs Detail:', combinedStats.recentJobs);
       setStats(combinedStats);
 
     } catch (err) {
-      console.error('Error fetching admin stats:', err);
+      console.error('❌ Error fetching admin stats:', err);
       
       let errorMessage = 'Failed to load admin statistics';
       if (err.response?.status === 404) {

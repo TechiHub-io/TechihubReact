@@ -73,9 +73,9 @@ export default function CompanySelector({
     return (
       <div className="flex items-center space-x-3">
         <div className="flex-shrink-0">
-          {company.logo ? (
+          {(company.logo_url || company.logo) ? (
             <img
-              src={company.logo}
+              src={company.logo_url || company.logo}
               alt={company.name}
               className="w-8 h-8 rounded-lg object-cover"
             />
@@ -103,9 +103,9 @@ export default function CompanySelector({
     return (
       <div className="flex items-center space-x-3 p-4 sm:p-3">
         <div className="flex-shrink-0">
-          {company.logo ? (
+          {(company.logo_url || company.logo) ? (
             <img
-              src={company.logo}
+              src={company.logo_url || company.logo}
               alt={company.name}
               className="w-12 h-12 sm:w-10 sm:h-10 rounded-lg object-cover"
             />

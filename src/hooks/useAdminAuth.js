@@ -50,7 +50,9 @@ export function useAdminAuth() {
       // Import the API function dynamically to avoid circular dependencies
       const { companiesApi } = await import('@/lib/api/companies');
       const response = await companiesApi.getAdminAccessibleCompanies();
+      console.log('🏢 Admin Accessible Companies API Response:', response);
       const companies = response.data?.data || response.data || [];
+      console.log('🏢 Processed Companies:', companies);
       setAccessibleCompanies(companies);
     } catch (error) {
       console.error('Error fetching accessible companies:', error);

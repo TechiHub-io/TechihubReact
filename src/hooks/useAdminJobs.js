@@ -178,9 +178,11 @@ export function useAdminJobs() {
     try {
       const apiData = transformFormDataToAPI(formData);
       
+      console.log('🔄 Updating job with data:', apiData);
+      
       // Import the API function to use the centralized endpoint
       const { jobsApi } = await import('@/lib/api/jobs');
-      const response = await jobsApi.updateJob(jobId, apiData);
+      const response = await jobsApi.updateAdminJob(jobId, apiData);
       
       const updatedJob = response.data;
       setLoading(false);

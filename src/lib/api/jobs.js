@@ -26,6 +26,8 @@ export const jobsApi = {
   // Admin-specific job operations
   createAdminJob: (data) => api.post('/jobs/admin-create/', data),
   
+  updateAdminJob: (jobId, data) => api.put(`/jobs/${jobId}/admin-update/`, data),
+  
   getAdminPostedJobs: (params) => api.get('/jobs/admin-posted/', { params }),
   
   bulkUpdateJobs: (data) => api.post('/jobs/bulk-update/', data),
