@@ -585,12 +585,13 @@ export default function JobDetailsView({ jobId }) {
                 <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Salary Range
                 </h4>
-                <p className="text-gray-900 dark:text-white">
-                  {formatSalaryRange()}
-                </p>
-                {currentJob.is_salary_visible === false && (
-                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                {currentJob.is_salary_visible === false ? (
+                  <p className="text-gray-500 dark:text-gray-400 italic">
                     Hidden from applicants
+                  </p>
+                ) : (
+                  <p className="text-gray-900 dark:text-white">
+                    {formatSalaryRange()}
                   </p>
                 )}
               </div>
