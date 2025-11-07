@@ -1387,18 +1387,25 @@ export default function AdminJobPostingForm({
               <label htmlFor="application_deadline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Application Deadline
               </label>
-              <input
-                id="application_deadline"
-                name="application_deadline"
-                type="date"
-                value={formData.application_deadline}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                min={new Date().toISOString().split('T')[0]}
-                className={`w-full bg-white dark:bg-gray-800 border rounded-md py-2 px-3 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent focus:ring-offset-2 transition-all duration-200 ${
-                  validationErrors.application_deadline ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                }`}
-              />
+              <div className="relative">
+                <input
+                  id="application_deadline"
+                  name="application_deadline"
+                  type="date"
+                  value={formData.application_deadline}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full bg-white dark:bg-gray-800 border rounded-md py-2 px-3 pr-10 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0CCE68] focus:border-transparent focus:ring-offset-2 transition-all duration-200 cursor-pointer ${
+                    validationErrors.application_deadline ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                  }`}
+                  onClick={(e) => e.target.showPicker?.()}
+                />
+                <Calendar 
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" 
+                  aria-hidden="true"
+                />
+              </div>
               {validationErrors.application_deadline && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
                   <AlertCircle className="w-4 h-4 mr-1" />
