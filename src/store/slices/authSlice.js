@@ -245,12 +245,6 @@ export const createAuthSlice = (set, get) => ({
       const isSuperAdminByFlags = data?.user?.is_staff && data?.user?.is_superuser;
       const isSuperAdminByEmail = data?.user?.email === "vitalis@gmail.com"; // Temporary check for your specific user
       
-      console.log("🔍 Super admin detection checks:", {
-        isSuperAdminByType,
-        isSuperAdminByFlags,
-        isSuperAdminByEmail,
-        finalDecision: isSuperAdminByType || isSuperAdminByFlags || isSuperAdminByEmail
-      });
       
       // Handle super admin users - check multiple fields since user_type might be undefined
       let userRole = "jobseeker"; // default
@@ -280,13 +274,7 @@ export const createAuthSlice = (set, get) => ({
         });
       }
       
-      // Debug: Log all cookies being set
-      console.log("🍪 All cookies after enhanced login:", {
-        user_role: userRole,
-        has_completed_profile: userRole === "super_admin" ? "true" : "depends on profile",
-        auth_token: "set",
-        user_email: data?.user?.email
-      });
+   
 
       // Initialize userCompanies variable in proper scope
       let userCompanies = [];
@@ -294,7 +282,7 @@ export const createAuthSlice = (set, get) => ({
       if (data?.user?.user_type === "super_admin" || 
           (data?.user?.is_staff && data?.user?.is_superuser) ||
           data?.user?.email === "vitalis@gmail.com") { // Temporary check for your specific user
-        console.log("🎯 Super admin detected - setting completed profile to true");
+        
         Cookies.set("has_completed_profile", "true", {
           expires: 7,
           sameSite: "strict",
@@ -878,13 +866,7 @@ export const createAuthSlice = (set, get) => ({
 
       // 2. User role (critical for middleware)
       // Console log for debugging super admin
-      console.log("🔍 User data from social login API:", {
-        user_type: data?.user?.user_type,
-        is_employer: data?.user?.is_employer,
-        is_staff: data?.user?.is_staff,
-        is_superuser: data?.user?.is_superuser,
-        full_user: data?.user
-      });
+     
       
       // Handle super admin users - check multiple fields since user_type might be undefined
       let userRole = "jobseeker"; // default
@@ -895,8 +877,6 @@ export const createAuthSlice = (set, get) => ({
         userRole = "employer";
       }
       
-      console.log("🎯 Setting user_role cookie to:", userRole);
-      
       Cookies.set("user_role", userRole, {
         expires: 1,
         sameSite: "strict",
@@ -905,7 +885,6 @@ export const createAuthSlice = (set, get) => ({
       
       // For super admin, set profile as completed immediately
       if (userRole === "super_admin") {
-        console.log("🎯 Super admin detected in social login - setting completed profile to true");
         Cookies.set("has_completed_profile", "true", {
           expires: 7,
           sameSite: "strict",
@@ -925,7 +904,6 @@ export const createAuthSlice = (set, get) => ({
       // 4. Handle super admin users first (with fallback detection)
       if (data?.user?.user_type === "super_admin" || 
           (data?.user?.is_staff && data?.user?.is_superuser)) {
-        console.log("🎯 Super admin detected in social login - setting completed profile to true");
         Cookies.set("has_completed_profile", "true", {
           expires: 7,
           sameSite: "strict",

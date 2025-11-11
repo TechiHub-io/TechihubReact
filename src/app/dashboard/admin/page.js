@@ -24,14 +24,6 @@ function AdminDashboardContent() {
   const { stats, loading: statsLoading } = useAdminStats();
   const router = useRouter();
 
-  // Debug logging for stats
-  useEffect(() => {
-    console.log('📈 Admin Dashboard Stats Update:', {
-      stats,
-      statsLoading,
-      accessibleCompanies: accessibleCompanies?.length || 0
-    });
-  }, [stats, statsLoading, accessibleCompanies]);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('overview');
   const [showJobForm, setShowJobForm] = useState(false);

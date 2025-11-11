@@ -27,15 +27,7 @@ api.interceptors.request.use(
 
       token = cookieToken || localStorageToken;
 
-      // Debug log only for auth-related requests
-      if (config.url?.includes('auth') || config.url?.includes('admin')) {
-        console.log('🔍 API Request Token Check:', {
-          cookieToken: cookieToken ? 'exists' : 'missing',
-          localStorageToken: localStorageToken ? 'exists' : 'missing',
-          usingToken: token ? 'exists' : 'missing',
-          url: config.url
-        });
-      }
+      
     }
 
     if (token) {
@@ -56,11 +48,7 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      console.log('🚨 401 Unauthorized response:', {
-        url: error.config?.url,
-        method: error.config?.method,
-        hasAuthHeader: !!error.config?.headers?.Authorization
-      });
+     
 
       // Only redirect if we're not already on an auth page
       if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth/')) {
@@ -68,7 +56,6 @@ api.interceptors.response.use(
         localStorage.removeItem("auth_token");
         document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
-        console.log('🔄 Redirecting to login due to 401');
         window.location.href = "/auth/login";
       }
     }

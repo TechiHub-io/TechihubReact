@@ -42,7 +42,6 @@ export default function ProfileSetupPage() {
       ?.split('=')[1];
     
     if (userRole === 'super_admin') {
-      console.log("🔄 Super admin detected in profile setup page - redirecting to admin dashboard");
       router.push('/dashboard/admin');
       return;
     }

@@ -38,7 +38,6 @@ export default function CompanySelectorDemo() {
   };
 
   const handleAccessRevoked = (companyId, company) => {
-    console.log('Access revoked for company:', company?.name);
     // Handle access revocation (e.g., show notification, clear selection)
     setSelectedCompanyId(null);
   };

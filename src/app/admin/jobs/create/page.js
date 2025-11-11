@@ -19,7 +19,6 @@ export default function AdminJobCreatePage() {
     }
 
     if (!isAdmin) {
-      console.log("❌ Non-super admin trying to access admin job creation");
       // Check user role from cookie to redirect appropriately
       const userRole = document.cookie
         .split('; ')

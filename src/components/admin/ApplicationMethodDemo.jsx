@@ -71,7 +71,6 @@ export default function ApplicationMethodDemo() {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log('Application methods saved:', apiData);
       setSaveSuccess(true);
       
       // Auto-hide success message after 3 seconds

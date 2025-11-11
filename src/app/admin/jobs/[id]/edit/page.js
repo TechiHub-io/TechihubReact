@@ -36,7 +36,6 @@ export default function AdminJobEditPage({ params }) {
     }
 
     if (!isAdmin) {
-      console.log("❌ Non-super admin trying to access admin job editing");
       // Check user role from cookie to redirect appropriately
       const userRole = document.cookie
         .split('; ')

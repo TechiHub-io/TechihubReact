@@ -35,12 +35,6 @@ export function useAdminStats() {
         api.get('/jobs/admin-posted/')
       ]);
 
-      // Debug logging (can be removed in production)
-      console.log('🔍 Admin Stats API Responses:');
-      console.log('Dashboard Response:', dashboardResponse.status === 'fulfilled' ? dashboardResponse.value.data : dashboardResponse.reason);
-      console.log('Application Stats Response:', applicationStatsResponse.status === 'fulfilled' ? applicationStatsResponse.value.data : applicationStatsResponse.reason);
-      console.log('Jobs Response:', jobsResponse.status === 'fulfilled' ? jobsResponse.value.data : jobsResponse.reason);
-
       let combinedStats = {
         totalJobs: 0,
         activeJobs: 0,
@@ -121,8 +115,6 @@ export function useAdminStats() {
         combinedStats.totalUsers = 0;
       }
 
-      console.log('📊 Final Combined Stats:', combinedStats);
-      console.log('📊 Recent Jobs Detail:', combinedStats.recentJobs);
       setStats(combinedStats);
 
     } catch (err) {

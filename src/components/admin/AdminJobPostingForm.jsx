@@ -315,7 +315,6 @@ export default function AdminJobPostingForm({
   // Load initial data
   useEffect(() => {
     if (isEdit && initialData) {
-      console.log('🔄 Loading initial job data for editing:', initialData);
       
       // Transform skills from API format to form format
       const transformedSkills = (initialData.required_skills || initialData.skills || []).map((skill, index) => {
@@ -352,11 +351,6 @@ export default function AdminJobPostingForm({
         postedByAdmin: initialData.posted_by_admin || true
       };
       
-      console.log('🔄 Transformed form data:', {
-        companyId: data.companyId,
-        skills: data.skills,
-        title: data.title
-      });
       
       setFormData(data);
       setInitialFormData(data);
