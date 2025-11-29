@@ -3,10 +3,19 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: [
-      "localhost",
-      "api.techhub.example.com",
-      "techihub-resources.s3.amazonaws.com",
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "api.techhub.example.com",
+      },
+      {
+        protocol: "https",
+        hostname: "techihub-resources.s3.amazonaws.com",
+      },
     ],
     formats: ["image/avif", "image/webp"],
   },

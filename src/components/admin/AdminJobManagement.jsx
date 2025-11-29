@@ -81,6 +81,10 @@ export default function AdminJobManagement() {
   // State for jobs data
   const [jobs, setJobs] = useState([]);
   const [totalJobs, setTotalJobs] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [hasNext, setHasNext] = useState(false);
+  const [hasPrevious, setHasPrevious] = useState(false);
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -116,12 +120,20 @@ export default function AdminJobManagement() {
     }
     
     prevFiltersRef.current = filters;
+    // Reset to page 1 when filters change
+    setCurrentPage(1);
     loadAdminJobs();
     
     if (!mountedRef.current) {
       mountedRef.current = true;
     }
   }, [filters, isAdmin]);
+
+  // Load jobs when page changes
+  useEffect(() => {
+    if (!isAdmin || !mountedRef.current) return;
+    loadAdminJobs();
+  }, [currentPage, pageSize]);
 
   // Load admin jobs with current filters
   const loadAdminJobs = async (isRefresh = false) => {
@@ -134,22 +146,34 @@ export default function AdminJobManagement() {
       }
 
       const apiFilters = createApiFilters(filters);
+      // Add pagination parameters
+      apiFilters.page = currentPage;
+      apiFilters.page_size = pageSize;
+      
       const jobsData = await fetchAdminJobs(apiFilters);
       
       if (Array.isArray(jobsData)) {
         setJobs(jobsData);
         setTotalJobs(jobsData.length);
+        setHasNext(false);
+        setHasPrevious(false);
       } else if (jobsData?.results) {
         setJobs(jobsData.results);
         setTotalJobs(jobsData.count || jobsData.results.length);
+        setHasNext(!!jobsData.next);
+        setHasPrevious(!!jobsData.previous);
       } else {
         setJobs([]);
         setTotalJobs(0);
+        setHasNext(false);
+        setHasPrevious(false);
       }
     } catch (error) {
       handleJobFetchError(error);
       setJobs([]);
       setTotalJobs(0);
+      setHasNext(false);
+      setHasPrevious(false);
     } finally {
       // Clear loading states
       if (isRefresh) {
@@ -250,6 +274,7 @@ export default function AdminJobManagement() {
       date_from: '',
       date_to: ''
     });
+    setCurrentPage(1); // Reset to first page
   };
 
   // Toggle job status
@@ -460,9 +485,19 @@ export default function AdminJobManagement() {
       )}
       
       {/* Loading state */}
-      {loading && (
+      {loading && jobs.length === 0 && (
         <div className="flex justify-center items-center p-8">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#0CCE68]"></div>
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading jobs...</span>
+        </div>
+      )}
+      
+      {/* Loading overlay for pagination */}
+      {loading && jobs.length > 0 && (
+        <div className="relative">
+          <div className="absolute inset-0 bg-white/50 dark:bg-gray-800/50 flex justify-center items-center z-10">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#0CCE68]"></div>
+          </div>
         </div>
       )}
       
@@ -821,15 +856,79 @@ export default function AdminJobManagement() {
                 ))}
               </div>
 
-              {/* Summary */}
+              {/* Pagination */}
               <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
-                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-                  <span>
-                    Showing {jobs.length} of {totalJobs} admin jobs
-                  </span>
-                  <span>
-                    {selectedJobs.size > 0 && `${selectedJobs.size} selected`}
-                  </span>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  {/* Summary */}
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <span>
+                      Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalJobs)} of {totalJobs} admin jobs
+                    </span>
+                    {selectedJobs.size > 0 && (
+                      <span className="ml-2">
+                        ({selectedJobs.size} selected)
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Pagination Controls */}
+                  <div className="flex items-center gap-2">
+                    {/* Page size selector */}
+                    <div className="flex items-center gap-2">
+                      <label htmlFor="pageSize" className="text-sm text-gray-600 dark:text-gray-400">
+                        Per page:
+                      </label>
+                      <select
+                        id="pageSize"
+                        value={pageSize}
+                        onChange={(e) => {
+                          setPageSize(Number(e.target.value));
+                          setCurrentPage(1);
+                        }}
+                        className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      >
+                        <option value={10}>10</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                        <option value={100}>100</option>
+                      </select>
+                    </div>
+
+                    {/* Page navigation */}
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={!hasPrevious || loading}
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        First
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={!hasPrevious || loading}
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+                      <span className="px-3 py-1 text-sm text-gray-700 dark:text-gray-300">
+                        Page {currentPage} of {Math.ceil(totalJobs / pageSize)}
+                      </span>
+                      <button
+                        onClick={() => setCurrentPage(prev => prev + 1)}
+                        disabled={!hasNext || loading}
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(Math.ceil(totalJobs / pageSize))}
+                        disabled={!hasNext || loading}
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Last
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </>

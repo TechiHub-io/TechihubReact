@@ -216,10 +216,17 @@ export function useAdminJobs() {
         posted_by_admin: 'true' // Filter for admin-posted jobs
       });
       
-      const jobsData = response.data?.results || response.data;
+      // Return the full response with pagination data
+      const result = {
+        results: response.data?.results || response.data || [],
+        count: response.data?.count || (response.data?.results?.length || 0),
+        next: response.data?.next || null,
+        previous: response.data?.previous || null
+      };
+      
       setLoading(false);
       
-      return jobsData;
+      return result;
     } catch (error) {
       console.error('Error fetching admin jobs:', error);
       const errorMessage = error.response?.data?.detail || 
@@ -228,7 +235,7 @@ export function useAdminJobs() {
                           'Failed to fetch admin jobs';
       setError(errorMessage);
       setLoading(false);
-      return [];
+      return { results: [], count: 0, next: null, previous: null };
     }
   }, [isAdmin]);
 
